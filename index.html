@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>خدمات wossol | خدمات ومتجر في منصة واحدة</title>
+  <title>خدمات wossol | مسار حي دقيق بالموقع الفعلي</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --bg-base: #0d1117;
@@ -44,7 +46,6 @@
       line-height: 1.65;
     }
 
-    /* Top Bar with Notification Button */
     .topbar {
       position: sticky;
       top: 0;
@@ -129,9 +130,7 @@
       border-radius: var(--radius-pill);
     }
 
-    .notif-count.empty {
-      display: none;
-    }
+    .notif-count.empty { display: none; }
 
     .notif-dropdown {
       position: absolute;
@@ -147,9 +146,7 @@
       z-index: 95;
     }
 
-    .notif-dropdown.open {
-      display: block;
-    }
+    .notif-dropdown.open { display: block; }
 
     .notif-drop-head {
       display: flex;
@@ -177,10 +174,7 @@
       padding: 0 16px;
     }
 
-    /* Home Hero & Status Strip */
-    .home-shell.hidden {
-      display: none;
-    }
+    .home-shell.hidden { display: none; }
 
     .hero-card {
       background: linear-gradient(125deg, rgba(245, 158, 11, 0.12), rgba(56, 189, 248, 0.12), rgba(16, 185, 129, 0.12));
@@ -188,11 +182,6 @@
       border-radius: var(--radius-lg);
       padding: 20px;
       margin-bottom: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
     }
 
     .hero-card h1 {
@@ -210,6 +199,7 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     .tag-pill {
@@ -226,7 +216,6 @@
     .tag-emerald { border-color: rgba(16, 185, 129, 0.45); color: #6ee7b7; }
     .tag-sky { border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc; }
 
-    /* Multi-Accent Menu Tiles */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -234,9 +223,7 @@
     }
 
     @media (min-width: 680px) {
-      .menu-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
+      .menu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
     .tile-btn {
@@ -275,15 +262,12 @@
       background: rgba(251, 113, 133, 0.12);
     }
 
-    /* Dedicated Single-Option Pages */
     .solo-page {
       display: none;
       animation: fadeIn 0.2s ease;
     }
 
-    .solo-page.active {
-      display: block;
-    }
+    .solo-page.active { display: block; }
 
     .page-head {
       background: var(--bg-card);
@@ -357,9 +341,7 @@
       margin-bottom: 14px;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--sky);
-    }
+    input:focus, select:focus, textarea:focus { border-color: var(--sky); }
 
     .quick-row {
       display: flex;
@@ -379,9 +361,7 @@
       cursor: pointer;
     }
 
-    .chip-btn:hover {
-      border-color: var(--emerald);
-    }
+    .chip-btn:hover { border-color: var(--emerald); }
 
     .check-row {
       display: flex;
@@ -505,18 +485,14 @@
       margin-top: 14px;
     }
 
-    .route-bar {
-      margin-top: 10px;
-      background: var(--bg-card);
-      border: 1px dashed rgba(16, 185, 129, 0.5);
-      border-radius: 14px;
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 0.85rem;
+    #liveMapCanvas {
+      width: 100%;
+      height: 290px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      z-index: 1;
     }
 
     .msg-box {
@@ -574,17 +550,14 @@
   </header>
 
   <div class="wrap">
-    <!-- Home Screen (Hides completely when a single option page is opened) -->
     <section class="home-shell" id="homeShell">
       <div class="hero-card">
-        <div>
-          <h1>منصة خدمات wossol — خدمات ومتجر في مكان واحد</h1>
-          <p>اختر خياراً واحداً لفتح صفحته المستقلة، أو اضغط على زر الإشعارات بالأعلى لمتابعة التنبيهات.</p>
-          <div class="status-row" style="margin-top:10px;">
-            <span class="tag-pill tag-sky" id="homeAccountTag">🔑 غير مسجّل</span>
-            <span class="tag-pill tag-amber" id="homeRoleTag">🪪 مشتري</span>
-            <span class="tag-pill tag-emerald" id="homeLocTag">📌 خنشلة، بلدية ولاد رشاش</span>
-          </div>
+        <h1>منصة خدمات wossol — خدمات ومتجر في مكان واحد</h1>
+        <p>اختر خياراً واحداً لفتح صفحته المستقلة، أو اضغط على زر الإشعارات بالأعلى لمتابعة التنبيهات.</p>
+        <div class="status-row">
+          <span class="tag-pill tag-sky" id="homeAccountTag">🔑 غير مسجّل</span>
+          <span class="tag-pill tag-amber" id="homeRoleTag">🪪 مشتري</span>
+          <span class="tag-pill tag-emerald" id="homeLocTag">📌 خنشلة، بلدية ولاد رشاش</span>
         </div>
       </div>
 
@@ -662,12 +635,12 @@
       </div>
     </section>
 
-    <!-- 4. NEW ORDER -->
+    <!-- 4. NEW ORDER (Captures exact GPS of where the order is placed) -->
     <section class="solo-page" id="p-new-order">
       <div class="page-head">
         <div>
           <h2>✍️ طلبية جديدة</h2>
-          <p>حدد ما ينقصك مع دعم الشراء بالآجل والتوصيل بين الولايات.</p>
+          <p>يتم التقاط الموقع الفعلي الذي أُرسلت منه الطلبية تلقائياً لرسم المسار إليه بدقة.</p>
         </div>
         <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
@@ -703,8 +676,8 @@
               <input type="tel" id="orderPhone" placeholder="06xxxxxxxx" required />
             </div>
             <div>
-              <label for="orderAddress">عنوان التسليم *</label>
-              <input type="text" id="orderAddress" placeholder="عنوان التسليم المنزلي أو الوجهة" required />
+              <label for="orderAddress">وصف نقطة التسليم *</label>
+              <input type="text" id="orderAddress" placeholder="مثال: حي كذا / قرب متجر كذا" required />
             </div>
           </div>
 
@@ -738,18 +711,18 @@
             </select>
           </div>
 
-          <button type="submit" class="btn btn-amber">🚀 إرسال الطلب</button>
+          <button type="submit" class="btn btn-amber" id="btnSubmitOrder">🚀 إرسال الطلب وتثبيت موقع الطلبية</button>
           <div class="msg-box" id="orderMsg"></div>
         </form>
       </div>
     </section>
 
-    <!-- 5. BROWSE ORDERS & LIVE ROUTE -->
+    <!-- 5. BROWSE ORDERS + LIVE ROUTE FROM ORDER LOCATION TO ACCEPTOR'S CURRENT LOCATION -->
     <section class="solo-page" id="p-browse-orders">
       <div class="page-head">
         <div>
-          <h2>🛵 تصفح الطلبات والمسار</h2>
-          <p>تصفح الطلبات المتاحة، اقبل ما يناسبك، وافتح مساراً حياً على خرائط جوجل.</p>
+          <h2>🛵 تصفح الطلبات والمسار الحي</h2>
+          <p>عند القبول، يلتقط النظام موقعك الحالي ويرسم المسار من موقع الطلبية تحديداً إلى موقعك الحالي.</p>
         </div>
         <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
@@ -763,18 +736,15 @@
         </div>
 
         <div id="availableOrdersBox"></div>
+        <div class="msg-box" id="routeErrMsg"></div>
 
         <div class="route-card" id="liveRouteBox" style="display:none;">
-          <div class="section-label" style="margin-bottom:6px;color:var(--emerald);">🗺️ المسار الحي إلى صاحب الطلب</div>
+          <div class="section-label" style="margin-bottom:6px;color:var(--emerald);">🗺️ المسار الحي: من موقع الطلبية إلى موقع القابل الحالي</div>
           <p id="liveRouteSummary" style="font-size:0.88rem;"></p>
-          <div class="route-bar">
-            <span>🛵 موقعك (عامل التوصيل)</span>
-            <span>━━━━━━━━➤ مسار حي ➤━━━━━━━━</span>
-            <span id="routeDestLabel">🏠 الزبون</span>
-          </div>
+          <div id="liveMapCanvas"></div>
           <div style="margin-top:12px;">
             <a id="gmapsExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sky">
-              📍 فتح المسار في خرائط جوجل
+              📍 فتح المسار بالإحداثيات في خرائط جوجل
             </a>
           </div>
         </div>
@@ -786,7 +756,7 @@
       <div class="page-head">
         <div>
           <h2>🧾 سجل الطلبيات</h2>
-          <p>متابعة الطلبات وحالات التسليم ومستحقات عامل التوصيل (ثمن المشتريات + العمولة).</p>
+          <p>متابعة الطلبات، إحداثيات موقع الطلبية، وحالات التسليم والمستحقات.</p>
         </div>
         <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
@@ -893,8 +863,11 @@
     let userMail = localStorage.getItem("wossol_user_email") || "";
     let activeFilterCat = "الكل";
 
+    let mapInstance = null;
+    let routeLayerGroup = null;
+
     let alerts = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
-      { id: 1, text: "🔔 مرحباً بك في خدمات wossol — الواجهة المحدثة جاهزة.", time: "الآن", unread: true }
+      { id: 1, text: "🔔 مرحباً بك في خدمات wossol — المسار الحي يعتمد على المواقع الفعلية.", time: "الآن", unread: true }
     ];
 
     let shopItems = JSON.parse(localStorage.getItem("wossol_products") || "null") || [
@@ -914,7 +887,9 @@
         category: "بقالة",
         itemsText: "خبز 2x، حليب 1x، بيض 6x",
         phone: "0660000000",
-        address: "عنوان التسليم المنزلي - خنشلة",
+        address: "ولاد رشاش - خنشلة",
+        orderCoords: { lat: 35.653, lng: 7.058 },
+        acceptorCoords: null,
         distanceKm: "2.3 كم",
         estCost: 650,
         commission: 200,
@@ -926,6 +901,67 @@
         time: "اليوم"
       }
     ];
+
+    function getCurrentGeoCoords() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error("المتصفح لا يدعم تحديد الموقع الجغرافي (Geolocation)."));
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          (err) => reject(new Error(err.message || "تم رفض الوصول إلى الموقع الجغرافي")),
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        );
+      });
+    }
+
+    function haversineKm(a, b) {
+      const toRad = d => (d * Math.PI) / 180;
+      const R = 6371;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const x =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return (2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x))).toFixed(2);
+    }
+
+    function renderLeafletRoute(orderCoords, acceptorCoords, orderLabel, acceptorLabel) {
+      const mapEl = document.getElementById("liveMapCanvas");
+      if (!window.L) return;
+
+      if (!mapInstance) {
+        mapInstance = L.map(mapEl).setView([orderCoords.lat, orderCoords.lng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap"
+        }).addTo(mapInstance);
+        routeLayerGroup = L.layerGroup().addTo(mapInstance);
+      }
+
+      routeLayerGroup.clearLayers();
+
+      const pOrder = [orderCoords.lat, orderCoords.lng];
+      const pAcceptor = [acceptorCoords.lat, acceptorCoords.lng];
+
+      L.circleMarker(pOrder, { radius: 9, color: "#f59e0b", fillColor: "#f59e0b", fillOpacity: 0.95 })
+        .bindPopup(`📦 موقع تقديم الطلبية: ${esc(orderLabel)}`)
+        .addTo(routeLayerGroup);
+
+      L.circleMarker(pAcceptor, { radius: 9, color: "#10b981", fillColor: "#10b981", fillOpacity: 0.95 })
+        .bindPopup(`🛵 موقع من قبل الطلبية حالياً: ${esc(acceptorLabel)}`)
+        .addTo(routeLayerGroup);
+
+      const line = L.polyline([pOrder, pAcceptor], {
+        color: "#38bdf8",
+        weight: 4,
+        dashArray: "8, 6"
+      }).addTo(routeLayerGroup);
+
+      mapInstance.fitBounds(line.getBounds(), { padding: [36, 36] });
+      setTimeout(() => mapInstance.invalidateSize(), 150);
+    }
 
     function openSoloPage(pKey) {
       document.getElementById("topNotifDropdown").classList.remove("open");
@@ -1053,8 +1089,9 @@
       document.getElementById("vehicleBox").style.display = checked ? "block" : "none";
     }
 
-    function submitOrder(e) {
+    async function submitOrder(e) {
       e.preventDefault();
+      const btn = document.getElementById("btnSubmitOrder");
       const category = document.getElementById("orderCategory").value;
       const itemsText = document.getElementById("orderItemsText").value.trim();
       const phone = document.getElementById("orderPhone").value.trim();
@@ -1065,13 +1102,28 @@
       const interWilaya = document.getElementById("orderInterWilaya").checked;
       const vehicle = interWilaya ? document.getElementById("orderVehicle").value : "دراجة / توصيل محلي";
 
+      btn.disabled = true;
+      btn.textContent = "📍 جاري التقاط موقع الطلبية...";
+
+      let orderCoords = null;
+      try {
+        orderCoords = await getCurrentGeoCoords();
+      } catch (err) {
+        showMsg("orderMsg", `❌ تعذر تحديد الموقع الفعلي للطلبية: ${err.message}. فعّل خدمة الموقع (GPS) واسمح بالوصول للموقع.`, "err");
+        btn.disabled = false;
+        btn.textContent = "🚀 إرسال الطلب وتثبيت موقع الطلبية";
+        return;
+      }
+
       const rec = {
         id: "WSS-" + String(Date.now()).slice(-6),
         category,
         itemsText,
         phone,
         address,
-        distanceKm: interWilaya ? "بين الولايات" : "2.3 كم",
+        orderCoords,
+        acceptorCoords: null,
+        distanceKm: "—",
         estCost,
         commission,
         deferred,
@@ -1091,8 +1143,15 @@
       document.getElementById("orderCommission").value = 200;
       document.getElementById("vehicleBox").style.display = "none";
 
-      showMsg("orderMsg", `✔️ تم إرسال الطلبية رقم ${rec.id} بنجاح!`, "ok");
-      pushAlert(`✍️ طلبية جديدة (${rec.id}): ${itemsText}`);
+      showMsg(
+        "orderMsg",
+        `✔️ تم إرسال الطلبية رقم ${rec.id} وتثبيت موقعها الفعلي (${orderCoords.lat.toFixed(5)}, ${orderCoords.lng.toFixed(5)})!`,
+        "ok"
+      );
+      pushAlert(`✍️ طلبية جديدة (${rec.id}) من موقع محدد بدقة.`);
+
+      btn.disabled = false;
+      btn.textContent = "🚀 إرسال الطلب وتثبيت موقع الطلبية";
     }
 
     function setFilterCategory(cat) {
@@ -1111,24 +1170,27 @@
 
       box.innerHTML = filtered.map(o => {
         const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
+        const coordsTxt = o.orderCoords
+          ? `${o.orderCoords.lat.toFixed(4)}, ${o.orderCoords.lng.toFixed(4)}`
+          : "غير محدد";
         return `
           <div class="list-card">
             <div>
-              <strong>طلبية ${esc(o.category)} • ${esc(o.distanceKm)}</strong>
+              <strong>طلبية ${esc(o.category)} • المسافة: ${esc(o.distanceKm)}</strong>
               <span class="tag-pill">${esc(o.status)}</span>
               ${o.deferred ? `<span class="tag-pill tag-amber">🤝 شراء بالآجل</span>` : ""}
               ${o.interWilaya ? `<span class="tag-pill tag-sky">🚚 ${esc(o.vehicle)}</span>` : ""}
               <div style="font-size:0.9rem;margin-top:4px;">${esc(o.itemsText)}</div>
               <div style="color:var(--text-muted);font-size:0.8rem;margin-top:3px;">
-                📍 العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
+                📌 نقطة الطلبية: ${esc(o.address)} (${coordsTxt}) | 📞 ${esc(o.phone)}
               </div>
               <div class="price-txt" style="margin-top:5px;">
                 عمولة التوصيل: ${Number(o.commission).toLocaleString()} د.ج | إجمالي المستحقات: ${totalPay.toLocaleString()} د.ج
               </div>
             </div>
             <div>
-              <button class="btn btn-emerald" onclick="acceptOrderAndShowRoute('${escJs(o.id)}')">
-                ✅ قبول ورسم المسار الحي
+              <button class="btn btn-emerald" id="acceptBtn-${escJs(o.id)}" onclick="acceptOrderWithExactRoute('${escJs(o.id)}')">
+                ✅ قبول ورسم المسار من موقعي الحالي
               </button>
             </div>
           </div>
@@ -1136,12 +1198,44 @@
       }).join("");
     }
 
-    function acceptOrderAndShowRoute(orderId) {
+    async function acceptOrderWithExactRoute(orderId) {
       const target = orderList.find(o => o.id === orderId);
       if (!target) return;
 
+      if (!target.orderCoords || typeof target.orderCoords.lat !== "number") {
+        showMsg("routeErrMsg", "❌ هذه الطلبية لا تملك إحداثيات موقع دقيقة. أرسل طلبية جديدة بعد تفعيل GPS.", "err");
+        return;
+      }
+
+      const btn = document.getElementById(`acceptBtn-${orderId}`);
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "📍 جاري تحديد موقعك الحالي...";
+      }
+      document.getElementById("routeErrMsg").classList.remove("show");
+
+      let acceptorCoords = null;
+      try {
+        acceptorCoords = await getCurrentGeoCoords();
+      } catch (err) {
+        showMsg("routeErrMsg", `❌ تعذر التقاط موقعك الحالي لرسم المسار: ${err.message}`, "err");
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "✅ قبول ورسم المسار من موقعي الحالي";
+        }
+        return;
+      }
+
+      const kmDist = haversineKm(target.orderCoords, acceptorCoords);
+
       orderList = orderList.map(o => o.id === orderId
-        ? { ...o, status: "مقبولة — جاري الشراء والتوصيل", courier: userMail || "عامل توصيل نشط" }
+        ? {
+            ...o,
+            acceptorCoords,
+            distanceKm: `${kmDist} كم`,
+            status: "مقبولة — مسار حي نشط",
+            courier: userMail || "عامل توصيل نشط"
+          }
         : o
       );
       localStorage.setItem("wossol_orders", JSON.stringify(orderList));
@@ -1150,18 +1244,23 @@
 
       const routeBox = document.getElementById("liveRouteBox");
       const summary = document.getElementById("liveRouteSummary");
-      const destLabel = document.getElementById("routeDestLabel");
       const mapsLink = document.getElementById("gmapsExternalLink");
 
-      const originEnc = encodeURIComponent(locVal);
-      const destEnc = encodeURIComponent(target.address || locVal);
-
       routeBox.style.display = "block";
-      summary.textContent = `تم قبول الطلبية (${target.id}) — شراء (${target.itemsText}) وتوصيلها إلى (${target.address})، ويتسلم العامل ثمن المشتريات (${Number(target.estCost).toLocaleString()} د.ج) + العمولة (${Number(target.commission).toLocaleString()} د.ج).`;
-      destLabel.textContent = `🏠 ${target.address}`;
-      mapsLink.href = `https://www.google.com/maps/dir/?api=1&origin=${originEnc}&destination=${destEnc}&travelmode=driving`;
+      summary.textContent =
+        `المسافة الفعلية: ${kmDist} كم — من موقع الطلبية (${target.orderCoords.lat.toFixed(5)}, ${target.orderCoords.lng.toFixed(5)}) إلى موقعك الحالي (${acceptorCoords.lat.toFixed(5)}, ${acceptorCoords.lng.toFixed(5)}).`;
 
-      pushAlert(`🛵 تم قبول الطلبية ${target.id} وتفعيل المسار الحي على خرائط جوجل.`);
+      mapsLink.href =
+        `https://www.google.com/maps/dir/?api=1&origin=${target.orderCoords.lat},${target.orderCoords.lng}&destination=${acceptorCoords.lat},${acceptorCoords.lng}&travelmode=driving`;
+
+      renderLeafletRoute(
+        target.orderCoords,
+        acceptorCoords,
+        `${target.id} (${target.address})`,
+        userMail || "موقع من قبل الطلبية الآن"
+      );
+
+      pushAlert(`🛵 تم قبول الطلبية ${target.id} ورسم المسار الحي (${kmDist} كم) بناءً على موقعك الحالي.`);
     }
 
     function updateOrderStatus(orderId, status) {
@@ -1181,6 +1280,8 @@
 
       box.innerHTML = orderList.map(o => {
         const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
+        const oCoords = o.orderCoords ? `${o.orderCoords.lat.toFixed(4)}, ${o.orderCoords.lng.toFixed(4)}` : "—";
+        const aCoords = o.acceptorCoords ? `${o.acceptorCoords.lat.toFixed(4)}, ${o.acceptorCoords.lng.toFixed(4)}` : "بانتظار القبول";
         return `
           <div class="list-card">
             <div>
@@ -1189,6 +1290,9 @@
               ${o.interWilaya ? `<span class="tag-pill tag-sky">🚚 ${esc(o.vehicle)}</span>` : ""}
               <div style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;">
                 الرقم: <strong>${esc(o.id)}</strong> | التصنيف: ${esc(o.category)} | العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
+              </div>
+              <div style="color:var(--text-muted);font-size:0.78rem;margin-top:2px;">
+                📍 موقع الطلبية: ${esc(oCoords)} | 🛵 موقع القابل: ${esc(aCoords)} | المسافة: ${esc(o.distanceKm)}
               </div>
               <div style="color:var(--amber);font-size:0.84rem;font-weight:700;margin-top:3px;">
                 المشتريات: ${Number(o.estCost).toLocaleString()} د.ج + العمولة: ${Number(o.commission).toLocaleString()} د.ج = المجموع: ${totalPay.toLocaleString()} د.ج
