@@ -3,27 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>خدمات wossol | مسار حي دقيق بالموقع الفعلي</title>
+  <title>wossol | دخول وإنشاء حساب + خدمات ومتجر</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
-      --bg-base: #0d1117;
-      --bg-card: #161c28;
-      --bg-soft: #1e2636;
-      --amber: #f59e0b;
-      --emerald: #10b981;
-      --sky: #38bdf8;
-      --rose: #fb7185;
-      --violet: #a78bfa;
-      --text-main: #f8fafc;
-      --text-sub: #cbd5e1;
-      --text-muted: #94a3b8;
-      --line: rgba(148, 163, 184, 0.16);
-      --radius-lg: 22px;
-      --radius-md: 16px;
-      --radius-pill: 999px;
+      --bg-page: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-tint: #f8fafc;
+      --royal: #1d4ed8;
+      --royal-dark: #1e3a8a;
+      --mint: #059669;
+      --coral: #e11d48;
+      --sun: #d97706;
+      --ink: #0f172a;
+      --ink-muted: #475569;
+      --line: #cbd5e1;
+      --r-card: 16px;
+      --r-btn: 12px;
     }
 
     * {
@@ -34,368 +32,251 @@
     }
 
     body {
-      background:
-        radial-gradient(circle at 10% 6%, rgba(245, 158, 11, 0.16), transparent 36%),
-        radial-gradient(circle at 90% 14%, rgba(56, 189, 248, 0.15), transparent 38%),
-        radial-gradient(circle at 22% 88%, rgba(16, 185, 129, 0.14), transparent 40%),
-        radial-gradient(circle at 86% 86%, rgba(251, 113, 133, 0.12), transparent 38%),
-        var(--bg-base);
-      color: var(--text-main);
+      background: var(--bg-page);
+      color: var(--ink);
       min-height: 100vh;
-      padding-bottom: 64px;
+      padding-bottom: 60px;
       line-height: 1.65;
     }
 
-    .topbar {
+    /* Top Header */
+    .app-bar {
+      background: var(--royal-dark);
+      color: #fff;
+      padding: 12px 16px;
       position: sticky;
       top: 0;
-      z-index: 70;
-      backdrop-filter: blur(14px);
-      background: rgba(13, 17, 23, 0.9);
-      border-bottom: 1px solid var(--line);
-      padding: 12px 16px;
+      z-index: 80;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.18);
     }
 
-    .topbar-inner {
-      max-width: 1100px;
+    .app-bar-inner {
+      max-width: 980px;
       margin: 0 auto;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
       position: relative;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .app-title {
       font-weight: 900;
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       cursor: pointer;
-      background: linear-gradient(90deg, var(--amber), var(--sky), var(--emerald));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 13px;
-      background: linear-gradient(135deg, var(--amber), var(--rose));
-      color: #0d1117;
-      display: grid;
-      place-items: center;
-      font-size: 1.15rem;
-      font-weight: 900;
-      -webkit-text-fill-color: #0d1117;
-      flex-shrink: 0;
-    }
-
-    .top-right-controls {
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
-    .notif-trigger {
-      position: relative;
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(56, 189, 248, 0.18));
-      color: var(--text-main);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      border-radius: var(--radius-pill);
-      padding: 8px 14px;
-      font-size: 0.85rem;
+    .notif-top-btn {
+      background: #ffffff;
+      color: var(--royal-dark);
+      border: none;
+      border-radius: var(--r-btn);
+      padding: 7px 13px;
       font-weight: 800;
+      font-size: 0.85rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: transform 0.15s ease, filter 0.2s ease;
     }
 
-    .notif-trigger:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.08);
-    }
-
-    .notif-count {
-      background: var(--rose);
+    .notif-badge {
+      background: var(--coral);
       color: #fff;
-      font-size: 0.72rem;
-      font-weight: 900;
+      border-radius: 999px;
       padding: 1px 7px;
-      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
     }
 
-    .notif-count.empty { display: none; }
+    .notif-badge.hide { display: none; }
 
-    .notif-dropdown {
+    .notif-pop {
       position: absolute;
-      top: 52px;
+      top: 48px;
       left: 0;
-      width: min(350px, 92vw);
+      width: min(330px, 92vw);
       background: var(--bg-card);
+      color: var(--ink);
       border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-      padding: 14px;
+      border-radius: var(--r-card);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
+      padding: 12px;
       display: none;
-      z-index: 95;
+      z-index: 100;
     }
 
-    .notif-dropdown.open { display: block; }
+    .notif-pop.open { display: block; }
 
-    .notif-drop-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 8px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid var(--line);
-      font-weight: 800;
-      font-size: 0.9rem;
-    }
-
-    .notif-mini-item {
-      background: var(--bg-soft);
-      border-right: 3px solid var(--sky);
-      border-radius: 12px;
-      padding: 9px 11px;
+    .notif-row {
+      background: var(--bg-tint);
+      border-right: 3px solid var(--royal);
+      padding: 8px 10px;
+      border-radius: 8px;
       margin-bottom: 8px;
       font-size: 0.82rem;
     }
 
-    .wrap {
-      max-width: 1100px;
+    .main-wrap {
+      max-width: 980px;
       margin: 20px auto 0;
       padding: 0 16px;
     }
 
-    .home-shell.hidden { display: none; }
+    /* Entry Auth & Location Screen (Shown First on Load) */
+    .entry-gate.hidden { display: none; }
 
-    .hero-card {
-      background: linear-gradient(125deg, rgba(245, 158, 11, 0.12), rgba(56, 189, 248, 0.12), rgba(16, 185, 129, 0.12));
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 18px;
+    /* Hub Menu (Shown After Login / Entry, Hidden When a Solo Page Opens) */
+    .hub-menu {
+      display: none;
     }
 
-    .hero-card h1 {
-      font-size: 1.24rem;
-      font-weight: 900;
-      margin-bottom: 4px;
-    }
+    .hub-menu.active { display: block; }
 
-    .hero-card p {
-      color: var(--text-sub);
-      font-size: 0.88rem;
-    }
-
-    .status-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .tag-pill {
-      padding: 6px 12px;
-      border-radius: var(--radius-pill);
-      font-size: 0.78rem;
-      font-weight: 800;
-      background: var(--bg-card);
-      border: 1px solid var(--line);
-      color: var(--text-sub);
-    }
-
-    .tag-amber { border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
-    .tag-emerald { border-color: rgba(16, 185, 129, 0.45); color: #6ee7b7; }
-    .tag-sky { border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc; }
-
-    .menu-grid {
+    .hub-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
+      margin-top: 14px;
     }
 
-    @media (min-width: 680px) {
-      .menu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (min-width: 650px) {
+      .hub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
-    .tile-btn {
+    .hub-btn {
       background: var(--bg-card);
-      color: var(--text-main);
+      color: var(--ink);
       border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 16px 14px;
-      font-size: 0.9rem;
+      border-radius: var(--r-btn);
+      padding: 14px 12px;
       font-weight: 800;
+      font-size: 0.88rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      text-align: center;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
-      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+      gap: 7px;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .tile-btn:hover {
-      transform: translateY(-2px);
-      background: var(--bg-soft);
+    .hub-btn:hover {
+      background: #eff6ff;
+      border-color: var(--royal);
     }
 
-    .tile-amber:hover { border-color: var(--amber); }
-    .tile-emerald:hover { border-color: var(--emerald); }
-    .tile-sky:hover { border-color: var(--sky); }
-    .tile-violet:hover { border-color: var(--violet); }
-    .tile-rose {
-      border-color: rgba(251, 113, 133, 0.35);
-      color: #fda4af;
-    }
-    .tile-rose:hover {
-      border-color: var(--rose);
-      background: rgba(251, 113, 133, 0.12);
+    .hub-btn.exit-btn {
+      color: var(--coral);
+      border-color: #fecdd3;
     }
 
-    .solo-page {
-      display: none;
-      animation: fadeIn 0.2s ease;
+    .hub-btn.exit-btn:hover {
+      background: #fff1f2;
+      border-color: var(--coral);
     }
 
-    .solo-page.active { display: block; }
+    /* Dedicated Single-Option Pages */
+    .solo-view { display: none; }
+    .solo-view.active { display: block; }
 
-    .page-head {
+    .box {
       background: var(--bg-card);
       border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      margin-bottom: 16px;
+      border-radius: var(--r-card);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .box-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-    }
-
-    .page-head h2 {
-      font-size: 1.18rem;
-      font-weight: 900;
-      color: var(--amber);
-    }
-
-    .page-head p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 3px;
-    }
-
-    .card-box {
-      background: var(--bg-card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .section-label {
-      font-size: 1rem;
-      font-weight: 800;
       margin-bottom: 14px;
-      color: var(--sky);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
     }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 14px;
+    .box-head h1, .box-head h2 {
+      font-size: 1.12rem;
+      font-weight: 900;
+      color: var(--royal-dark);
     }
 
-    .grid-3 {
+    .sub-note {
+      color: var(--ink-muted);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .row-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
     }
 
     label {
       display: block;
       font-size: 0.84rem;
-      color: var(--text-sub);
-      margin-bottom: 6px;
       font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 5px;
     }
 
     input, select, textarea {
       width: 100%;
-      background: var(--bg-soft);
-      color: var(--text-main);
+      background: var(--bg-tint);
+      color: var(--ink);
       border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      padding: 11px 14px;
+      border-radius: 10px;
+      padding: 10px 12px;
       font-size: 0.92rem;
       outline: none;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
-    input:focus, select:focus, textarea:focus { border-color: var(--sky); }
-
-    .quick-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--royal);
+      background: #fff;
     }
 
-    .chip-btn {
-      background: var(--bg-soft);
-      color: var(--text-main);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-pill);
-      padding: 7px 14px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .chip-btn:hover { border-color: var(--emerald); }
-
-    .check-row {
+    .check-opt {
       display: flex;
       align-items: center;
-      gap: 9px;
-      margin-bottom: 12px;
+      gap: 8px;
       font-size: 0.88rem;
       font-weight: 700;
+      margin-bottom: 10px;
     }
 
-    .check-row input[type="checkbox"] {
+    .check-opt input[type="checkbox"] {
       width: auto;
       margin: 0;
-      transform: scale(1.15);
     }
 
     .btn {
       border: none;
-      border-radius: var(--radius-pill);
-      padding: 10px 18px;
+      border-radius: var(--r-btn);
+      padding: 10px 16px;
       font-size: 0.88rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 6px;
       text-decoration: none;
-      transition: transform 0.14s ease, filter 0.18s ease;
-    }
-
-    .btn:hover:not(:disabled) {
-      filter: brightness(1.07);
-      transform: translateY(-2px);
     }
 
     .btn:disabled {
@@ -403,453 +284,450 @@
       cursor: not-allowed;
     }
 
-    .btn-amber {
-      background: var(--amber);
-      color: #0d1117;
-      box-shadow: 0 4px 0 #b45309;
-    }
-
-    .btn-emerald {
-      background: var(--emerald);
-      color: #062018;
-      box-shadow: 0 4px 0 #047857;
-    }
-
-    .btn-sky {
-      background: var(--sky);
-      color: #071926;
-      box-shadow: 0 4px 0 #0284c7;
-    }
-
-    .btn-rose {
-      background: var(--rose);
-      color: #fff;
-      box-shadow: 0 4px 0 #be123c;
-    }
-
-    .btn-soft {
-      background: var(--bg-soft);
-      color: var(--text-main);
+    .btn-royal { background: var(--royal); color: #fff; }
+    .btn-mint { background: var(--mint); color: #fff; }
+    .btn-coral { background: var(--coral); color: #fff; }
+    .btn-sun { background: var(--sun); color: #fff; }
+    .btn-light {
+      background: var(--bg-tint);
+      color: var(--ink);
       border: 1px solid var(--line);
-      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
     }
 
-    .prod-card {
-      background: var(--bg-soft);
+    .meta-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .badge {
+      background: #eff6ff;
+      color: var(--royal-dark);
+      border: 1px solid #bfdbfe;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .badge-mint {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .prod-tile {
+      background: var(--bg-tint);
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    .prod-img {
+    .prod-pic {
       width: 100%;
-      height: 170px;
+      height: 165px;
       object-fit: cover;
-      background: #0d1117;
+      background: #e2e8f0;
     }
 
-    .prod-body {
-      padding: 13px;
+    .prod-info {
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
       flex: 1;
     }
 
-    .price-txt {
-      color: var(--emerald);
-      font-weight: 900;
-      font-size: 1rem;
-    }
-
-    .list-card {
-      background: var(--bg-soft);
+    .card-row {
+      background: var(--bg-tint);
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .route-card {
-      background: rgba(56, 189, 248, 0.09);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      border-radius: 18px;
-      padding: 16px;
-      margin-top: 14px;
-    }
-
-    #liveMapCanvas {
+    #mapBox {
       width: 100%;
-      height: 290px;
-      border-radius: 16px;
+      height: 280px;
+      border-radius: 12px;
       overflow: hidden;
-      margin-top: 12px;
       border: 1px solid var(--line);
+      margin-top: 10px;
       z-index: 1;
     }
 
-    .msg-box {
-      margin-top: 12px;
-      padding: 11px 14px;
-      border-radius: 14px;
-      font-size: 0.86rem;
+    .feedback {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
       font-weight: 700;
       display: none;
     }
 
-    .msg-box.show { display: block; }
-    .msg-box.ok {
-      background: rgba(16, 185, 129, 0.16);
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      color: #6ee7b7;
+    .feedback.show { display: block; }
+    .feedback.ok {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
     }
-    .msg-box.err {
-      background: rgba(251, 113, 133, 0.16);
-      border: 1px solid rgba(251, 113, 133, 0.45);
-      color: #fda4af;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    .feedback.err {
+      background: #fff1f2;
+      color: #9f1239;
+      border: 1px solid #fda4af;
     }
   </style>
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand" onclick="goHome()">
-        <span class="brand-icon">⚡</span>
-        <span>خدمات wossol</span>
+  <header class="app-bar">
+    <div class="app-bar-inner">
+      <div class="app-title" onclick="backToMenu()">
+        <span>wossol</span>
       </div>
 
-      <div class="top-right-controls">
-        <button class="notif-trigger" id="topNotifBtn" onclick="toggleTopNotifMenu()">
-          <span>🔔</span>
-          <span>الإشعارات</span>
-          <span class="notif-count" id="topNotifBadge">1</span>
+      <div style="position:relative;">
+        <button class="notif-top-btn" id="notifBtn" onclick="toggleNotifPop()">
+          <span>🔔 الإشعارات</span>
+          <span class="notif-badge" id="notifCount">1</span>
         </button>
 
-        <div class="notif-dropdown" id="topNotifDropdown">
-          <div class="notif-drop-head">
-            <span>🔔 أحدث الإشعارات</span>
-            <button class="btn btn-soft" style="padding:4px 10px;font-size:0.75rem;" onclick="openSoloPage('alerts')">فتح الصفحة</button>
+        <div class="notif-pop" id="notifPop">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line);">
+            <strong>🔔 التنبيهات</strong>
+            <button class="btn btn-light" style="padding:3px 9px;font-size:0.75rem;" onclick="openPage('alerts')">صفحة الإشعارات</button>
           </div>
-          <div id="topNotifPreview"></div>
+          <div id="notifPreviewList"></div>
         </div>
       </div>
     </div>
   </header>
 
-  <div class="wrap">
-    <section class="home-shell" id="homeShell">
-      <div class="hero-card">
-        <h1>منصة خدمات wossol — خدمات ومتجر في مكان واحد</h1>
-        <p>اختر خياراً واحداً لفتح صفحته المستقلة، أو اضغط على زر الإشعارات بالأعلى لمتابعة التنبيهات.</p>
-        <div class="status-row">
-          <span class="tag-pill tag-sky" id="homeAccountTag">🔑 غير مسجّل</span>
-          <span class="tag-pill tag-amber" id="homeRoleTag">🪪 مشتري</span>
-          <span class="tag-pill tag-emerald" id="homeLocTag">📌 خنشلة، بلدية ولاد رشاش</span>
-        </div>
-      </div>
+  <main class="main-wrap">
 
-      <nav class="menu-grid" aria-label="خيارات المنصة">
-        <button class="tile-btn tile-sky" onclick="openSoloPage('auth')">🔑 الدخول والـ OTP</button>
-        <button class="tile-btn tile-amber" onclick="openSoloPage('role')">🪪 اختيار الدور</button>
-        <button class="tile-btn tile-emerald" onclick="openSoloPage('location')">📌 مكان الإقامة</button>
-        <button class="tile-btn tile-amber" onclick="openSoloPage('new-order')">✍️ طلبية جديدة</button>
-        <button class="tile-btn tile-sky" onclick="openSoloPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
-        <button class="tile-btn tile-violet" onclick="openSoloPage('orders-log')">🧾 سجل الطلبيات</button>
-        <button class="tile-btn tile-emerald" onclick="openSoloPage('store')">🛍️ المتجر ونشر الصور</button>
-        <button class="tile-btn tile-sky" onclick="openSoloPage('alerts')">📣 صفحة الإشعارات</button>
-        <button class="tile-btn tile-rose" onclick="executeImmediateLogout()">🛑 تسجيل الخروج</button>
-      </nav>
+    <!-- START PAGE: LOGIN, SIGN UP & LOCATION PERMISSION REQUEST -->
+    <section class="entry-gate" id="entryGate">
+      <div class="box">
+        <div class="box-head">
+          <h1>تسجيل الدخول وإنشاء حساب — wossol</h1>
+          <span class="badge" id="gpsStatusBadge">📍 الموقع: بانتظار السماح</span>
+        </div>
+
+        <p class="sub-note">
+          لبدء استخدام المنصة، يتم طلب السماح بالوصول إلى موقعك الحالي هنا لتثبيته وتفادي تأخر تحديد الموقع لاحقاً.
+        </p>
+
+        <div style="margin-bottom:14px;">
+          <button type="button" class="btn btn-mint" id="requestGpsEntryBtn" onclick="requestLocationAtLogin()">
+            📍 السماح بالوصول إلى الموقع الآن
+          </button>
+        </div>
+
+        <div class="row-2">
+          <div>
+            <label for="entryName">الاسم الكامل (لإنشاء حساب)</label>
+            <input type="text" id="entryName" placeholder="اكتب اسمك" />
+          </div>
+          <div>
+            <label for="entryEmail">البريد الإلكتروني *</label>
+            <input type="email" id="entryEmail" placeholder="name@example.com" required />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div>
+            <label for="entryPhone">رقم الهاتف</label>
+            <input type="tel" id="entryPhone" placeholder="06xxxxxxxx" />
+          </div>
+          <div>
+            <label for="entryRole">اختر دورك</label>
+            <select id="entryRole">
+              <option value="مشتري">مشتري</option>
+              <option value="عامل توصيل">عامل توصيل</option>
+              <option value="بائع">بائع / متجر</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-royal" id="sendOtpBtn" onclick="sendLoginOtp()">📨 إرسال رمز OTP للدخول</button>
+          <button type="button" class="btn btn-mint" onclick="completeAccountEntry(false)">✨ إنشاء حساب / دخول مباشر</button>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;" />
+
+        <label for="entryOtpCode">رمز التحقق OTP (إن أُرسل لبريدك)</label>
+        <input type="text" id="entryOtpCode" placeholder="أدخل رمز OTP" />
+        <button type="button" class="btn btn-sun" onclick="verifyLoginOtp()">✔️ تأكيد OTP والدخول</button>
+
+        <div class="feedback" id="entryFeedback"></div>
+      </div>
     </section>
 
-    <!-- 1. LOGIN & OTP -->
-    <section class="solo-page" id="p-auth">
-      <div class="page-head">
-        <div>
-          <h2>🔑 الدخول والـ OTP</h2>
-          <p>تسجيل الدخول وتأكيد الحساب عبر رمز التحقق (OTP) على البريد الإلكتروني.</p>
+    <!-- MAIN HUB MENU (Shown after login, hidden when a single option page opens) -->
+    <section class="hub-menu" id="hubMenu">
+      <div class="box">
+        <div class="box-head">
+          <h2>القائمة الرئيسية — wossol</h2>
+          <div class="meta-strip">
+            <span class="badge" id="hubUserBadge">غير مسجّل</span>
+            <span class="badge badge-mint" id="hubRoleBadge">مشتري</span>
+            <span class="badge" id="hubGpsBadge">📍 غير محدد</span>
+          </div>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <label for="otpMail">البريد الإلكتروني</label>
-        <input type="email" id="otpMail" placeholder="example@mail.com" />
-        <button class="btn btn-amber" id="btnSendOtp" onclick="requestOtp()">📨 إرسال رمز OTP</button>
 
-        <hr style="border:none;border-top:1px solid var(--line);margin:18px 0;" />
-
-        <label for="otpToken">رمز التحقق (OTP)</label>
-        <input type="text" id="otpToken" placeholder="أدخل الرمز المرسل" />
-        <button class="btn btn-emerald" id="btnVerifyOtp" onclick="confirmOtp()">✔️ تأكيد الرمز والدخول</button>
-        <div class="msg-box" id="authMsg"></div>
+        <div class="hub-grid">
+          <button class="hub-btn" onclick="openPage('role')">🪪 اختيار الدور</button>
+          <button class="hub-btn" onclick="openPage('location')">📌 تحديث الموقع</button>
+          <button class="hub-btn" onclick="openPage('new-order')">✍️ طلبية جديدة</button>
+          <button class="hub-btn" onclick="openPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
+          <button class="hub-btn" onclick="openPage('orders-log')">🧾 سجل الطلبيات</button>
+          <button class="hub-btn" onclick="openPage('store')">🛍️ المتجر ونشر الصور</button>
+          <button class="hub-btn" onclick="openPage('alerts')">📣 صفحة الإشعارات</button>
+          <button class="hub-btn exit-btn" onclick="logoutImmediately()">🛑 تسجيل الخروج</button>
+        </div>
       </div>
     </section>
 
-    <!-- 2. ROLE SELECTION -->
-    <section class="solo-page" id="p-role">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 1: ROLE -->
+    <section class="solo-view" id="v-role">
+      <div class="box">
+        <div class="box-head">
           <h2>🪪 اختيار الدور</h2>
-          <p>حدد دورك في المنصة: مشتري، عامل توصيل، أو بائع / متجر.</p>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <label for="rolePicker">اختر دورك</label>
-        <select id="rolePicker">
-          <option value="مشتري">🛒 مشتري (صاحب الطلب — حاجيات البيت، قطع غيار، متاجر)</option>
-          <option value="عامل توصيل">🛵 عامل توصيل (يشتري ويوصل ويتقاضى ثمن المشتريات + العمولة)</option>
-          <option value="بائع">🏪 بائع / متجر (أسر منتجة، حرف، حلويات، كسكس، مطاعم، صيدليات، بقالات)</option>
+        <label for="roleSelectSolo">دور المستخدم</label>
+        <select id="roleSelectSolo">
+          <option value="مشتري">مشتري</option>
+          <option value="عامل توصيل">عامل توصيل</option>
+          <option value="بائع">بائع / متجر</option>
         </select>
-        <button class="btn btn-emerald" onclick="applyRole()">💾 اعتماد الدور</button>
-        <div class="msg-box" id="roleMsg"></div>
+        <button class="btn btn-royal" onclick="saveRoleSolo()">💾 حفظ الدور</button>
+        <div class="feedback" id="roleFeedback"></div>
       </div>
     </section>
 
-    <!-- 3. LOCATION -->
-    <section class="solo-page" id="p-location">
-      <div class="page-head">
-        <div>
-          <h2>📌 مكان الإقامة</h2>
-          <p>تحديد وحفظ مكان الإقامة الحالي.</p>
+    <!-- SOLO 2: LOCATION -->
+    <section class="solo-view" id="v-location">
+      <div class="box">
+        <div class="box-head">
+          <h2>📌 تحديث الموقع</h2>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <label for="locField">مكان الإقامة</label>
-        <input type="text" id="locField" placeholder="خنشلة، بلدية ولاد رشاش" />
-        <button class="btn btn-amber" onclick="applyLocation()">💾 حفظ الموقع</button>
-        <div class="msg-box" id="locMsg"></div>
+        <label for="locNameSolo">اسم المكان / العنوان</label>
+        <input type="text" id="locNameSolo" placeholder="مثال: ولاد رشاش - خنشلة" />
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-mint" onclick="refreshCoordsNow()">📍 التقاط الإحداثيات الحالية</button>
+          <button type="button" class="btn btn-royal" onclick="saveLocationSolo()">💾 حفظ الموقع</button>
+        </div>
+        <div class="feedback" id="locFeedback"></div>
       </div>
     </section>
 
-    <!-- 4. NEW ORDER (Captures exact GPS of where the order is placed) -->
-    <section class="solo-page" id="p-new-order">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 3: NEW ORDER -->
+    <section class="solo-view" id="v-new-order">
+      <div class="box">
+        <div class="box-head">
           <h2>✍️ طلبية جديدة</h2>
-          <p>يتم التقاط الموقع الفعلي الذي أُرسلت منه الطلبية تلقائياً لرسم المسار إليه بدقة.</p>
-        </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <div class="section-label">⚡ إضافة سريعة لحاجيات شائعة</div>
-        <div class="quick-row">
-          <button type="button" class="chip-btn" onclick="quickAddItem('خبز (2x)')">🍞 خبز 2x</button>
-          <button type="button" class="chip-btn" onclick="quickAddItem('حليب (1x)')">🥛 حليب 1x</button>
-          <button type="button" class="chip-btn" onclick="quickAddItem('بيض (6x)')">🥚 بيض 6x</button>
-          <button type="button" class="chip-btn" onclick="quickAddItem('قطعة غيار سيارة')">🔧 قطعة غيار</button>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
 
-        <form id="orderForm" onsubmit="submitOrder(event)">
-          <div class="grid-2">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="addQuickText('خبز 2x')">+ خبز 2x</button>
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="addQuickText('حليب 1x')">+ حليب 1x</button>
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="addQuickText('بيض 6x')">+ بيض 6x</button>
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="addQuickText('قطعة غيار')">+ قطعة غيار</button>
+        </div>
+
+        <form id="orderForm" onsubmit="createOrderItem(event)">
+          <div class="row-2">
             <div>
-              <label for="orderCategory">التصنيف *</label>
-              <select id="orderCategory">
-                <option value="بقالة">بقالة وحاجيات البيت</option>
+              <label for="ordCat">التصنيف</label>
+              <select id="ordCat">
+                <option value="بقالة">بقالة</option>
                 <option value="قطع غيار">قطع غيار</option>
                 <option value="مطاعم">مطاعم وأسر منتجة</option>
-                <option value="صيدليات">صيدليات ومستلزمات</option>
               </select>
             </div>
             <div>
-              <label for="orderItemsText">ما تحتاجه / تفاصيل الطلبية *</label>
-              <input type="text" id="orderItemsText" placeholder="مثال: خبز 2x، حليب 1x، بيض 6x" required />
+              <label for="ordItems">تفاصيل الطلبية *</label>
+              <input type="text" id="ordItems" placeholder="مثال: خبز 2x، حليب 1x، بيض 6x" required />
             </div>
           </div>
 
-          <div class="grid-2">
+          <div class="row-2">
             <div>
-              <label for="orderPhone">رقم الهاتف *</label>
-              <input type="tel" id="orderPhone" placeholder="06xxxxxxxx" required />
+              <label for="ordPhone">رقم الهاتف *</label>
+              <input type="tel" id="ordPhone" placeholder="06xxxxxxxx" required />
             </div>
             <div>
-              <label for="orderAddress">وصف نقطة التسليم *</label>
-              <input type="text" id="orderAddress" placeholder="مثال: حي كذا / قرب متجر كذا" required />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div>
-              <label for="orderEstCost">التقدير التقريبي للمشتريات (د.ج)</label>
-              <input type="number" id="orderEstCost" value="1500" min="0" step="any" />
-            </div>
-            <div>
-              <label for="orderCommission">عمولة التوصيل المقترحة (د.ج)</label>
-              <input type="number" id="orderCommission" value="200" min="50" step="any" />
+              <label for="ordAddr">وصف موقع الطلبية *</label>
+              <input type="text" id="ordAddr" placeholder="عنوان التسليم" required />
             </div>
           </div>
 
-          <label class="check-row">
-            <input type="checkbox" id="orderDeferred" />
-            <span>🤝 الشراء بالآجل (تسديد لاحق بالاتفاق مع المتجر/البائع)</span>
+          <div class="row-2">
+            <div>
+              <label for="ordCost">ثمن المشتريات التقريبي (د.ج)</label>
+              <input type="number" id="ordCost" value="1200" min="0" step="any" />
+            </div>
+            <div>
+              <label for="ordFee">عمولة التوصيل (د.ج)</label>
+              <input type="number" id="ordFee" value="200" min="0" step="any" />
+            </div>
+          </div>
+
+          <label class="check-opt">
+            <input type="checkbox" id="ordDeferred" />
+            <span>الشراء بالآجل</span>
           </label>
 
-          <label class="check-row">
-            <input type="checkbox" id="orderInterWilaya" onchange="toggleVehicleBox()" />
-            <span>🚚 توصيل بين الولايات</span>
+          <label class="check-opt">
+            <input type="checkbox" id="ordInterState" onchange="toggleTransport()" />
+            <span>توصيل بين الولايات</span>
           </label>
 
-          <div id="vehicleBox" style="display:none;">
-            <label for="orderVehicle">نوع وحجم وسيلة النقل المناسبة لحجم الطلبية</label>
-            <select id="orderVehicle">
-              <option value="دراجة / توصيل محلي">🚲 دراجة / توصيل محلي سريع</option>
-              <option value="سيارة">🚗 سيارة</option>
-              <option value="شاحنة">🚚 شاحنة (للطلبات الكبيرة أو بين الولايات)</option>
+          <div id="transportWrap" style="display:none;">
+            <label for="ordVehicle">وسيلة النقل بحسب حجم الطلبية</label>
+            <select id="ordVehicle">
+              <option value="دراجة">دراجة</option>
+              <option value="سيارة">سيارة</option>
+              <option value="شاحنة">شاحنة</option>
             </select>
           </div>
 
-          <button type="submit" class="btn btn-amber" id="btnSubmitOrder">🚀 إرسال الطلب وتثبيت موقع الطلبية</button>
-          <div class="msg-box" id="orderMsg"></div>
+          <button type="submit" class="btn btn-royal" id="submitOrderBtn">🚀 إرسال الطلبية</button>
+          <div class="feedback" id="orderFeedback"></div>
         </form>
       </div>
     </section>
 
-    <!-- 5. BROWSE ORDERS + LIVE ROUTE FROM ORDER LOCATION TO ACCEPTOR'S CURRENT LOCATION -->
-    <section class="solo-page" id="p-browse-orders">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 4: BROWSE ORDERS & LIVE ROUTE -->
+    <section class="solo-view" id="v-browse-orders">
+      <div class="box">
+        <div class="box-head">
           <h2>🛵 تصفح الطلبات والمسار الحي</h2>
-          <p>عند القبول، يلتقط النظام موقعك الحالي ويرسم المسار من موقع الطلبية تحديداً إلى موقعك الحالي.</p>
-        </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <div class="section-label">🔎 تصفية حسب التصنيف</div>
-        <div class="quick-row">
-          <button type="button" class="chip-btn" onclick="setFilterCategory('الكل')">الكل</button>
-          <button type="button" class="chip-btn" onclick="setFilterCategory('بقالة')">بقالة</button>
-          <button type="button" class="chip-btn" onclick="setFilterCategory('قطع غيار')">قطع غيار</button>
-          <button type="button" class="chip-btn" onclick="setFilterCategory('مطاعم')">مطاعم</button>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
 
-        <div id="availableOrdersBox"></div>
-        <div class="msg-box" id="routeErrMsg"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="filterOrders('الكل')">الكل</button>
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="filterOrders('بقالة')">بقالة</button>
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="filterOrders('قطع غيار')">قطع غيار</button>
+          <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:0.8rem;" onclick="filterOrders('مطاعم')">مطاعم</button>
+        </div>
 
-        <div class="route-card" id="liveRouteBox" style="display:none;">
-          <div class="section-label" style="margin-bottom:6px;color:var(--emerald);">🗺️ المسار الحي: من موقع الطلبية إلى موقع القابل الحالي</div>
-          <p id="liveRouteSummary" style="font-size:0.88rem;"></p>
-          <div id="liveMapCanvas"></div>
-          <div style="margin-top:12px;">
-            <a id="gmapsExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sky">
-              📍 فتح المسار بالإحداثيات في خرائط جوجل
-            </a>
+        <div id="browseOrdersList"></div>
+        <div class="feedback" id="routeFeedback"></div>
+
+        <div id="routePanel" style="display:none;margin-top:14px;">
+          <strong style="color:var(--mint);">🗺️ المسار الحي: من موقع الطلبية إلى موقع من قبلها حالياً</strong>
+          <p class="sub-note" id="routeSummaryTxt" style="margin-top:4px;"></p>
+          <div id="mapBox"></div>
+          <div style="margin-top:10px;">
+            <a id="gmapsLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-royal">فتح في خرائط جوجل</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 6. ORDERS LOG -->
-    <section class="solo-page" id="p-orders-log">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 5: ORDERS LOG -->
+    <section class="solo-view" id="v-orders-log">
+      <div class="box">
+        <div class="box-head">
           <h2>🧾 سجل الطلبيات</h2>
-          <p>متابعة الطلبات، إحداثيات موقع الطلبية، وحالات التسليم والمستحقات.</p>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <div id="allOrdersLogBox"></div>
+        <div id="ordersLogList"></div>
       </div>
     </section>
 
-    <!-- 7. STORE & PUBLISH PRODUCT IMAGES -->
-    <section class="solo-page" id="p-store">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 6: STORE & IMAGE PUBLISHING -->
+    <section class="solo-view" id="v-store">
+      <div class="box">
+        <div class="box-head">
           <h2>🛍️ المتجر ونشر الصور</h2>
-          <p>أضف منتجاً أو خدمة مع صورته وعرضه في المتجر مع محاولة الرفع إلى product-images.</p>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <div class="section-label">📸 نشر منتج جديد</div>
-        <form id="shopForm" onsubmit="addShopItem(event)">
-          <div class="grid-2">
+
+        <form id="storeForm" onsubmit="publishProduct(event)">
+          <div class="row-2">
             <div>
-              <label for="itemName">اسم المنتج أو الخدمة *</label>
-              <input type="text" id="itemName" placeholder="مثال: كسكس يدوي / حلويات / قطعة غيار" required />
+              <label for="prodTitle">اسم المنتج أو الخدمة *</label>
+              <input type="text" id="prodTitle" placeholder="مثال: كسكس يدوي / حلويات" required />
             </div>
             <div>
-              <label for="itemPrice">السعر (د.ج) *</label>
-              <input type="number" id="itemPrice" placeholder="2500" min="0" step="any" required />
+              <label for="prodCost">السعر (د.ج) *</label>
+              <input type="number" id="prodCost" placeholder="2000" min="0" step="any" required />
             </div>
           </div>
 
-          <div class="grid-2">
+          <div class="row-2">
             <div>
-              <label for="itemSellerType">نوع البائع / المتجر</label>
-              <select id="itemSellerType">
-                <option value="أسرة منتجة / منزلية">أسرة منتجة / أكلات وحرف منزلية</option>
+              <label for="prodKind">الجهة / المتجر</label>
+              <select id="prodKind">
+                <option value="أسرة منتجة">أسرة منتجة</option>
                 <option value="متجر / بقالة">متجر / بقالة</option>
                 <option value="مطعم">مطعم</option>
-                <option value="صيدلية / قطع غيار">صيدلية / قطع غيار</option>
+                <option value="قطع غيار / صيدلية">قطع غيار / صيدلية</option>
               </select>
             </div>
             <div>
-              <label for="itemPic">صورة المنتج *</label>
-              <input type="file" id="itemPic" accept="image/*" required />
+              <label for="prodFile">صورة المنتج *</label>
+              <input type="file" id="prodFile" accept="image/*" required />
             </div>
           </div>
 
-          <label for="itemNote">وصف قصير</label>
-          <textarea id="itemNote" rows="2" placeholder="تفاصيل المنتج أو توفره بالآجل..."></textarea>
+          <label for="prodNotes">وصف المنتج</label>
+          <textarea id="prodNotes" rows="2" placeholder="تفاصيل إضافية..."></textarea>
 
-          <button type="submit" class="btn btn-emerald" id="btnUploadItem">⬆️ نشر الصورة والمنتج</button>
-          <div class="msg-box" id="shopMsg"></div>
+          <button type="submit" class="btn btn-mint" id="publishProdBtn">⬆️ نشر المنتج والصورة</button>
+          <div class="feedback" id="storeFeedback"></div>
         </form>
       </div>
 
-      <div class="card-box">
-        <div class="section-label">🧺 المنتجات المعروضة في المتجر</div>
-        <div class="grid-3" id="shopGrid"></div>
+      <div class="box">
+        <div class="box-head">
+          <h2>المنتجات المعروضة</h2>
+        </div>
+        <div class="row-3" id="storeGrid"></div>
       </div>
     </section>
 
-    <!-- 8. NOTIFICATIONS PAGE -->
-    <section class="solo-page" id="p-alerts">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 7: NOTIFICATIONS -->
+    <section class="solo-view" id="v-alerts">
+      <div class="box">
+        <div class="box-head">
           <h2>📣 صفحة الإشعارات</h2>
-          <p>استعراض جميع الإشعارات وتحديث حالتها.</p>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <button class="btn btn-soft" style="margin-bottom:14px;" onclick="clearUnread()">✅ تعليم الكل كمقروء</button>
-        <div id="alertsBox"></div>
+        <button type="button" class="btn btn-light" style="margin-bottom:12px;" onclick="readAllAlerts()">تعليم الكل كمقروء</button>
+        <div id="alertsFullList"></div>
       </div>
     </section>
 
-    <!-- 9. IMMEDIATE LOGOUT CONFIRMATION -->
-    <section class="solo-page" id="p-signout">
-      <div class="page-head">
-        <div>
+    <!-- SOLO 8: LOGOUT RESULT -->
+    <section class="solo-view" id="v-logout">
+      <div class="box">
+        <div class="box-head">
           <h2>🛑 تسجيل الخروج</h2>
-          <p>تم تنفيذ تسجيل الخروج فوراً وتحديث حالة الحساب.</p>
+          <button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button>
         </div>
-        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
-      </div>
-      <div class="card-box">
-        <div class="msg-box show ok" id="signoutResultBox" style="margin-top:0;"></div>
-        <div style="margin-top:14px;">
-          <button class="btn btn-amber" onclick="openSoloPage('auth')">🔑 العودة إلى صفحة الدخول</button>
+        <div class="feedback show ok" id="logoutNote" style="margin-top:0;"></div>
+        <div style="margin-top:12px;">
+          <button type="button" class="btn btn-royal" onclick="showEntryGate()">العودة إلى صفحة تسجيل الدخول</button>
         </div>
       </div>
     </section>
-  </div>
+
+  </main>
 
   <script>
     const SUPABASE_URL = "https://nnozlrxxleutxwbznbza.supabase.co";
@@ -858,490 +736,411 @@
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let roleVal = localStorage.getItem("wossol_role") || "مشتري";
-    let locVal = localStorage.getItem("wossol_location") || "خنشلة، بلدية ولاد رشاش";
-    let userMail = localStorage.getItem("wossol_user_email") || "";
-    let activeFilterCat = "الكل";
+    let userEmail = localStorage.getItem("wossol_user_email") || "";
+    let userRole = localStorage.getItem("wossol_role") || "مشتري";
+    let locLabel = localStorage.getItem("wossol_location") || "ولاد رشاش - خنشلة";
+    let cachedCoords = JSON.parse(localStorage.getItem("wossol_coords") || "null");
+    let catFilter = "الكل";
 
-    let mapInstance = null;
-    let routeLayerGroup = null;
+    let mapObj = null;
+    let mapLayer = null;
 
-    let alerts = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
-      { id: 1, text: "🔔 مرحباً بك في خدمات wossol — المسار الحي يعتمد على المواقع الفعلية.", time: "الآن", unread: true }
+    let alertItems = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
+      { id: 1, text: "مرحباً بك في wossol.", time: "الآن", unread: true }
     ];
 
-    let shopItems = JSON.parse(localStorage.getItem("wossol_products") || "null") || [
-      {
-        id: "p-1",
-        name: "كسكس يدوي وحلويات منزلية",
-        price: 1800,
-        sellerType: "أسرة منتجة / منزلية",
-        desc: "تحضير منزلي طازج متاح للطلب والتوصيل.",
-        imageUrl: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=75"
-      }
-    ];
+    let storeList = JSON.parse(localStorage.getItem("wossol_products") || "null") || [];
+    let ordersArr = JSON.parse(localStorage.getItem("wossol_orders") || "null") || [];
 
-    let orderList = JSON.parse(localStorage.getItem("wossol_orders") || "null") || [
-      {
-        id: "WSS-2301",
-        category: "بقالة",
-        itemsText: "خبز 2x، حليب 1x، بيض 6x",
-        phone: "0660000000",
-        address: "ولاد رشاش - خنشلة",
-        orderCoords: { lat: 35.653, lng: 7.058 },
-        acceptorCoords: null,
-        distanceKm: "2.3 كم",
-        estCost: 650,
-        commission: 200,
-        deferred: false,
-        interWilaya: false,
-        vehicle: "دراجة / توصيل محلي",
-        status: "متاح للقبول",
-        courier: "",
-        time: "اليوم"
-      }
-    ];
-
-    function getCurrentGeoCoords() {
+    function readCoords(timeoutMs = 20000) {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
-          reject(new Error("المتصفح لا يدعم تحديد الموقع الجغرافي (Geolocation)."));
+          reject(new Error("المتصفح لا يدعم تحديد الموقع."));
           return;
         }
         navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-          (err) => reject(new Error(err.message || "تم رفض الوصول إلى الموقع الجغرافي")),
-          { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+          (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+          (e) => reject(new Error(e.message || "تعذر الوصول إلى الموقع")),
+          { enableHighAccuracy: false, timeout: timeoutMs, maximumAge: 60000 }
         );
       });
     }
 
-    function haversineKm(a, b) {
-      const toRad = d => (d * Math.PI) / 180;
-      const R = 6371;
-      const dLat = toRad(b.lat - a.lat);
-      const dLng = toRad(b.lng - a.lng);
-      const x =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-      return (2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x))).toFixed(2);
-    }
-
-    function renderLeafletRoute(orderCoords, acceptorCoords, orderLabel, acceptorLabel) {
-      const mapEl = document.getElementById("liveMapCanvas");
-      if (!window.L) return;
-
-      if (!mapInstance) {
-        mapInstance = L.map(mapEl).setView([orderCoords.lat, orderCoords.lng], 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "&copy; OpenStreetMap"
-        }).addTo(mapInstance);
-        routeLayerGroup = L.layerGroup().addTo(mapInstance);
+    async function requestLocationAtLogin() {
+      const btn = document.getElementById("requestGpsEntryBtn");
+      btn.disabled = true;
+      btn.textContent = "📍 جاري طلب الموقع...";
+      try {
+        const c = await readCoords(20000);
+        cachedCoords = c;
+        localStorage.setItem("wossol_coords", JSON.stringify(c));
+        document.getElementById("gpsStatusBadge").textContent = `📍 تم السماح (${c.lat.toFixed(4)}, ${c.lng.toFixed(4)})`;
+        showFb("entryFeedback", "✔️ تم السماح بالوصول إلى الموقع وحفظ الإحداثيات بنجاح.", "ok");
+        refreshHubBadges();
+      } catch (err) {
+        showFb("entryFeedback", `⚠️ لم يكتمل تحديد الموقع الآن (${err.message}). يمكنك المتابعة أو المحاولة مجدداً.`, "err");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "📍 السماح بالوصول إلى الموقع الآن";
       }
-
-      routeLayerGroup.clearLayers();
-
-      const pOrder = [orderCoords.lat, orderCoords.lng];
-      const pAcceptor = [acceptorCoords.lat, acceptorCoords.lng];
-
-      L.circleMarker(pOrder, { radius: 9, color: "#f59e0b", fillColor: "#f59e0b", fillOpacity: 0.95 })
-        .bindPopup(`📦 موقع تقديم الطلبية: ${esc(orderLabel)}`)
-        .addTo(routeLayerGroup);
-
-      L.circleMarker(pAcceptor, { radius: 9, color: "#10b981", fillColor: "#10b981", fillOpacity: 0.95 })
-        .bindPopup(`🛵 موقع من قبل الطلبية حالياً: ${esc(acceptorLabel)}`)
-        .addTo(routeLayerGroup);
-
-      const line = L.polyline([pOrder, pAcceptor], {
-        color: "#38bdf8",
-        weight: 4,
-        dashArray: "8, 6"
-      }).addTo(routeLayerGroup);
-
-      mapInstance.fitBounds(line.getBounds(), { padding: [36, 36] });
-      setTimeout(() => mapInstance.invalidateSize(), 150);
     }
 
-    function openSoloPage(pKey) {
-      document.getElementById("topNotifDropdown").classList.remove("open");
-      document.getElementById("homeShell").classList.add("hidden");
-      document.querySelectorAll(".solo-page").forEach(s => {
-        s.classList.toggle("active", s.id === `p-${pKey}`);
-      });
+    function showEntryGate() {
+      hideAllSolo();
+      document.getElementById("hubMenu").classList.remove("active");
+      document.getElementById("entryGate").classList.remove("hidden");
+    }
+
+    function backToMenu() {
+      document.getElementById("notifPop").classList.remove("open");
+      hideAllSolo();
+      document.getElementById("entryGate").classList.add("hidden");
+      document.getElementById("hubMenu").classList.add("active");
+      refreshHubBadges();
+    }
+
+    function openPage(key) {
+      document.getElementById("notifPop").classList.remove("open");
+      document.getElementById("entryGate").classList.add("hidden");
+      document.getElementById("hubMenu").classList.remove("active");
+      hideAllSolo();
+      document.getElementById(`v-${key}`).classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function goHome() {
-      document.getElementById("topNotifDropdown").classList.remove("open");
-      document.querySelectorAll(".solo-page").forEach(s => s.classList.remove("active"));
-      document.getElementById("homeShell").classList.remove("hidden");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    function hideAllSolo() {
+      document.querySelectorAll(".solo-view").forEach(v => v.classList.remove("active"));
     }
 
-    function toggleTopNotifMenu() {
-      document.getElementById("topNotifDropdown").classList.toggle("open");
-    }
+    async function completeAccountEntry(fromOtp) {
+      const email = document.getElementById("entryEmail").value.trim();
+      const name = document.getElementById("entryName").value.trim();
+      const role = document.getElementById("entryRole").value;
 
-    document.addEventListener("click", (e) => {
-      const drop = document.getElementById("topNotifDropdown");
-      const btn = document.getElementById("topNotifBtn");
-      if (!drop.contains(e.target) && !btn.contains(e.target)) {
-        drop.classList.remove("open");
-      }
-    });
-
-    async function executeImmediateLogout() {
-      const hadSession = Boolean(userMail);
-      try { await sb.auth.signOut(); } catch (_) {}
-      userMail = "";
-      localStorage.removeItem("wossol_user_email");
-      refreshTags();
-
-      const box = document.getElementById("signoutResultBox");
-      if (hadSession) {
-        box.textContent = "🛑 تم تسجيل الخروج بنجاح وإنهاء الجلسة الحالية.";
-        pushAlert("🛑 تم تسجيل الخروج من الحساب.");
-      } else {
-        box.textContent = "ℹ️ تم التحقق: الحساب غير مسجّل حالياً.";
-      }
-      openSoloPage("signout");
-    }
-
-    function refreshTags() {
-      document.getElementById("homeAccountTag").textContent = userMail ? `🔑 ${userMail}` : "🔑 غير مسجّل";
-      document.getElementById("homeRoleTag").textContent = `🪪 ${roleVal}`;
-      document.getElementById("homeLocTag").textContent = `📌 ${locVal}`;
-      document.getElementById("rolePicker").value = roleVal;
-      document.getElementById("locField").value = locVal;
-    }
-
-    function pushAlert(text) {
-      alerts.unshift({ id: Date.now(), text, time: "الآن", unread: true });
-      localStorage.setItem("wossol_notifs", JSON.stringify(alerts));
-      drawAlerts();
-    }
-
-    function clearUnread() {
-      alerts = alerts.map(a => ({ ...a, unread: false }));
-      localStorage.setItem("wossol_notifs", JSON.stringify(alerts));
-      drawAlerts();
-    }
-
-    function drawAlerts() {
-      const unreadCount = alerts.filter(a => a.unread).length;
-      const badge = document.getElementById("topNotifBadge");
-      badge.textContent = String(unreadCount);
-      badge.classList.toggle("empty", unreadCount === 0);
-
-      const preview = document.getElementById("topNotifPreview");
-      preview.innerHTML = alerts.slice(0, 3).map(a => `
-        <div class="notif-mini-item" style="opacity:${a.unread ? 1 : 0.7}">
-          <div>${esc(a.text)}</div>
-          <small style="color:var(--text-muted);font-size:0.72rem;">${esc(a.time)}</small>
-        </div>
-      `).join("") || `<div class="notif-mini-item">لا توجد إشعارات.</div>`;
-
-      const el = document.getElementById("alertsBox");
-      if (!alerts.length) {
-        el.innerHTML = `<p style="color:var(--text-muted);">لا توجد إشعارات.</p>`;
+      if (!email) {
+        showFb("entryFeedback", "أدخل البريد الإلكتروني أولاً.", "err");
         return;
       }
-      el.innerHTML = alerts.map(a => `
-        <div class="list-card" style="opacity:${a.unread ? 1 : 0.72}">
+
+      if (!cachedCoords) {
+        try {
+          cachedCoords = await readCoords(20000);
+          localStorage.setItem("wossol_coords", JSON.stringify(cachedCoords));
+        } catch (_) {}
+      }
+
+      userEmail = email;
+      userRole = role;
+      localStorage.setItem("wossol_user_email", userEmail);
+      localStorage.setItem("wossol_role", userRole);
+      if (name) localStorage.setItem("wossol_user_name", name);
+
+      pushAlert(`تم الدخول (${userRole}): ${userEmail}`);
+      backToMenu();
+      if (!fromOtp) {
+        showFb("roleFeedback", "", "ok");
+      }
+    }
+
+    async function sendLoginOtp() {
+      const email = document.getElementById("entryEmail").value.trim();
+      if (!email) {
+        showFb("entryFeedback", "أدخل البريد الإلكتروني لإرسال رمز OTP.", "err");
+        return;
+      }
+      const btn = document.getElementById("sendOtpBtn");
+      btn.disabled = true;
+      btn.textContent = "⏳ جاري الإرسال...";
+      try {
+        const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+        if (error) throw error;
+        showFb("entryFeedback", `📨 تم إرسال رمز OTP إلى ${email}.`, "ok");
+      } catch (err) {
+        showFb("entryFeedback", `❌ خطأ في إرسال الرمز: ${err.message || err}`, "err");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "📨 إرسال رمز OTP للدخول";
+      }
+    }
+
+    async function verifyLoginOtp() {
+      const email = document.getElementById("entryEmail").value.trim();
+      const token = document.getElementById("entryOtpCode").value.trim();
+      if (!email || !token) {
+        showFb("entryFeedback", "أدخل البريد الإلكتروني ورمز OTP.", "err");
+        return;
+      }
+      try {
+        const { data, error } = await sb.auth.verifyOtp({ email, token, type: "email" });
+        if (error) throw error;
+        document.getElementById("entryEmail").value = data.user?.email || email;
+        await completeAccountEntry(true);
+      } catch (err) {
+        showFb("entryFeedback", `❌ رمز غير صحيح: ${err.message || err}`, "err");
+      }
+    }
+
+    async function logoutImmediately() {
+      try { await sb.auth.signOut(); } catch (_) {}
+      userEmail = "";
+      localStorage.removeItem("wossol_user_email");
+      refreshHubBadges();
+      document.getElementById("logoutNote").textContent = "✔️ تم تسجيل الخروج فوراً وإنهاء الجلسة.";
+      pushAlert("تم تسجيل الخروج من الحساب.");
+      openPage("logout");
+    }
+
+    function refreshHubBadges() {
+      document.getElementById("hubUserBadge").textContent = userEmail || "غير مسجّل";
+      document.getElementById("hubRoleBadge").textContent = userRole;
+      document.getElementById("hubGpsBadge").textContent = cachedCoords
+        ? `📍 ${cachedCoords.lat.toFixed(3)}, ${cachedCoords.lng.toFixed(3)}`
+        : "📍 غير محدد";
+      document.getElementById("roleSelectSolo").value = userRole;
+      document.getElementById("locNameSolo").value = locLabel;
+    }
+
+    function saveRoleSolo() {
+      userRole = document.getElementById("roleSelectSolo").value;
+      localStorage.setItem("wossol_role", userRole);
+      refreshHubBadges();
+      showFb("roleFeedback", `✔️ تم حفظ الدور: ${userRole}`, "ok");
+      pushAlert(`تغيير الدور إلى: ${userRole}`);
+    }
+
+    async function refreshCoordsNow() {
+      try {
+        cachedCoords = await readCoords(20000);
+        localStorage.setItem("wossol_coords", JSON.stringify(cachedCoords));
+        refreshHubBadges();
+        showFb("locFeedback", `✔️ تم تحديث الإحداثيات: ${cachedCoords.lat.toFixed(5)}, ${cachedCoords.lng.toFixed(5)}`, "ok");
+      } catch (err) {
+        showFb("locFeedback", `❌ ${err.message}`, "err");
+      }
+    }
+
+    function saveLocationSolo() {
+      const v = document.getElementById("locNameSolo").value.trim();
+      if (!v) {
+        showFb("locFeedback", "أدخل اسم المكان أولاً.", "err");
+        return;
+      }
+      locLabel = v;
+      localStorage.setItem("wossol_location", locLabel);
+      refreshHubBadges();
+      showFb("locFeedback", `✔️ تم حفظ الموقع: ${locLabel}`, "ok");
+    }
+
+    function addQuickText(txt) {
+      const inp = document.getElementById("ordItems");
+      inp.value = inp.value.trim() ? `${inp.value.trim()}، ${txt}` : txt;
+    }
+
+    function toggleTransport() {
+      document.getElementById("transportWrap").style.display =
+        document.getElementById("ordInterState").checked ? "block" : "none";
+    }
+
+    async function createOrderItem(e) {
+      e.preventDefault();
+      const btn = document.getElementById("submitOrderBtn");
+      btn.disabled = true;
+      btn.textContent = "⏳ جاري الإرسال...";
+
+      let orderCoords = cachedCoords;
+      try {
+        orderCoords = await readCoords(20000);
+        cachedCoords = orderCoords;
+        localStorage.setItem("wossol_coords", JSON.stringify(orderCoords));
+      } catch (err) {
+        if (!orderCoords) {
+          showFb("orderFeedback", `❌ تعذر تحديد موقع الطلبية: ${err.message}`, "err");
+          btn.disabled = false;
+          btn.textContent = "🚀 إرسال الطلبية";
+          return;
+        }
+      }
+
+      const item = {
+        id: "ORD-" + String(Date.now()).slice(-6),
+        cat: document.getElementById("ordCat").value,
+        items: document.getElementById("ordItems").value.trim(),
+        phone: document.getElementById("ordPhone").value.trim(),
+        addr: document.getElementById("ordAddr").value.trim(),
+        orderCoords,
+        acceptorCoords: null,
+        distKm: "—",
+        cost: Number(document.getElementById("ordCost").value || 0),
+        fee: Number(document.getElementById("ordFee").value || 0),
+        deferred: document.getElementById("ordDeferred").checked,
+        interState: document.getElementById("ordInterState").checked,
+        vehicle: document.getElementById("ordInterState").checked ? document.getElementById("ordVehicle").value : "محلي",
+        status: "متاحة",
+        time: new Date().toLocaleString("ar-DZ")
+      };
+
+      ordersArr.unshift(item);
+      localStorage.setItem("wossol_orders", JSON.stringify(ordersArr));
+      drawBrowse();
+      drawLog();
+      document.getElementById("orderForm").reset();
+      document.getElementById("transportWrap").style.display = "none";
+
+      showFb("orderFeedback", `✔️ تم إرسال الطلبية (${item.id}) وتثبيت موقعها.`, "ok");
+      pushAlert(`طلبية جديدة (${item.id}): ${item.items}`);
+
+      btn.disabled = false;
+      btn.textContent = "🚀 إرسال الطلبية";
+    }
+
+    function filterOrders(cat) {
+      catFilter = cat;
+      drawBrowse();
+    }
+
+    function distBetweenKm(a, b) {
+      const rad = x => (x * Math.PI) / 180;
+      const R = 6371;
+      const dLat = rad(b.lat - a.lat);
+      const dLng = rad(b.lng - a.lng);
+      const s = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+      return (2 * R * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))).toFixed(2);
+    }
+
+    function drawRouteMap(fromOrder, toAcceptor) {
+      if (!window.L) return;
+      const el = document.getElementById("mapBox");
+      if (!mapObj) {
+        mapObj = L.map(el).setView([fromOrder.lat, fromOrder.lng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap"
+        }).addTo(mapObj);
+        mapLayer = L.layerGroup().addTo(mapObj);
+      }
+      mapLayer.clearLayers();
+      const p1 = [fromOrder.lat, fromOrder.lng];
+      const p2 = [toAcceptor.lat, toAcceptor.lng];
+      L.circleMarker(p1, { radius: 8, color: "#1d4ed8", fillColor: "#1d4ed8", fillOpacity: 0.9 })
+        .bindPopup("موقع الطلبية").addTo(mapLayer);
+      L.circleMarker(p2, { radius: 8, color: "#059669", fillColor: "#059669", fillOpacity: 0.9 })
+        .bindPopup("موقع من قبل الطلبية حالياً").addTo(mapLayer);
+      const poly = L.polyline([p1, p2], { color: "#e11d48", weight: 4 }).addTo(mapLayer);
+      mapObj.fitBounds(poly.getBounds(), { padding: [30, 30] });
+      setTimeout(() => mapObj.invalidateSize(), 150);
+    }
+
+    async function acceptOrderRoute(orderId) {
+      const target = ordersArr.find(o => o.id === orderId);
+      if (!target || !target.orderCoords) {
+        showFb("routeFeedback", "❌ لا توجد إحداثيات لموقع هذه الطلبية.", "err");
+        return;
+      }
+
+      let acceptorCoords = null;
+      try {
+        acceptorCoords = await readCoords(20000);
+        cachedCoords = acceptorCoords;
+        localStorage.setItem("wossol_coords", JSON.stringify(acceptorCoords));
+      } catch (err) {
+        showFb("routeFeedback", `❌ تعذر تحديد موقعك الحالي: ${err.message}`, "err");
+        return;
+      }
+
+      const km = distBetweenKm(target.orderCoords, acceptorCoords);
+      ordersArr = ordersArr.map(o => o.id === orderId
+        ? { ...o, acceptorCoords, distKm: `${km} كم`, status: "مقبولة" }
+        : o
+      );
+      localStorage.setItem("wossol_orders", JSON.stringify(ordersArr));
+      drawBrowse();
+      drawLog();
+
+      document.getElementById("routePanel").style.display = "block";
+      document.getElementById("routeSummaryTxt").textContent =
+        `المسافة: ${km} كم — من موقع الطلبية (${target.orderCoords.lat.toFixed(5)}, ${target.orderCoords.lng.toFixed(5)}) إلى موقعك الحالي (${acceptorCoords.lat.toFixed(5)}, ${acceptorCoords.lng.toFixed(5)}).`;
+      document.getElementById("gmapsLink").href =
+        `https://www.google.com/maps/dir/?api=1&origin=${target.orderCoords.lat},${target.orderCoords.lng}&destination=${acceptorCoords.lat},${acceptorCoords.lng}&travelmode=driving`;
+
+      drawRouteMap(target.orderCoords, acceptorCoords);
+      pushAlert(`تم قبول الطلبية ${target.id} ورسم المسار (${km} كم).`);
+    }
+
+    function drawBrowse() {
+      const box = document.getElementById("browseOrdersList");
+      const list = ordersArr.filter(o => catFilter === "الكل" || o.cat === catFilter);
+      if (!list.length) {
+        box.innerHTML = `<p class="sub-note">لا توجد طلبات حالياً.</p>`;
+        return;
+      }
+      box.innerHTML = list.map(o => `
+        <div class="card-row">
           <div>
-            <strong>${esc(a.text)}</strong>
-            <div style="color:var(--text-muted);font-size:0.78rem;">${esc(a.time)}</div>
+            <strong>${esc(o.cat)} • ${esc(o.distKm)}</strong> <span class="badge">${esc(o.status)}</span>
+            ${o.deferred ? `<span class="badge badge-mint">بالآجل</span>` : ""}
+            ${o.interState ? `<span class="badge">${esc(o.vehicle)}</span>` : ""}
+            <div style="margin-top:4px;">${esc(o.items)}</div>
+            <div class="sub-note" style="margin:4px 0 0;">${esc(o.addr)} | 📞 ${esc(o.phone)} | عمولة: ${Number(o.fee).toLocaleString()} د.ج</div>
           </div>
-          <span class="tag-pill">${a.unread ? "جديد" : "مقروء"}</span>
+          <button type="button" class="btn btn-mint" onclick="acceptOrderRoute('${escJs(o.id)}')">قبول ورسم المسار</button>
         </div>
       `).join("");
     }
 
-    function applyRole() {
-      roleVal = document.getElementById("rolePicker").value;
-      localStorage.setItem("wossol_role", roleVal);
-      refreshTags();
-      showMsg("roleMsg", `✔️ تم اعتماد الدور: ${roleVal}`, "ok");
-      pushAlert(`🪪 تم اختيار الدور: ${roleVal}`);
+    function setOrderDone(id, st) {
+      ordersArr = ordersArr.map(o => o.id === id ? { ...o, status: st } : o);
+      localStorage.setItem("wossol_orders", JSON.stringify(ordersArr));
+      drawBrowse();
+      drawLog();
     }
 
-    function applyLocation() {
-      const v = document.getElementById("locField").value.trim();
-      if (!v) {
-        showMsg("locMsg", "أدخل مكان الإقامة أولاً.", "err");
+    function drawLog() {
+      const box = document.getElementById("ordersLogList");
+      if (!ordersArr.length) {
+        box.innerHTML = `<p class="sub-note">لا توجد طلبيات مسجلة.</p>`;
         return;
       }
-      locVal = v;
-      localStorage.setItem("wossol_location", locVal);
-      refreshTags();
-      showMsg("locMsg", `✔️ تم حفظ مكان الإقامة: ${locVal}`, "ok");
-      pushAlert(`📌 تم تحديث مكان الإقامة: ${locVal}`);
-    }
-
-    function quickAddItem(label) {
-      const inp = document.getElementById("orderItemsText");
-      inp.value = inp.value.trim() ? `${inp.value.trim()}، ${label}` : label;
-    }
-
-    function toggleVehicleBox() {
-      const checked = document.getElementById("orderInterWilaya").checked;
-      document.getElementById("vehicleBox").style.display = checked ? "block" : "none";
-    }
-
-    async function submitOrder(e) {
-      e.preventDefault();
-      const btn = document.getElementById("btnSubmitOrder");
-      const category = document.getElementById("orderCategory").value;
-      const itemsText = document.getElementById("orderItemsText").value.trim();
-      const phone = document.getElementById("orderPhone").value.trim();
-      const address = document.getElementById("orderAddress").value.trim();
-      const estCost = Number(document.getElementById("orderEstCost").value || 0);
-      const commission = Number(document.getElementById("orderCommission").value || 200);
-      const deferred = document.getElementById("orderDeferred").checked;
-      const interWilaya = document.getElementById("orderInterWilaya").checked;
-      const vehicle = interWilaya ? document.getElementById("orderVehicle").value : "دراجة / توصيل محلي";
-
-      btn.disabled = true;
-      btn.textContent = "📍 جاري التقاط موقع الطلبية...";
-
-      let orderCoords = null;
-      try {
-        orderCoords = await getCurrentGeoCoords();
-      } catch (err) {
-        showMsg("orderMsg", `❌ تعذر تحديد الموقع الفعلي للطلبية: ${err.message}. فعّل خدمة الموقع (GPS) واسمح بالوصول للموقع.`, "err");
-        btn.disabled = false;
-        btn.textContent = "🚀 إرسال الطلب وتثبيت موقع الطلبية";
-        return;
-      }
-
-      const rec = {
-        id: "WSS-" + String(Date.now()).slice(-6),
-        category,
-        itemsText,
-        phone,
-        address,
-        orderCoords,
-        acceptorCoords: null,
-        distanceKm: "—",
-        estCost,
-        commission,
-        deferred,
-        interWilaya,
-        vehicle,
-        status: "متاح للقبول",
-        courier: "",
-        time: new Date().toLocaleString("ar-DZ")
-      };
-
-      orderList.unshift(rec);
-      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
-      drawBrowseOrders();
-      drawOrdersLog();
-      document.getElementById("orderForm").reset();
-      document.getElementById("orderEstCost").value = 1500;
-      document.getElementById("orderCommission").value = 200;
-      document.getElementById("vehicleBox").style.display = "none";
-
-      showMsg(
-        "orderMsg",
-        `✔️ تم إرسال الطلبية رقم ${rec.id} وتثبيت موقعها الفعلي (${orderCoords.lat.toFixed(5)}, ${orderCoords.lng.toFixed(5)})!`,
-        "ok"
-      );
-      pushAlert(`✍️ طلبية جديدة (${rec.id}) من موقع محدد بدقة.`);
-
-      btn.disabled = false;
-      btn.textContent = "🚀 إرسال الطلب وتثبيت موقع الطلبية";
-    }
-
-    function setFilterCategory(cat) {
-      activeFilterCat = cat;
-      drawBrowseOrders();
-    }
-
-    function drawBrowseOrders() {
-      const box = document.getElementById("availableOrdersBox");
-      const filtered = orderList.filter(o => activeFilterCat === "الكل" || o.category === activeFilterCat);
-
-      if (!filtered.length) {
-        box.innerHTML = `<p style="color:var(--text-muted);">لا توجد طلبات في هذا التصنيف حالياً.</p>`;
-        return;
-      }
-
-      box.innerHTML = filtered.map(o => {
-        const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
-        const coordsTxt = o.orderCoords
-          ? `${o.orderCoords.lat.toFixed(4)}, ${o.orderCoords.lng.toFixed(4)}`
-          : "غير محدد";
+      box.innerHTML = ordersArr.map(o => {
+        const total = Number(o.cost || 0) + Number(o.fee || 0);
         return `
-          <div class="list-card">
+          <div class="card-row">
             <div>
-              <strong>طلبية ${esc(o.category)} • المسافة: ${esc(o.distanceKm)}</strong>
-              <span class="tag-pill">${esc(o.status)}</span>
-              ${o.deferred ? `<span class="tag-pill tag-amber">🤝 شراء بالآجل</span>` : ""}
-              ${o.interWilaya ? `<span class="tag-pill tag-sky">🚚 ${esc(o.vehicle)}</span>` : ""}
-              <div style="font-size:0.9rem;margin-top:4px;">${esc(o.itemsText)}</div>
-              <div style="color:var(--text-muted);font-size:0.8rem;margin-top:3px;">
-                📌 نقطة الطلبية: ${esc(o.address)} (${coordsTxt}) | 📞 ${esc(o.phone)}
-              </div>
-              <div class="price-txt" style="margin-top:5px;">
-                عمولة التوصيل: ${Number(o.commission).toLocaleString()} د.ج | إجمالي المستحقات: ${totalPay.toLocaleString()} د.ج
-              </div>
-            </div>
-            <div>
-              <button class="btn btn-emerald" id="acceptBtn-${escJs(o.id)}" onclick="acceptOrderWithExactRoute('${escJs(o.id)}')">
-                ✅ قبول ورسم المسار من موقعي الحالي
-              </button>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    async function acceptOrderWithExactRoute(orderId) {
-      const target = orderList.find(o => o.id === orderId);
-      if (!target) return;
-
-      if (!target.orderCoords || typeof target.orderCoords.lat !== "number") {
-        showMsg("routeErrMsg", "❌ هذه الطلبية لا تملك إحداثيات موقع دقيقة. أرسل طلبية جديدة بعد تفعيل GPS.", "err");
-        return;
-      }
-
-      const btn = document.getElementById(`acceptBtn-${orderId}`);
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = "📍 جاري تحديد موقعك الحالي...";
-      }
-      document.getElementById("routeErrMsg").classList.remove("show");
-
-      let acceptorCoords = null;
-      try {
-        acceptorCoords = await getCurrentGeoCoords();
-      } catch (err) {
-        showMsg("routeErrMsg", `❌ تعذر التقاط موقعك الحالي لرسم المسار: ${err.message}`, "err");
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = "✅ قبول ورسم المسار من موقعي الحالي";
-        }
-        return;
-      }
-
-      const kmDist = haversineKm(target.orderCoords, acceptorCoords);
-
-      orderList = orderList.map(o => o.id === orderId
-        ? {
-            ...o,
-            acceptorCoords,
-            distanceKm: `${kmDist} كم`,
-            status: "مقبولة — مسار حي نشط",
-            courier: userMail || "عامل توصيل نشط"
-          }
-        : o
-      );
-      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
-      drawBrowseOrders();
-      drawOrdersLog();
-
-      const routeBox = document.getElementById("liveRouteBox");
-      const summary = document.getElementById("liveRouteSummary");
-      const mapsLink = document.getElementById("gmapsExternalLink");
-
-      routeBox.style.display = "block";
-      summary.textContent =
-        `المسافة الفعلية: ${kmDist} كم — من موقع الطلبية (${target.orderCoords.lat.toFixed(5)}, ${target.orderCoords.lng.toFixed(5)}) إلى موقعك الحالي (${acceptorCoords.lat.toFixed(5)}, ${acceptorCoords.lng.toFixed(5)}).`;
-
-      mapsLink.href =
-        `https://www.google.com/maps/dir/?api=1&origin=${target.orderCoords.lat},${target.orderCoords.lng}&destination=${acceptorCoords.lat},${acceptorCoords.lng}&travelmode=driving`;
-
-      renderLeafletRoute(
-        target.orderCoords,
-        acceptorCoords,
-        `${target.id} (${target.address})`,
-        userMail || "موقع من قبل الطلبية الآن"
-      );
-
-      pushAlert(`🛵 تم قبول الطلبية ${target.id} ورسم المسار الحي (${kmDist} كم) بناءً على موقعك الحالي.`);
-    }
-
-    function updateOrderStatus(orderId, status) {
-      orderList = orderList.map(o => o.id === orderId ? { ...o, status } : o);
-      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
-      drawBrowseOrders();
-      drawOrdersLog();
-      pushAlert(`🧾 تحديث حالة الطلبية ${orderId} إلى: ${status}`);
-    }
-
-    function drawOrdersLog() {
-      const box = document.getElementById("allOrdersLogBox");
-      if (!orderList.length) {
-        box.innerHTML = `<p style="color:var(--text-muted);">لا توجد طلبيات مسجلة.</p>`;
-        return;
-      }
-
-      box.innerHTML = orderList.map(o => {
-        const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
-        const oCoords = o.orderCoords ? `${o.orderCoords.lat.toFixed(4)}, ${o.orderCoords.lng.toFixed(4)}` : "—";
-        const aCoords = o.acceptorCoords ? `${o.acceptorCoords.lat.toFixed(4)}, ${o.acceptorCoords.lng.toFixed(4)}` : "بانتظار القبول";
-        return `
-          <div class="list-card">
-            <div>
-              <strong>${esc(o.itemsText)}</strong> <span class="tag-pill">${esc(o.status)}</span>
-              ${o.deferred ? `<span class="tag-pill tag-amber">🤝 بالآجل</span>` : ""}
-              ${o.interWilaya ? `<span class="tag-pill tag-sky">🚚 ${esc(o.vehicle)}</span>` : ""}
-              <div style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;">
-                الرقم: <strong>${esc(o.id)}</strong> | التصنيف: ${esc(o.category)} | العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
-              </div>
-              <div style="color:var(--text-muted);font-size:0.78rem;margin-top:2px;">
-                📍 موقع الطلبية: ${esc(oCoords)} | 🛵 موقع القابل: ${esc(aCoords)} | المسافة: ${esc(o.distanceKm)}
-              </div>
-              <div style="color:var(--amber);font-size:0.84rem;font-weight:700;margin-top:3px;">
-                المشتريات: ${Number(o.estCost).toLocaleString()} د.ج + العمولة: ${Number(o.commission).toLocaleString()} د.ج = المجموع: ${totalPay.toLocaleString()} د.ج
+              <strong>${esc(o.items)}</strong> <span class="badge">${esc(o.status)}</span>
+              <div class="sub-note" style="margin:4px 0 0;">
+                ${esc(o.id)} | ${esc(o.addr)} | المشتريات + العمولة = ${total.toLocaleString()} د.ج
               </div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button class="btn btn-soft" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم الشراء وجاري التوصيل')">تم الشراء</button>
-              <button class="btn btn-emerald" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم التسليم واستلام المستحقات')">تم التسليم</button>
+              <button type="button" class="btn btn-light" style="padding:6px 10px;font-size:0.78rem;" onclick="setOrderDone('${escJs(o.id)}', 'تم الشراء')">تم الشراء</button>
+              <button type="button" class="btn btn-mint" style="padding:6px 10px;font-size:0.78rem;" onclick="setOrderDone('${escJs(o.id)}', 'تم التسليم')">تم التسليم</button>
             </div>
           </div>
         `;
       }).join("");
     }
 
-    function fileToDataUrl(file) {
+    function readFileBase64(file) {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error("تعذر قراءة ملف الصورة"));
-        reader.readAsDataURL(file);
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(new Error("تعذر قراءة الصورة"));
+        r.readAsDataURL(file);
       });
     }
 
-    async function addShopItem(e) {
+    async function publishProduct(e) {
       e.preventDefault();
-      const name = document.getElementById("itemName").value.trim();
-      const price = document.getElementById("itemPrice").value.trim();
-      const sellerType = document.getElementById("itemSellerType").value;
-      const desc = document.getElementById("itemNote").value.trim();
-      const file = document.getElementById("itemPic").files[0];
-      const btn = document.getElementById("btnUploadItem");
-
-      if (!file) {
-        showMsg("shopMsg", "اختر صورة للمنتج أولاً.", "err");
-        return;
-      }
+      const btn = document.getElementById("publishProdBtn");
+      const file = document.getElementById("prodFile").files[0];
+      if (!file) return;
 
       btn.disabled = true;
-      btn.textContent = "⏳ جاري نشر الصورة والمنتج...";
+      btn.textContent = "⏳ جاري النشر...";
 
-      let finalImageUrl = "";
-      let cloudUploaded = false;
-
+      let imgUrl = "";
       try {
         const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-        const objectPath = `items/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${objectPath}`;
-
-        const res = await fetch(uploadUrl, {
+        const path = `items/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${path}`, {
           method: "POST",
           headers: {
             "apikey": SUPABASE_ANON_KEY,
@@ -1351,132 +1150,91 @@
           },
           body: file
         });
-
-        if (res.ok) {
-          finalImageUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${objectPath}`;
-          cloudUploaded = true;
-        } else {
-          finalImageUrl = await fileToDataUrl(file);
-        }
+        imgUrl = res.ok
+          ? `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${path}`
+          : await readFileBase64(file);
       } catch (_) {
-        try {
-          finalImageUrl = await fileToDataUrl(file);
-        } catch (readErr) {
-          showMsg("shopMsg", `❌ تعذر معالجة الصورة: ${readErr.message}`, "err");
-          btn.disabled = false;
-          btn.textContent = "⬆️ نشر الصورة والمنتج";
-          return;
-        }
+        imgUrl = await readFileBase64(file);
       }
 
-      shopItems.unshift({
+      const prod = {
         id: String(Date.now()),
-        name,
-        price,
-        sellerType,
-        desc,
-        imageUrl: finalImageUrl
-      });
+        title: document.getElementById("prodTitle").value.trim(),
+        cost: document.getElementById("prodCost").value.trim(),
+        kind: document.getElementById("prodKind").value,
+        notes: document.getElementById("prodNotes").value.trim(),
+        imgUrl
+      };
 
-      try {
-        localStorage.setItem("wossol_products", JSON.stringify(shopItems));
-      } catch (_) {}
-
-      drawShop();
-      document.getElementById("shopForm").reset();
-
-      if (cloudUploaded) {
-        showMsg("shopMsg", "✔️ تم رفع الصورة إلى product-images ونشر المنتج بنجاح!", "ok");
-      } else {
-        showMsg("shopMsg", "✔️ تم نشر الصورة والمنتج في المتجر بنجاح (تم الحفظ محلياً لتجاوز رفض مفتاح التخزين).", "ok");
-      }
-      pushAlert(`🛍️ تمت إضافة منتج جديد في المتجر: ${name}`);
+      storeList.unshift(prod);
+      try { localStorage.setItem("wossol_products", JSON.stringify(storeList)); } catch (_) {}
+      drawStore();
+      document.getElementById("storeForm").reset();
+      showFb("storeFeedback", "✔️ تم نشر المنتج والصورة بنجاح.", "ok");
+      pushAlert(`منتج جديد: ${prod.title}`);
 
       btn.disabled = false;
-      btn.textContent = "⬆️ نشر الصورة والمنتج";
+      btn.textContent = "⬆️ نشر المنتج والصورة";
     }
 
-    function drawShop() {
-      const grid = document.getElementById("shopGrid");
-      if (!shopItems.length) {
-        grid.innerHTML = `<p style="color:var(--text-muted);">لا توجد منتجات معروضة حالياً.</p>`;
+    function drawStore() {
+      const grid = document.getElementById("storeGrid");
+      if (!storeList.length) {
+        grid.innerHTML = `<p class="sub-note">لا توجد منتجات معروضة حالياً.</p>`;
         return;
       }
-
-      grid.innerHTML = shopItems.map(i => `
-        <article class="prod-card">
-          <img class="prod-img" src="${i.imageUrl}" alt="${esc(i.name)}" loading="lazy" />
-          <div class="prod-body">
-            <span class="tag-pill tag-sky" style="align-self:flex-start;">${esc(i.sellerType || "متجر")}</span>
-            <strong>${esc(i.name)}</strong>
-            <div class="price-txt">${Number(i.price).toLocaleString()} د.ج</div>
-            <p style="color:var(--text-muted);font-size:0.84rem;">${esc(i.desc || "")}</p>
-            <button class="btn btn-amber" style="margin-top:auto;" onclick="quickOrderFromShop('${escJs(i.name)}', '${escJs(String(i.price))}')">
-              ✍️ اطلب الآن
-            </button>
+      grid.innerHTML = storeList.map(p => `
+        <article class="prod-tile">
+          <img class="prod-pic" src="${p.imgUrl}" alt="${esc(p.title)}" loading="lazy" />
+          <div class="prod-info">
+            <span class="badge" style="align-self:flex-start;">${esc(p.kind)}</span>
+            <strong>${esc(p.title)}</strong>
+            <strong style="color:var(--mint);">${Number(p.cost).toLocaleString()} د.ج</strong>
+            <p class="sub-note" style="margin:0;">${esc(p.notes || "")}</p>
           </div>
         </article>
       `).join("");
     }
 
-    function quickOrderFromShop(name, price) {
-      openSoloPage("new-order");
-      document.getElementById("orderItemsText").value = name;
-      document.getElementById("orderEstCost").value = price || 0;
+    function toggleNotifPop() {
+      document.getElementById("notifPop").classList.toggle("open");
     }
 
-    async function requestOtp() {
-      const mail = document.getElementById("otpMail").value.trim();
-      const btn = document.getElementById("btnSendOtp");
-      if (!mail) {
-        showMsg("authMsg", "أدخل البريد الإلكتروني أولاً.", "err");
-        return;
-      }
-      btn.disabled = true;
-      btn.textContent = "⏳ جاري الإرسال...";
-      try {
-        const { error } = await sb.auth.signInWithOtp({ email: mail, options: { shouldCreateUser: true } });
-        if (error) throw error;
-        showMsg("authMsg", `📨 تم إرسال الرمز إلى ${mail} (تحقق من البريد الوارد أو Spam).`, "ok");
-        pushAlert(`🔑 إرسال رمز OTP إلى ${mail}`);
-      } catch (err) {
-        showMsg("authMsg", `❌ تعذر الإرسال: ${err.message || err}`, "err");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "📨 إرسال رمز OTP";
-      }
+    function pushAlert(text) {
+      alertItems.unshift({ id: Date.now(), text, time: "الآن", unread: true });
+      localStorage.setItem("wossol_notifs", JSON.stringify(alertItems));
+      drawAlerts();
     }
 
-    async function confirmOtp() {
-      const mail = document.getElementById("otpMail").value.trim();
-      const token = document.getElementById("otpToken").value.trim();
-      const btn = document.getElementById("btnVerifyOtp");
-      if (!mail || !token) {
-        showMsg("authMsg", "أدخل البريد ورمز OTP معاً.", "err");
-        return;
-      }
-      btn.disabled = true;
-      btn.textContent = "⏳ جاري التحقق...";
-      try {
-        const { data, error } = await sb.auth.verifyOtp({ email: mail, token, type: "email" });
-        if (error) throw error;
-        userMail = data.user?.email || mail;
-        localStorage.setItem("wossol_user_email", userMail);
-        refreshTags();
-        showMsg("authMsg", `✔️ تم تسجيل الدخول بنجاح: ${userMail}`, "ok");
-        pushAlert(`🔑 تم تسجيل الدخول: ${userMail}`);
-      } catch (err) {
-        showMsg("authMsg", `❌ رمز غير صحيح: ${err.message || err}`, "err");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "✔️ تأكيد الرمز والدخول";
-      }
+    function readAllAlerts() {
+      alertItems = alertItems.map(a => ({ ...a, unread: false }));
+      localStorage.setItem("wossol_notifs", JSON.stringify(alertItems));
+      drawAlerts();
     }
 
-    function showMsg(id, msg, kind) {
+    function drawAlerts() {
+      const cnt = alertItems.filter(a => a.unread).length;
+      const b = document.getElementById("notifCount");
+      b.textContent = String(cnt);
+      b.classList.toggle("hide", cnt === 0);
+
+      document.getElementById("notifPreviewList").innerHTML = alertItems.slice(0, 3).map(a => `
+        <div class="notif-row"><div>${esc(a.text)}</div><small style="color:var(--ink-muted);">${esc(a.time)}</small></div>
+      `).join("") || `<div class="notif-row">لا توجد إشعارات.</div>`;
+
+      document.getElementById("alertsFullList").innerHTML = alertItems.map(a => `
+        <div class="card-row" style="opacity:${a.unread ? 1 : 0.7}">
+          <div><strong>${esc(a.text)}</strong><div class="sub-note" style="margin:2px 0 0;">${esc(a.time)}</div></div>
+          <span class="badge">${a.unread ? "جديد" : "مقروء"}</span>
+        </div>
+      `).join("") || `<p class="sub-note">لا توجد إشعارات.</p>`;
+    }
+
+    function showFb(id, msg, kind) {
       const el = document.getElementById(id);
+      if (!msg) { el.className = "feedback"; return; }
       el.textContent = msg;
-      el.className = `msg-box show ${kind}`;
+      el.className = `feedback show ${kind}`;
     }
 
     function esc(s) {
@@ -1487,11 +1245,11 @@
       return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     }
 
-    refreshTags();
+    refreshHubBadges();
     drawAlerts();
-    drawShop();
-    drawBrowseOrders();
-    drawOrdersLog();
+    drawStore();
+    drawBrowse();
+    drawLog();
   </script>
 </body>
 </html>
