@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>خدمات wossol | إصدار الهوية الكهرمانية</title>
+  <title>خدمات wossol | واجهة متقنة وصفحات مستقلة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -18,7 +18,7 @@
       --crimson-deep: #e11d48;
       --ink: #fffbeb;
       --ink-dim: #b8ad9e;
-      --line: rgba(245, 158, 11, 0.16);
+      --line: rgba(245, 158, 11, 0.18);
       --card-radius: 22px;
       --btn-radius: 999px;
     }
@@ -41,9 +41,8 @@
       line-height: 1.65;
     }
 
-    /* Top Bar */
     .topbar {
-      background: rgba(18, 16, 14, 0.92);
+      background: rgba(18, 16, 14, 0.94);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--line);
       padding: 14px 18px;
@@ -53,7 +52,7 @@
     }
 
     .topbar-inner {
-      max-width: 1100px;
+      max-width: 1040px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -100,50 +99,63 @@
     }
 
     .wrap {
-      max-width: 1100px;
-      margin: 20px auto 0;
+      max-width: 1040px;
+      margin: 22px auto 0;
       padding: 0 18px;
     }
 
-    /* Reordered Separate Page Switcher */
-    .switcher {
+    /* Main Menu Grid - Hidden automatically once a single option is selected */
+    .home-menu {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 10px;
-      margin-bottom: 22px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
-    .nav-pill-btn {
+    .home-menu.hidden {
+      display: none;
+    }
+
+    @media (min-width: 680px) {
+      .home-menu {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .menu-tile {
       background: var(--bg-surface);
-      color: var(--ink-dim);
+      color: var(--ink);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 11px 12px;
-      font-size: 0.84rem;
+      border-radius: 20px;
+      padding: 16px 14px;
+      font-size: 0.9rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
-      transition: all 0.16s ease;
+      gap: 8px;
+      text-align: center;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
+      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
     }
 
-    .nav-pill-btn:hover {
-      color: var(--ink);
-      border-color: var(--amber);
+    .menu-tile:hover {
       transform: translateY(-2px);
-    }
-
-    .nav-pill-btn.active {
-      background: var(--amber);
-      color: #12100e;
       border-color: var(--amber);
-      box-shadow: 0 3px 0 var(--amber-deep);
+      background: var(--bg-elevated);
     }
 
-    /* Single-Option Dedicated Pages */
+    .menu-tile.danger-tile {
+      border-color: rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+    }
+
+    .menu-tile.danger-tile:hover {
+      border-color: var(--crimson);
+      background: rgba(244, 63, 94, 0.14);
+    }
+
+    /* Dedicated Single Page */
     .solo-page {
       display: none;
       animation: reveal 0.2s ease;
@@ -157,20 +169,25 @@
       background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
       border: 1px solid var(--line);
       border-radius: var(--card-radius);
-      padding: 18px 20px;
+      padding: 16px 20px;
       margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .page-header-box h1 {
-      font-size: 1.24rem;
+      font-size: 1.2rem;
       font-weight: 900;
       color: var(--amber);
     }
 
     .page-header-box p {
       color: var(--ink-dim);
-      font-size: 0.88rem;
-      margin-top: 4px;
+      font-size: 0.86rem;
+      margin-top: 3px;
     }
 
     .panel {
@@ -190,13 +207,13 @@
 
     .cols-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 14px;
     }
 
     .cols-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
       gap: 14px;
     }
 
@@ -224,18 +241,17 @@
       border-color: var(--amber);
     }
 
-    /* Distinct Pill Buttons with Bottom Lip */
     .action-btn {
       border: none;
       border-radius: var(--btn-radius);
-      padding: 11px 20px;
-      font-size: 0.9rem;
+      padding: 10px 18px;
+      font-size: 0.88rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       transition: transform 0.14s ease, filter 0.18s ease;
     }
 
@@ -356,7 +372,7 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="logo-area">
+      <div class="logo-area" style="cursor:pointer;" onclick="showHomeMenu()">
         <span class="logo-mark">⚡</span>
         <span>خدمات wossol</span>
       </div>
@@ -369,23 +385,26 @@
   </header>
 
   <div class="wrap">
-    <!-- Reordered Navigation: Each button opens ONE dedicated page -->
-    <div class="switcher">
-      <button class="nav-pill-btn active" data-p="auth" onclick="goPage('auth')">🔑 الدخول والـ OTP</button>
-      <button class="nav-pill-btn" data-p="role" onclick="goPage('role')">🪪 تحديد الدور</button>
-      <button class="nav-pill-btn" data-p="location" onclick="goPage('location')">📌 مكان الإقامة</button>
-      <button class="nav-pill-btn" data-p="shop" onclick="goPage('shop')">🛍️ المتجر</button>
-      <button class="nav-pill-btn" data-p="order-new" onclick="goPage('order-new')">✍️ تقديم طلب</button>
-      <button class="nav-pill-btn" data-p="orders-list" onclick="goPage('orders-list')">🧾 الطلبيات</button>
-      <button class="nav-pill-btn" data-p="alerts" onclick="goPage('alerts')">📣 الإشعارات</button>
-      <button class="nav-pill-btn" data-p="signout" onclick="goPage('signout')">🛑 تسجيل الخروج</button>
-    </div>
+    <!-- Main Buttons Grid: Hides completely when any option is opened -->
+    <nav class="home-menu" id="homeMenu" aria-label="القائمة الرئيسية">
+      <button class="menu-tile" onclick="openSoloPage('auth')">🔑 الدخول والـ OTP</button>
+      <button class="menu-tile" onclick="openSoloPage('role')">🪪 تحديد الدور</button>
+      <button class="menu-tile" onclick="openSoloPage('location')">📌 مكان الإقامة</button>
+      <button class="menu-tile" onclick="openSoloPage('shop')">🛍️ المتجر</button>
+      <button class="menu-tile" onclick="openSoloPage('order-new')">✍️ تقديم طلب</button>
+      <button class="menu-tile" onclick="openSoloPage('orders-list')">🧾 الطلبيات</button>
+      <button class="menu-tile" onclick="openSoloPage('alerts')">📣 الإشعارات</button>
+      <button class="menu-tile danger-tile" onclick="selectLogoutOption()">🛑 تسجيل الخروج</button>
+    </nav>
 
     <!-- 1. SOLO PAGE: LOGIN & OTP -->
-    <section class="solo-page active" id="p-auth">
+    <section class="solo-page" id="p-auth">
       <div class="page-header-box">
-        <h1>🔑 الدخول والـ OTP</h1>
-        <p>صفحة مخصصة لإرسال رمز التحقق (OTP) إلى البريد الإلكتروني وتأكيده وتسجيل الدخول.</p>
+        <div>
+          <h1>🔑 الدخول والـ OTP</h1>
+          <p>صفحة مستقلة لإرسال رمز التحقق (OTP) وتأكيد البريد الإلكتروني.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <label for="otpMail">البريد الإلكتروني</label>
@@ -405,8 +424,11 @@
     <!-- 2. SOLO PAGE: ROLE SELECTION -->
     <section class="solo-page" id="p-role">
       <div class="page-header-box">
-        <h1>🪪 تحديد الدور</h1>
-        <p>صفحة مخصصة لاختيار دور المستخدم الحالي داخل المنصة.</p>
+        <div>
+          <h1>🪪 تحديد الدور</h1>
+          <p>صفحة مستقلة لاختيار وتحديد دور المستخدم.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <label for="rolePicker">اختر الدور</label>
@@ -423,8 +445,11 @@
     <!-- 3. SOLO PAGE: LOCATION -->
     <section class="solo-page" id="p-location">
       <div class="page-header-box">
-        <h1>📌 مكان الإقامة</h1>
-        <p>صفحة مخصصة لتحديث وحفظ مكان الإقامة الحالي.</p>
+        <div>
+          <h1>📌 مكان الإقامة</h1>
+          <p>صفحة مستقلة لتحديد وحفظ مكان الإقامة.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <label for="locField">مكان الإقامة</label>
@@ -437,8 +462,11 @@
     <!-- 4. SOLO PAGE: SHOP & IMAGES -->
     <section class="solo-page" id="p-shop">
       <div class="page-header-box">
-        <h1>🛍️ المتجر</h1>
-        <p>صفحة مخصصة لإضافة المنتجات ورفع صورها إلى حاوية product-images وعرضها.</p>
+        <div>
+          <h1>🛍️ المتجر</h1>
+          <p>صفحة مستقلة لإضافة المنتجات ورفع صورها إلى product-images واستعراضها.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <div class="panel-title">📸 نشر منتج جديد</div>
@@ -470,8 +498,11 @@
     <!-- 5. SOLO PAGE: NEW ORDER -->
     <section class="solo-page" id="p-order-new">
       <div class="page-header-box">
-        <h1>✍️ تقديم طلب</h1>
-        <p>صفحة مخصصة لإرسال طلب جديد فقط.</p>
+        <div>
+          <h1>✍️ تقديم طلب</h1>
+          <p>صفحة مستقلة لإرسال طلب جديد.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <form id="orderForm" onsubmit="submitOrder(event)">
@@ -502,8 +533,11 @@
     <!-- 6. SOLO PAGE: ORDERS LIST -->
     <section class="solo-page" id="p-orders-list">
       <div class="page-header-box">
-        <h1>🧾 الطلبيات</h1>
-        <p>صفحة مخصصة لاستعراض الطلبيات المسجلة وتحديث حالاتها.</p>
+        <div>
+          <h1>🧾 الطلبيات</h1>
+          <p>صفحة مستقلة لاستعراض الطلبيات ومتابعة وتحديث حالاتها.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <div id="ordersBox"></div>
@@ -513,8 +547,11 @@
     <!-- 7. SOLO PAGE: NOTIFICATIONS -->
     <section class="solo-page" id="p-alerts">
       <div class="page-header-box">
-        <h1>📣 الإشعارات</h1>
-        <p>صفحة مخصصة لعرض سجل الإشعارات.</p>
+        <div>
+          <h1>📣 الإشعارات</h1>
+          <p>صفحة مستقلة لعرض الإشعارات.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
         <button class="action-btn btn-dark" style="margin-bottom:14px;" onclick="clearUnread()">✅ تعليم الكل كمقروء</button>
@@ -522,16 +559,20 @@
       </div>
     </section>
 
-    <!-- 8. SOLO PAGE: SIGN OUT -->
+    <!-- 8. SOLO PAGE: LOGOUT CONFIRMATION AFTER EXECUTING SIGN OUT -->
     <section class="solo-page" id="p-signout">
       <div class="page-header-box">
-        <h1>🛑 تسجيل الخروج</h1>
-        <p>صفحة مخصصة لتسجيل الخروج من الحساب.</p>
+        <div>
+          <h1>🛑 تسجيل الخروج</h1>
+          <p>تم تنفيذ إجراء تسجيل الخروج وتحديث حالة الجلسة.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
-        <p style="margin-bottom:14px;"><strong>الحساب النشط:</strong> <span id="signoutMailLabel">غير مسجّل</span></p>
-        <button class="action-btn btn-crimson" onclick="doSignOut()">🛑 تأكيد تسجيل الخروج</button>
-        <div class="alert-box" id="signoutAlert"></div>
+        <div class="alert-box show success" id="signoutResultBox" style="margin-top:0;"></div>
+        <div style="margin-top:14px;">
+          <button class="action-btn btn-amber" onclick="openSoloPage('auth')">🔑 العودة إلى صفحة الدخول</button>
+        </div>
       </div>
     </section>
   </div>
@@ -548,7 +589,7 @@
     let userMail = localStorage.getItem("wossol_user_email") || "";
 
     let alerts = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
-      { id: 1, text: "⚡ تم تفعيل النسخة الكهرمانية لخدمات wossol.", time: "الآن", unread: true }
+      { id: 1, text: "⚡ تم تفعيل واجهة خدمات wossol المحدّثة.", time: "الآن", unread: true }
     ];
 
     let shopItems = JSON.parse(localStorage.getItem("wossol_products") || "null") || [
@@ -563,17 +604,46 @@
 
     let orderList = JSON.parse(localStorage.getItem("wossol_orders") || "null") || [];
 
-    function goPage(pKey) {
-      document.querySelectorAll(".nav-pill-btn").forEach(b => b.classList.toggle("active", b.dataset.p === pKey));
-      document.querySelectorAll(".solo-page").forEach(s => s.classList.toggle("active", s.id === `p-${pKey}`));
+    // Hide main menu buttons when a solo page is opened
+    function openSoloPage(pKey) {
+      document.getElementById("homeMenu").classList.add("hidden");
+      document.querySelectorAll(".solo-page").forEach(s => {
+        s.classList.toggle("active", s.id === `p-${pKey}`);
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Return to main buttons menu and hide solo pages
+    function showHomeMenu() {
+      document.querySelectorAll(".solo-page").forEach(s => s.classList.remove("active"));
+      document.getElementById("homeMenu").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Immediate sign-out upon selecting "تسجيل الخروج"
+    async function selectLogoutOption() {
+      const hadSession = Boolean(userMail);
+      try {
+        await sb.auth.signOut();
+      } catch (_) {}
+      userMail = "";
+      localStorage.removeItem("wossol_user_email");
+      refreshChips();
+
+      const resBox = document.getElementById("signoutResultBox");
+      if (hadSession) {
+        resBox.textContent = "🛑 تم تسجيل الخروج بنجاح وإنهاء الجلسة الحالية.";
+        pushAlert("🛑 تم تسجيل الخروج من الحساب.");
+      } else {
+        resBox.textContent = "ℹ️ تم التحقق: لا يوجد حساب مسجّل حالياً (الحالة: غير مسجّل).";
+      }
+      openSoloPage("signout");
     }
 
     function refreshChips() {
       document.getElementById("chipAccount").textContent = userMail ? `🔑 ${userMail}` : "🔑 غير مسجّل";
       document.getElementById("chipRole").textContent = `🪪 ${roleVal}`;
       document.getElementById("chipLoc").textContent = `📌 ${locVal}`;
-      document.getElementById("signoutMailLabel").textContent = userMail || "غير مسجّل";
       document.getElementById("rolePicker").value = roleVal;
       document.getElementById("locField").value = locVal;
     }
@@ -658,7 +728,7 @@
     }
 
     function orderThisItem(name) {
-      goPage("order-new");
+      openSoloPage("order-new");
       document.getElementById("orderItemSelect").value = name;
       document.getElementById("orderSubject").value = name;
     }
@@ -811,15 +881,6 @@
         btn.disabled = false;
         btn.textContent = "✔️ تأكيد الرمز والدخول";
       }
-    }
-
-    async function doSignOut() {
-      try { await sb.auth.signOut(); } catch (_) {}
-      userMail = "";
-      localStorage.removeItem("wossol_user_email");
-      refreshChips();
-      showAlert("signoutAlert", "🛑 تم تسجيل الخروج بنجاح.", "success");
-      pushAlert("🛑 تم تسجيل الخروج.");
     }
 
     function showAlert(id, msg, kind) {
