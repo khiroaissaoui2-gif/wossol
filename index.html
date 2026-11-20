@@ -374,7 +374,6 @@
 
   <main class="main-wrap">
 
-    <!-- ENTRY GATE: STRICT OTP VERIFICATION REQUIRED BEFORE ACCOUNT CREATION / ACCESS -->
     <section class="entry-gate" id="entryGate">
       <div class="box">
         <div class="box-head">
@@ -434,7 +433,6 @@
       </div>
     </section>
 
-    <!-- MAIN HUB MENU (Opens directly on future visits once logged in) -->
     <section class="hub-menu" id="hubMenu">
       <div class="box">
         <div class="box-head">
@@ -459,7 +457,6 @@
       </div>
     </section>
 
-    <!-- SOLO 1: ROLE -->
     <section class="solo-view" id="v-role">
       <div class="box">
         <div class="box-head">
@@ -477,7 +474,6 @@
       </div>
     </section>
 
-    <!-- SOLO 2: LOCATION -->
     <section class="solo-view" id="v-location">
       <div class="box">
         <div class="box-head">
@@ -490,7 +486,6 @@
       </div>
     </section>
 
-    <!-- SOLO 3: NEW ORDER -->
     <section class="solo-view" id="v-new-order">
       <div class="box">
         <div class="box-head">
@@ -566,7 +561,6 @@
       </div>
     </section>
 
-    <!-- SOLO 4: BROWSE ORDERS & LIVE ROUTE -->
     <section class="solo-view" id="v-browse-orders">
       <div class="box">
         <div class="box-head">
@@ -595,7 +589,6 @@
       </div>
     </section>
 
-    <!-- SOLO 5: ORDERS LOG -->
     <section class="solo-view" id="v-orders-log">
       <div class="box">
         <div class="box-head">
@@ -606,7 +599,6 @@
       </div>
     </section>
 
-    <!-- SOLO 6: STORE & IMAGE PUBLISHING -->
     <section class="solo-view" id="v-store">
       <div class="box">
         <div class="box-head">
@@ -658,7 +650,6 @@
       </div>
     </section>
 
-    <!-- SOLO 7: NOTIFICATIONS -->
     <section class="solo-view" id="v-alerts">
       <div class="box">
         <div class="box-head">
@@ -669,7 +660,6 @@
       </div>
     </section>
 
-    <!-- SOLO 8: LOGOUT RESULT -->
     <section class="solo-view" id="v-logout">
       <div class="box">
         <div class="box-head">
@@ -686,7 +676,7 @@
 
   <script>
     const SUPABASE_URL = "https://nnozlrxxleutxwbznbza.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
+    const SUPABASE_ANON_KEY = "Sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
     const BUCKET_NAME = "product-images";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -844,10 +834,6 @@
         showFb("entryFeedback", "أدخل الاسم الكامل والبريد الإلكتروني أولاً.", "err");
         return;
       }
-      if (!otpSentToEmail || otpSentToEmail !== email) {
-        showFb("entryFeedback", "يجب إرسال رمز التحقق (OTP) إلى هذا البريد الإلكتروني أولاً.", "err");
-        return;
-      }
       if (!token) {
         showFb("entryFeedback", "أدخل رمز OTP المرسل إلى بريدك الإلكتروني.", "err");
         return;
@@ -858,11 +844,11 @@
       btn.textContent = "⏳ جاري التحقق من الرمز...";
 
       try {
-        const { data, error } = await sb.auth.verifyOtp({
-          email,
-          token,
-          type: "email"
-        });
+        const verifyPayload = /^\d+$/.test(token)
+          ? { email, token, type: "email" }
+          : { token_hash: token, type: "email" };
+
+        const { data, error } = await sb.auth.verifyOtp(verifyPayload);
         if (error) throw error;
 
         if (!cachedCoords) {
