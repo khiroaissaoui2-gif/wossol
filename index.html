@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>خدمات wossol | واجهة متقنة وصفحات مستقلة</title>
+  <title>خدمات wosool | تطبيق خدمات ومتجر في منصة واحدة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -52,7 +52,7 @@
     }
 
     .topbar-inner {
-      max-width: 1040px;
+      max-width: 1080px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -66,7 +66,7 @@
       align-items: center;
       gap: 10px;
       font-weight: 900;
-      font-size: 1.18rem;
+      font-size: 1.16rem;
       color: var(--amber);
     }
 
@@ -99,12 +99,12 @@
     }
 
     .wrap {
-      max-width: 1040px;
+      max-width: 1080px;
       margin: 22px auto 0;
       padding: 0 18px;
     }
 
-    /* Main Menu Grid - Hidden automatically once a single option is selected */
+    /* Main Menu Grid - Hidden when a solo page opens */
     .home-menu {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -117,7 +117,7 @@
 
     @media (min-width: 680px) {
       .home-menu {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
@@ -126,8 +126,8 @@
       color: var(--ink);
       border: 1px solid var(--line);
       border-radius: 20px;
-      padding: 16px 14px;
-      font-size: 0.9rem;
+      padding: 15px 14px;
+      font-size: 0.88rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -155,7 +155,6 @@
       background: rgba(244, 63, 94, 0.14);
     }
 
-    /* Dedicated Single Page */
     .solo-page {
       display: none;
       animation: reveal 0.2s ease;
@@ -179,14 +178,14 @@
     }
 
     .page-header-box h1 {
-      font-size: 1.2rem;
+      font-size: 1.18rem;
       font-weight: 900;
       color: var(--amber);
     }
 
     .page-header-box p {
       color: var(--ink-dim);
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       margin-top: 3px;
     }
 
@@ -239,6 +238,44 @@
 
     input:focus, select:focus, textarea:focus {
       border-color: var(--amber);
+    }
+
+    .quick-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .quick-btn {
+      background: var(--bg-elevated);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quick-btn:hover {
+      border-color: var(--teal);
+    }
+
+    .check-line {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .check-line input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      transform: scale(1.15);
     }
 
     .action-btn {
@@ -305,7 +342,7 @@
 
     .item-photo {
       width: 100%;
-      height: 170px;
+      height: 165px;
       object-fit: cover;
       background: #12100e;
     }
@@ -328,13 +365,35 @@
       background: var(--bg-elevated);
       border: 1px solid var(--line);
       border-radius: 16px;
-      padding: 13px 15px;
-      margin-bottom: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
+    }
+
+    .live-route-box {
+      background: rgba(20, 184, 166, 0.1);
+      border: 1px solid rgba(20, 184, 166, 0.4);
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .route-visual {
+      margin-top: 10px;
+      background: #171411;
+      border: 1px dashed rgba(245, 158, 11, 0.45);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
     }
 
     .alert-box {
@@ -378,21 +437,22 @@
       </div>
       <div class="status-chips">
         <span class="chip" id="chipAccount">🔑 غير مسجّل</span>
-        <span class="chip" id="chipRole">🪪 زبون</span>
+        <span class="chip" id="chipRole">🪪 مشتري</span>
         <span class="chip" id="chipLoc">📌 خنشلة، بلدية ولاد رشاش</span>
       </div>
     </div>
   </header>
 
   <div class="wrap">
-    <!-- Main Buttons Grid: Hides completely when any option is opened -->
-    <nav class="home-menu" id="homeMenu" aria-label="القائمة الرئيسية">
+    <!-- Main Menu: Hides automatically when any solo option is opened -->
+    <nav class="home-menu" id="homeMenu" aria-label="قائمة خيارات المنصة">
       <button class="menu-tile" onclick="openSoloPage('auth')">🔑 الدخول والـ OTP</button>
-      <button class="menu-tile" onclick="openSoloPage('role')">🪪 تحديد الدور</button>
+      <button class="menu-tile" onclick="openSoloPage('role')">🪪 اختيار الدور</button>
       <button class="menu-tile" onclick="openSoloPage('location')">📌 مكان الإقامة</button>
-      <button class="menu-tile" onclick="openSoloPage('shop')">🛍️ المتجر</button>
-      <button class="menu-tile" onclick="openSoloPage('order-new')">✍️ تقديم طلب</button>
-      <button class="menu-tile" onclick="openSoloPage('orders-list')">🧾 الطلبيات</button>
+      <button class="menu-tile" onclick="openSoloPage('new-order')">✍️ طلبية جديدة</button>
+      <button class="menu-tile" onclick="openSoloPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
+      <button class="menu-tile" onclick="openSoloPage('orders-log')">🧾 سجل الطلبيات</button>
+      <button class="menu-tile" onclick="openSoloPage('store')">🛍️ المتجر وإضافة منتج</button>
       <button class="menu-tile" onclick="openSoloPage('alerts')">📣 الإشعارات</button>
       <button class="menu-tile danger-tile" onclick="selectLogoutOption()">🛑 تسجيل الخروج</button>
     </nav>
@@ -402,7 +462,7 @@
       <div class="page-header-box">
         <div>
           <h1>🔑 الدخول والـ OTP</h1>
-          <p>صفحة مستقلة لإرسال رمز التحقق (OTP) وتأكيد البريد الإلكتروني.</p>
+          <p>تسجيل الدخول وتأكيد الحساب عبر رمز التحقق (OTP) على البريد الإلكتروني.</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
@@ -421,21 +481,21 @@
       </div>
     </section>
 
-    <!-- 2. SOLO PAGE: ROLE SELECTION -->
+    <!-- 2. SOLO PAGE: CHOOSE ROLE (المشتري / عامل التوصيل / البائع) -->
     <section class="solo-page" id="p-role">
       <div class="page-header-box">
         <div>
-          <h1>🪪 تحديد الدور</h1>
-          <p>صفحة مستقلة لاختيار وتحديد دور المستخدم.</p>
+          <h1>🪪 اختيار الدور</h1>
+          <p>حدد دورك في التطبيق: مشتري، عامل توصيل، أو بائع (متجر / أسر منتجة / محلات).</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
-        <label for="rolePicker">اختر الدور</label>
+        <label for="rolePicker">اختر دورك في التطبيق</label>
         <select id="rolePicker">
-          <option value="زبون">🛒 زبون</option>
-          <option value="بائع / مقدم خدمة">🏪 بائع / مقدم خدمة</option>
-          <option value="مشرف">🛡️ مشرف</option>
+          <option value="مشتري">🛒 مشتري (صاحب الطلب — حاجيات البيت، قطع غيار، متاجر)</option>
+          <option value="عامل توصيل">🛵 عامل توصيل (يشتري ويوصل ويتقاضى ثمن المشتريات + العمولة)</option>
+          <option value="بائع">🏪 بائع / متجر (أسر منتجة، حرف، حلويات، كسكس، مطاعم، صيدليات، بقالات)</option>
         </select>
         <button class="action-btn btn-teal" onclick="applyRole()">💾 اعتماد الدور</button>
         <div class="alert-box" id="roleAlert"></div>
@@ -447,7 +507,7 @@
       <div class="page-header-box">
         <div>
           <h1>📌 مكان الإقامة</h1>
-          <p>صفحة مستقلة لتحديد وحفظ مكان الإقامة.</p>
+          <p>تحديد وحفظ موقع الإقامة الحالي لتسهيل الطلبات والتوصيل.</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
@@ -459,97 +519,198 @@
       </div>
     </section>
 
-    <!-- 4. SOLO PAGE: SHOP & IMAGES -->
-    <section class="solo-page" id="p-shop">
+    <!-- 4. SOLO PAGE: NEW ORDER (حاجيات، بالآجل، بين الولايات، وسيلة النقل) -->
+    <section class="solo-page" id="p-new-order">
       <div class="page-header-box">
         <div>
-          <h1>🛍️ المتجر</h1>
-          <p>صفحة مستقلة لإضافة المنتجات ورفع صورها إلى product-images واستعراضها.</p>
+          <h1>✍️ طلبية جديدة</h1>
+          <p>حدد ما ينقصك في البيت أو المتجر، مع دعم الشراء بالآجل والتوصيل بين الولايات.</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
-        <div class="panel-title">📸 نشر منتج جديد</div>
-        <form id="shopForm" onsubmit="addShopItem(event)">
-          <div class="cols-2">
-            <div>
-              <label for="itemName">اسم المنتج *</label>
-              <input type="text" id="itemName" placeholder="مثال: سماعة ألعاب" required />
-            </div>
-            <div>
-              <label for="itemPrice">السعر (د.ج) *</label>
-              <input type="number" id="itemPrice" placeholder="3500" min="0" step="any" required />
-            </div>
-          </div>
-          <label for="itemNote">وصف قصير</label>
-          <textarea id="itemNote" rows="2" placeholder="تفاصيل المنتج..."></textarea>
-          <label for="itemPic">صورة المنتج (حاوية product-images) *</label>
-          <input type="file" id="itemPic" accept="image/*" required />
-          <button type="submit" class="action-btn btn-teal" id="btnUploadItem">⬆️ رفع الصورة ونشر المنتج</button>
-          <div class="alert-box" id="shopAlert"></div>
-        </form>
-      </div>
-      <div class="panel">
-        <div class="panel-title">🧺 المنتجات المتاحة</div>
-        <div class="cols-3" id="shopGrid"></div>
-      </div>
-    </section>
+        <div class="panel-title">⚡ إضافة سريعة لحاجيات شائعة</div>
+        <div class="quick-chips">
+          <button type="button" class="quick-btn" onclick="quickAddItem('خبز (2x)')">🍞 خبز 2x</button>
+          <button type="button" class="quick-btn" onclick="quickAddItem('حليب (1x)')">🥛 حليب 1x</button>
+          <button type="button" class="quick-btn" onclick="quickAddItem('بيض (6x)')">🥚 بيض 6x</button>
+          <button type="button" class="quick-btn" onclick="quickAddItem('قطعة غيار سيارة')">🔧 قطعة غيار</button>
+        </div>
 
-    <!-- 5. SOLO PAGE: NEW ORDER -->
-    <section class="solo-page" id="p-order-new">
-      <div class="page-header-box">
-        <div>
-          <h1>✍️ تقديم طلب</h1>
-          <p>صفحة مستقلة لإرسال طلب جديد.</p>
-        </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
-      </div>
-      <div class="panel">
         <form id="orderForm" onsubmit="submitOrder(event)">
-          <label for="orderItemSelect">اختيار منتج جاهز (اختياري)</label>
-          <select id="orderItemSelect" onchange="pickItemForOrder()">
-            <option value="">-- طلب مخصص --</option>
-          </select>
-          <label for="orderSubject">موضوع الطلب *</label>
-          <input type="text" id="orderSubject" placeholder="اكتب اسم المنتج أو الخدمة" required />
           <div class="cols-2">
             <div>
-              <label for="orderCount">الكمية *</label>
-              <input type="number" id="orderCount" value="1" min="1" required />
+              <label for="orderCategory">التصنيف *</label>
+              <select id="orderCategory">
+                <option value="بقالة">بقالة وحاجيات البيت</option>
+                <option value="قطع غيار">قطع غيار</option>
+                <option value="مطاعم">مطاعم وأسر منتجة</option>
+                <option value="صيدليات">صيدليات ومستلزمات</option>
+              </select>
             </div>
             <div>
-              <label for="orderTel">رقم الهاتف *</label>
-              <input type="tel" id="orderTel" placeholder="06xxxxxxxx" required />
+              <label for="orderItemsText">ما تحتاجه / تفاصيل الطلبية *</label>
+              <input type="text" id="orderItemsText" placeholder="مثال: خبز 2x، حليب 1x، بيض 6x" required />
             </div>
           </div>
-          <label for="orderExtra">ملاحظات التسليم</label>
-          <textarea id="orderExtra" rows="2" placeholder="أي تفاصيل إضافية..."></textarea>
+
+          <div class="cols-2">
+            <div>
+              <label for="orderPhone">رقم الهاتف *</label>
+              <input type="tel" id="orderPhone" placeholder="06xxxxxxxx" required />
+            </div>
+            <div>
+              <label for="orderAddress">عنوان التسليم *</label>
+              <input type="text" id="orderAddress" placeholder="عنوان التسليم المنزلي أو الوجهة" required />
+            </div>
+          </div>
+
+          <div class="cols-2">
+            <div>
+              <label for="orderEstCost">التقدير التقريبي للمشتريات (د.ج)</label>
+              <input type="number" id="orderEstCost" value="1500" min="0" step="any" />
+            </div>
+            <div>
+              <label for="orderCommission">عمولة التوصيل المقترحة (د.ج)</label>
+              <input type="number" id="orderCommission" value="200" min="50" step="any" />
+            </div>
+          </div>
+
+          <label class="check-line">
+            <input type="checkbox" id="orderDeferred" />
+            <span>🤝 الشراء بالآجل (اتفاق تسديد لاحق مع المتجر/البائع)</span>
+          </label>
+
+          <label class="check-line">
+            <input type="checkbox" id="orderInterWilaya" onchange="toggleVehicleBox()" />
+            <span>🚚 توصيل بين الولايات</span>
+          </label>
+
+          <div id="vehicleBox" style="display:none;">
+            <label for="orderVehicle">نوع وحجم وسيلة النقل المناسبة لحجم الطلبية</label>
+            <select id="orderVehicle">
+              <option value="دراجة / توصيل محلي">🚲 دراجة / توصيل محلي سريع</option>
+              <option value="سيارة">🚗 سيارة</option>
+              <option value="شاحنة">🚚 شاحنة (للطلبات الكبيرة أو بين الولايات)</option>
+            </select>
+          </div>
+
           <button type="submit" class="action-btn btn-amber">🚀 إرسال الطلب</button>
           <div class="alert-box" id="orderAlert"></div>
         </form>
       </div>
     </section>
 
-    <!-- 6. SOLO PAGE: ORDERS LIST -->
-    <section class="solo-page" id="p-orders-list">
+    <!-- 5. SOLO PAGE: BROWSE ORDERS + ACCEPT + LIVE GOOGLE MAPS ROUTE -->
+    <section class="solo-page" id="p-browse-orders">
       <div class="page-header-box">
         <div>
-          <h1>🧾 الطلبيات</h1>
-          <p>صفحة مستقلة لاستعراض الطلبيات ومتابعة وتحديث حالاتها.</p>
+          <h1>🛵 تصفح الطلبات والمسار</h1>
+          <p>تصفح الطلبات المتاحة، اقبل ما يناسبك، وعرض مسار حي على خرائط جوجل لصاحب الطلب.</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
       <div class="panel">
-        <div id="ordersBox"></div>
+        <div class="panel-title">🔎 تصفية حسب التصنيف</div>
+        <div class="quick-chips">
+          <button type="button" class="quick-btn" onclick="setFilterCategory('الكل')">الكل</button>
+          <button type="button" class="quick-btn" onclick="setFilterCategory('بقالة')">بقالة</button>
+          <button type="button" class="quick-btn" onclick="setFilterCategory('قطع غيار')">قطع غيار</button>
+          <button type="button" class="quick-btn" onclick="setFilterCategory('مطاعم')">مطاعم</button>
+        </div>
+
+        <div id="availableOrdersBox"></div>
+
+        <div class="live-route-box" id="liveRouteBox" style="display:none;">
+          <div class="panel-title" style="margin-bottom:6px;">🗺️ المسار الحي إلى صاحب الطلب (خرائط جوجل)</div>
+          <p id="liveRouteSummary" style="font-size:0.88rem;color:var(--ink);"></p>
+          <div class="route-visual">
+            <span>🛵 موقعك (عامل التوصيل)</span>
+            <span>━━━━━━━━➤ مسار حي ➤━━━━━━━━</span>
+            <span id="routeDestLabel">🏠 الزبون</span>
+          </div>
+          <div style="margin-top:12px;">
+            <a id="gmapsExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="action-btn btn-teal">
+              📍 فتح المسار الحي في خرائط جوجل
+            </a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- 7. SOLO PAGE: NOTIFICATIONS -->
+    <!-- 6. SOLO PAGE: ORDERS LOG & SETTLEMENT -->
+    <section class="solo-page" id="p-orders-log">
+      <div class="page-header-box">
+        <div>
+          <h1>🧾 سجل الطلبيات</h1>
+          <p>متابعة حالة الطلبات، الشراء بالآجل، ومستحقات عامل التوصيل (ثمن المشتريات + العمولة).</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+      </div>
+      <div class="panel">
+        <div id="allOrdersLogBox"></div>
+      </div>
+    </section>
+
+    <!-- 7. SOLO PAGE: STORE & ADD PRODUCT (product-images) -->
+    <section class="solo-page" id="p-store">
+      <div class="page-header-box">
+        <div>
+          <h1>🛍️ المتجر وإضافة منتج</h1>
+          <p>مساحة للبائعين والأسر المنتجة والحرف والمطاعم والمتاجر لعرض المنتجات ورفع صورها.</p>
+        </div>
+        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">➕ أضف منتجاً ورفع الصورة إلى product-images</div>
+        <form id="shopForm" onsubmit="addShopItem(event)">
+          <div class="cols-2">
+            <div>
+              <label for="itemName">اسم المنتج أو الخدمة *</label>
+              <input type="text" id="itemName" placeholder="مثال: كسكس يدوي / حلويات / قطعة غيار" required />
+            </div>
+            <div>
+              <label for="itemPrice">السعر (د.ج) *</label>
+              <input type="number" id="itemPrice" placeholder="2500" min="0" step="any" required />
+            </div>
+          </div>
+
+          <div class="cols-2">
+            <div>
+              <label for="itemSellerType">نوع البائع / المتجر</label>
+              <select id="itemSellerType">
+                <option value="أسرة منتجة / منزلية">أسرة منتجة / أكلات وحرف منزلية</option>
+                <option value="متجر / بقالة">متجر / بقالة</option>
+                <option value="مطعم">مطعم</option>
+                <option value="صيدلية / قطع غيار">صيدلية / قطع غيار</option>
+              </select>
+            </div>
+            <div>
+              <label for="itemPic">صورة المنتج (حاوية product-images) *</label>
+              <input type="file" id="itemPic" accept="image/*" required />
+            </div>
+          </div>
+
+          <label for="itemNote">وصف قصير</label>
+          <textarea id="itemNote" rows="2" placeholder="تفاصيل المنتج أو توفره بالآجل..."></textarea>
+
+          <button type="submit" class="action-btn btn-teal" id="btnUploadItem">⬆️ رفع الصورة ونشر المنتج</button>
+          <div class="alert-box" id="shopAlert"></div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🧺 المنتجات والخدمات المعروضة</div>
+        <div class="cols-3" id="shopGrid"></div>
+      </div>
+    </section>
+
+    <!-- 8. SOLO PAGE: NOTIFICATIONS -->
     <section class="solo-page" id="p-alerts">
       <div class="page-header-box">
         <div>
           <h1>📣 الإشعارات</h1>
-          <p>صفحة مستقلة لعرض الإشعارات.</p>
+          <p>متابعة التنبيهات الفورية للطلبات والقبول والتوصيل والحساب.</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
@@ -559,12 +720,12 @@
       </div>
     </section>
 
-    <!-- 8. SOLO PAGE: LOGOUT CONFIRMATION AFTER EXECUTING SIGN OUT -->
+    <!-- 9. SOLO PAGE: IMMEDIATE LOGOUT CONFIRMATION -->
     <section class="solo-page" id="p-signout">
       <div class="page-header-box">
         <div>
           <h1>🛑 تسجيل الخروج</h1>
-          <p>تم تنفيذ إجراء تسجيل الخروج وتحديث حالة الجلسة.</p>
+          <p>تم تنفيذ تسجيل الخروج فوراً وتحديث حالة الجلسة.</p>
         </div>
         <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
       </div>
@@ -584,27 +745,45 @@
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let roleVal = localStorage.getItem("wossol_role") || "زبون";
+    let roleVal = localStorage.getItem("wossol_role") || "مشتري";
     let locVal = localStorage.getItem("wossol_location") || "خنشلة، بلدية ولاد رشاش";
     let userMail = localStorage.getItem("wossol_user_email") || "";
+    let activeFilterCat = "الكل";
 
     let alerts = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
-      { id: 1, text: "⚡ تم تفعيل واجهة خدمات wossol المحدّثة.", time: "الآن", unread: true }
+      { id: 1, text: "⚡ مرحباً بك في خدمات wossol: خدمات + متجر في منصة واحدة.", time: "الآن", unread: true }
     ];
 
     let shopItems = JSON.parse(localStorage.getItem("wossol_products") || "null") || [
       {
-        id: "demo-1",
-        name: "سماعة ألعاب احترافية",
-        price: 4200,
-        desc: "صوت واضح ومريح للاستخدام الطويل.",
+        id: "p-1",
+        name: "كسكس يدوي وحلويات منزلية",
+        price: 1800,
+        sellerType: "أسرة منتجة / منزلية",
+        desc: "تحضير منزلي طازج متاح للطلب والتوصيل.",
         imageUrl: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=75"
       }
     ];
 
-    let orderList = JSON.parse(localStorage.getItem("wossol_orders") || "null") || [];
+    let orderList = JSON.parse(localStorage.getItem("wossol_orders") || "null") || [
+      {
+        id: "WSS-2301",
+        category: "بقالة",
+        itemsText: "خبز 2x، حليب 1x، بيض 6x",
+        phone: "0660000000",
+        address: "عنوان التسليم المنزلي - خنشلة",
+        distanceKm: "2.3 كم",
+        estCost: 650,
+        commission: 200,
+        deferred: false,
+        interWilaya: false,
+        vehicle: "دراجة / توصيل محلي",
+        status: "متاح للقبول",
+        courier: "",
+        time: "اليوم"
+      }
+    ];
 
-    // Hide main menu buttons when a solo page is opened
     function openSoloPage(pKey) {
       document.getElementById("homeMenu").classList.add("hidden");
       document.querySelectorAll(".solo-page").forEach(s => {
@@ -613,29 +792,25 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Return to main buttons menu and hide solo pages
     function showHomeMenu() {
       document.querySelectorAll(".solo-page").forEach(s => s.classList.remove("active"));
       document.getElementById("homeMenu").classList.remove("hidden");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Immediate sign-out upon selecting "تسجيل الخروج"
     async function selectLogoutOption() {
       const hadSession = Boolean(userMail);
-      try {
-        await sb.auth.signOut();
-      } catch (_) {}
+      try { await sb.auth.signOut(); } catch (_) {}
       userMail = "";
       localStorage.removeItem("wossol_user_email");
       refreshChips();
 
-      const resBox = document.getElementById("signoutResultBox");
+      const box = document.getElementById("signoutResultBox");
       if (hadSession) {
-        resBox.textContent = "🛑 تم تسجيل الخروج بنجاح وإنهاء الجلسة الحالية.";
+        box.textContent = "🛑 تم تسجيل الخروج بنجاح وإنهاء الجلسة الحالية.";
         pushAlert("🛑 تم تسجيل الخروج من الحساب.");
       } else {
-        resBox.textContent = "ℹ️ تم التحقق: لا يوجد حساب مسجّل حالياً (الحالة: غير مسجّل).";
+        box.textContent = "ℹ️ تم التحقق: الحساب غير مسجّل حالياً.";
       }
       openSoloPage("signout");
     }
@@ -682,7 +857,7 @@
       localStorage.setItem("wossol_role", roleVal);
       refreshChips();
       showAlert("roleAlert", `✔️ تم اعتماد الدور: ${roleVal}`, "success");
-      pushAlert(`🪪 تم تغيير الدور إلى: ${roleVal}`);
+      pushAlert(`🪪 تم اختيار الدور: ${roleVal}`);
     }
 
     function applyLocation() {
@@ -698,56 +873,177 @@
       pushAlert(`📌 تم تحديث مكان الإقامة: ${locVal}`);
     }
 
-    function drawShop() {
-      const grid = document.getElementById("shopGrid");
-      const sel = document.getElementById("orderItemSelect");
-      sel.innerHTML = `<option value="">-- طلب مخصص --</option>` + shopItems.map(i =>
-        `<option value="${esc(i.name)}">${esc(i.name)} (${Number(i.price).toLocaleString()} د.ج)</option>`
-      ).join("");
+    function quickAddItem(label) {
+      const inp = document.getElementById("orderItemsText");
+      inp.value = inp.value.trim() ? `${inp.value.trim()}، ${label}` : label;
+    }
 
-      if (!shopItems.length) {
-        grid.innerHTML = `<p style="color:var(--ink-dim);">لا توجد منتجات بعد.</p>`;
+    function toggleVehicleBox() {
+      const checked = document.getElementById("orderInterWilaya").checked;
+      document.getElementById("vehicleBox").style.display = checked ? "block" : "none";
+    }
+
+    function submitOrder(e) {
+      e.preventDefault();
+      const category = document.getElementById("orderCategory").value;
+      const itemsText = document.getElementById("orderItemsText").value.trim();
+      const phone = document.getElementById("orderPhone").value.trim();
+      const address = document.getElementById("orderAddress").value.trim();
+      const estCost = Number(document.getElementById("orderEstCost").value || 0);
+      const commission = Number(document.getElementById("orderCommission").value || 200);
+      const deferred = document.getElementById("orderDeferred").checked;
+      const interWilaya = document.getElementById("orderInterWilaya").checked;
+      const vehicle = interWilaya ? document.getElementById("orderVehicle").value : "دراجة / توصيل محلي";
+
+      const rec = {
+        id: "WSS-" + String(Date.now()).slice(-6),
+        category,
+        itemsText,
+        phone,
+        address,
+        distanceKm: interWilaya ? "بين الولايات" : "2.3 كم",
+        estCost,
+        commission,
+        deferred,
+        interWilaya,
+        vehicle,
+        status: "متاح للقبول",
+        courier: "",
+        time: new Date().toLocaleString("ar-DZ")
+      };
+
+      orderList.unshift(rec);
+      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
+      drawBrowseOrders();
+      drawOrdersLog();
+      document.getElementById("orderForm").reset();
+      document.getElementById("orderEstCost").value = 1500;
+      document.getElementById("orderCommission").value = 200;
+      document.getElementById("vehicleBox").style.display = "none";
+
+      showAlert("orderAlert", `✔️ تم إرسال الطلبية رقم ${rec.id} بنجاح!`, "success");
+      pushAlert(`✍️ طلبية جديدة (${rec.id}): ${itemsText}`);
+    }
+
+    function setFilterCategory(cat) {
+      activeFilterCat = cat;
+      drawBrowseOrders();
+    }
+
+    function drawBrowseOrders() {
+      const box = document.getElementById("availableOrdersBox");
+      const filtered = orderList.filter(o => activeFilterCat === "الكل" || o.category === activeFilterCat);
+
+      if (!filtered.length) {
+        box.innerHTML = `<p style="color:var(--ink-dim);">لا توجد طلبات في هذا التصنيف حالياً.</p>`;
         return;
       }
 
-      grid.innerHTML = shopItems.map(i => `
-        <article class="item-card">
-          <img class="item-photo" src="${i.imageUrl}" alt="${esc(i.name)}" loading="lazy" />
-          <div class="item-content">
-            <strong>${esc(i.name)}</strong>
-            <div class="cost-tag">${Number(i.price).toLocaleString()} د.ج</div>
-            <p style="color:var(--ink-dim);font-size:0.84rem;">${esc(i.desc || "")}</p>
-            <button class="action-btn btn-amber" style="margin-top:auto;" onclick="orderThisItem('${escJs(i.name)}')">
-              ✍️ طلب المنتج
-            </button>
+      box.innerHTML = filtered.map(o => {
+        const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
+        return `
+          <div class="row-box">
+            <div>
+              <strong>طلبية ${esc(o.category)} • ${esc(o.distanceKm)}</strong>
+              <span class="chip">${esc(o.status)}</span>
+              ${o.deferred ? `<span class="chip">🤝 شراء بالآجل</span>` : ""}
+              ${o.interWilaya ? `<span class="chip">🚚 ${esc(o.vehicle)}</span>` : ""}
+              <div style="color:var(--ink);font-size:0.9rem;margin-top:4px;">${esc(o.itemsText)}</div>
+              <div style="color:var(--ink-dim);font-size:0.8rem;margin-top:3px;">
+                📍 العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
+              </div>
+              <div class="cost-tag" style="margin-top:5px;">
+                عمولة التوصيل: ${Number(o.commission).toLocaleString()} د.ج | إجمالي المستحقات عند التسليم: ${totalPay.toLocaleString()} د.ج
+              </div>
+            </div>
+            <div>
+              <button class="action-btn btn-teal" onclick="acceptOrderAndShowRoute('${escJs(o.id)}')">
+                ✅ قبول ورسم المسار الحي
+              </button>
+            </div>
           </div>
-        </article>
-      `).join("");
-
-      localStorage.setItem("wossol_products", JSON.stringify(shopItems));
+        `;
+      }).join("");
     }
 
-    function orderThisItem(name) {
-      openSoloPage("order-new");
-      document.getElementById("orderItemSelect").value = name;
-      document.getElementById("orderSubject").value = name;
+    function acceptOrderAndShowRoute(orderId) {
+      const target = orderList.find(o => o.id === orderId);
+      if (!target) return;
+
+      orderList = orderList.map(o => o.id === orderId
+        ? { ...o, status: "مقبولة — جاري الشراء والتوصيل", courier: userMail || "عامل توصيل نشط" }
+        : o
+      );
+      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
+      drawBrowseOrders();
+      drawOrdersLog();
+
+      const routeBox = document.getElementById("liveRouteBox");
+      const summary = document.getElementById("liveRouteSummary");
+      const destLabel = document.getElementById("routeDestLabel");
+      const mapsLink = document.getElementById("gmapsExternalLink");
+
+      const originEnc = encodeURIComponent(locVal);
+      const destEnc = encodeURIComponent(target.address || locVal);
+
+      routeBox.style.display = "block";
+      summary.textContent = `تم قبول الطلبية (${target.id}) — يشتري عامل التوصيل (${target.itemsText}) ويوصله إلى (${target.address}) ويتسلم ثمن المشتريات (${Number(target.estCost).toLocaleString()} د.ج) + العمولة (${Number(target.commission).toLocaleString()} د.ج).`;
+      destLabel.textContent = `🏠 ${target.address}`;
+      mapsLink.href = `https://www.google.com/maps/dir/?api=1&origin=${originEnc}&destination=${destEnc}&travelmode=driving`;
+
+      pushAlert(`🛵 تم قبول الطلبية ${target.id} وتفعيل المسار الحي على خرائط جوجل.`);
     }
 
-    function pickItemForOrder() {
-      const v = document.getElementById("orderItemSelect").value;
-      if (v) document.getElementById("orderSubject").value = v;
+    function updateOrderStatus(orderId, status) {
+      orderList = orderList.map(o => o.id === orderId ? { ...o, status } : o);
+      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
+      drawBrowseOrders();
+      drawOrdersLog();
+      pushAlert(`🧾 تحديث حالة الطلبية ${orderId} إلى: ${status}`);
+    }
+
+    function drawOrdersLog() {
+      const box = document.getElementById("allOrdersLogBox");
+      if (!orderList.length) {
+        box.innerHTML = `<p style="color:var(--ink-dim);">لا توجد طلبيات مسجلة.</p>`;
+        return;
+      }
+
+      box.innerHTML = orderList.map(o => {
+        const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
+        return `
+          <div class="row-box">
+            <div>
+              <strong>${esc(o.itemsText)}</strong> <span class="chip">${esc(o.status)}</span>
+              ${o.deferred ? `<span class="chip">🤝 بالآجل</span>` : ""}
+              ${o.interWilaya ? `<span class="chip">🚚 ${esc(o.vehicle)}</span>` : ""}
+              <div style="color:var(--ink-dim);font-size:0.82rem;margin-top:4px;">
+                الرقم: <strong>${esc(o.id)}</strong> | التصنيف: ${esc(o.category)} | العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
+              </div>
+              <div style="color:var(--amber);font-size:0.84rem;font-weight:700;margin-top:3px;">
+                ثمن المشتريات: ${Number(o.estCost).toLocaleString()} د.ج + العمولة: ${Number(o.commission).toLocaleString()} د.ج = المجموع: ${totalPay.toLocaleString()} د.ج
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="action-btn btn-dark" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم الشراء وجاري التوصيل')">تم الشراء</button>
+              <button class="action-btn btn-teal" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم التسليم واستلام المستحقات')">تم التسليم</button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     async function addShopItem(e) {
       e.preventDefault();
       const name = document.getElementById("itemName").value.trim();
       const price = document.getElementById("itemPrice").value.trim();
+      const sellerType = document.getElementById("itemSellerType").value;
       const desc = document.getElementById("itemNote").value.trim();
       const file = document.getElementById("itemPic").files[0];
       const btn = document.getElementById("btnUploadItem");
 
       if (!file) {
-        showAlert("shopAlert", "اختر صورة أولاً.", "error");
+        showAlert("shopAlert", "اختر صورة للمنتج أولاً.", "error");
         return;
       }
 
@@ -761,78 +1057,48 @@
         if (upErr) throw upErr;
 
         const { data: pub } = sb.storage.from(BUCKET_NAME).getPublicUrl(path);
-        shopItems.unshift({ id: String(Date.now()), name, price, desc, imageUrl: pub.publicUrl });
+        shopItems.unshift({ id: String(Date.now()), name, price, sellerType, desc, imageUrl: pub.publicUrl });
         drawShop();
         document.getElementById("shopForm").reset();
-        showAlert("shopAlert", "✔️ تم رفع الصورة ونشر المنتج بنجاح!", "success");
-        pushAlert(`🛍️ تمت إضافة منتج: ${name}`);
+        showAlert("shopAlert", "✔️ تم رفع الصورة إلى product-images ونشر المنتج!", "success");
+        pushAlert(`🛍️ تمت إضافة منتج جديد في المتجر: ${name}`);
       } catch (err) {
-        showAlert("shopAlert", `❌ خطأ في الرفع: ${err.message || err}`, "error");
+        showAlert("shopAlert", `❌ تعذر الرفع: ${err.message || err}`, "error");
       } finally {
         btn.disabled = false;
         btn.textContent = "⬆️ رفع الصورة ونشر المنتج";
       }
     }
 
-    function submitOrder(e) {
-      e.preventDefault();
-      const subject = document.getElementById("orderSubject").value.trim();
-      const count = document.getElementById("orderCount").value;
-      const tel = document.getElementById("orderTel").value.trim();
-      const extra = document.getElementById("orderExtra").value.trim();
-
-      const rec = {
-        id: "WSS-" + String(Date.now()).slice(-6),
-        subject,
-        count,
-        tel,
-        extra,
-        role: roleVal,
-        loc: locVal,
-        state: "قيد المتابعة",
-        time: new Date().toLocaleString("ar-DZ")
-      };
-
-      orderList.unshift(rec);
-      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
-      drawOrders();
-      document.getElementById("orderForm").reset();
-      document.getElementById("orderCount").value = 1;
-      showAlert("orderAlert", `✔️ تم إرسال الطلب رقم ${rec.id}!`, "success");
-      pushAlert(`🧾 طلب جديد (${rec.id}): ${subject}`);
-    }
-
-    function setOrderState(id, state) {
-      orderList = orderList.map(o => o.id === id ? { ...o, state } : o);
-      localStorage.setItem("wossol_orders", JSON.stringify(orderList));
-      drawOrders();
-      pushAlert(`🧾 تحديث حالة الطلب ${id} إلى: ${state}`);
-    }
-
-    function drawOrders() {
-      const box = document.getElementById("ordersBox");
-      if (!orderList.length) {
-        box.innerHTML = `<p style="color:var(--ink-dim);">لا توجد طلبيات حتى الآن.</p>`;
+    function drawShop() {
+      const grid = document.getElementById("shopGrid");
+      if (!shopItems.length) {
+        grid.innerHTML = `<p style="color:var(--ink-dim);">لا توجد منتجات معروضة حالياً.</p>`;
         return;
       }
-      box.innerHTML = orderList.map(o => `
-        <div class="row-box">
-          <div>
-            <strong>${esc(o.subject)}</strong> <span class="chip">${esc(o.state)}</span>
-            <div style="color:var(--ink-dim);font-size:0.84rem;margin-top:4px;">
-              الرقم: <strong>${esc(o.id)}</strong> | الكمية: ${esc(String(o.count))} | الهاتف: ${esc(o.tel)}
-            </div>
-            <div style="color:var(--ink-dim);font-size:0.8rem;">
-              الدور: ${esc(o.role)} | الموقع: ${esc(o.loc)} | ${esc(o.time)}
-            </div>
-            ${o.extra ? `<div style="font-size:0.84rem;margin-top:4px;">ملاحظات: ${esc(o.extra)}</div>` : ""}
+
+      grid.innerHTML = shopItems.map(i => `
+        <article class="item-card">
+          <img class="item-photo" src="${i.imageUrl}" alt="${esc(i.name)}" loading="lazy" />
+          <div class="item-content">
+            <span class="chip" style="align-self:flex-start;">${esc(i.sellerType || "متجر")}</span>
+            <strong>${esc(i.name)}</strong>
+            <div class="cost-tag">${Number(i.price).toLocaleString()} د.ج</div>
+            <p style="color:var(--ink-dim);font-size:0.84rem;">${esc(i.desc || "")}</p>
+            <button class="action-btn btn-amber" style="margin-top:auto;" onclick="quickOrderFromShop('${escJs(i.name)}', '${escJs(String(i.price))}')">
+              ✍️ اطلب الآن
+            </button>
           </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="action-btn btn-dark" style="padding:7px 12px;font-size:0.78rem;" onclick="setOrderState('${escJs(o.id)}', 'مقبول')">مقبول</button>
-            <button class="action-btn btn-teal" style="padding:7px 12px;font-size:0.78rem;" onclick="setOrderState('${escJs(o.id)}', 'مكتمل')">مكتمل</button>
-          </div>
-        </div>
+        </article>
       `).join("");
+
+      localStorage.setItem("wossol_products", JSON.stringify(shopItems));
+    }
+
+    function quickOrderFromShop(name, price) {
+      openSoloPage("new-order");
+      document.getElementById("orderItemsText").value = name;
+      document.getElementById("orderEstCost").value = price || 0;
     }
 
     async function requestOtp() {
@@ -900,7 +1166,8 @@
     refreshChips();
     drawAlerts();
     drawShop();
-    drawOrders();
+    drawBrowseOrders();
+    drawOrdersLog();
   </script>
 </body>
 </html>
