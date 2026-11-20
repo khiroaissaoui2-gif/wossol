@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>خدمات wossol | منصة الخدمات والمتجر</title>
+  <title>خدمات wossol | صفحات مستقلة لكل خيار</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -13,7 +13,6 @@
       --primary: #3b82f6;
       --primary-hover: #2563eb;
       --accent: #10b981;
-      --warning: #f59e0b;
       --danger: #ef4444;
       --text: #f8fafc;
       --muted: #94a3b8;
@@ -35,23 +34,22 @@
                   var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-bottom: 48px;
+      padding-bottom: 56px;
       line-height: 1.6;
     }
 
-    /* Header */
     header {
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 60;
       backdrop-filter: blur(14px);
-      background: rgba(11, 15, 23, 0.85);
+      background: rgba(11, 15, 23, 0.9);
       border-bottom: 1px solid var(--border);
       padding: 12px 16px;
     }
 
     .nav-wrap {
-      max-width: 1050px;
+      max-width: 1120px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -66,7 +64,6 @@
       gap: 10px;
       font-weight: 800;
       font-size: 1.15rem;
-      letter-spacing: 0.2px;
     }
 
     .brand-badge {
@@ -74,198 +71,98 @@
       padding: 6px 10px;
       border-radius: 12px;
       font-size: 0.95rem;
-      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
     }
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      position: relative;
-    }
-
-    .icon-btn {
-      position: relative;
-      background: var(--card);
-      color: var(--text);
+    .pill {
+      background: var(--card-2);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 0.95rem;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      color: var(--text);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: transform 0.18s ease, background 0.2s ease, border-color 0.2s ease;
+      gap: 5px;
     }
 
-    .icon-btn:hover {
-      transform: translateY(-1px);
-      background: var(--card-2);
-      border-color: rgba(59, 130, 246, 0.45);
-    }
-
-    .notif-dot {
-      position: absolute;
-      top: 6px;
-      right: 7px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--danger);
-      box-shadow: 0 0 0 2px var(--card);
-    }
-
-    .notif-dot.hidden {
-      display: none;
-    }
-
-    /* Notifications Dropdown */
-    .notif-panel {
-      position: absolute;
-      top: 48px;
-      left: 0;
-      width: min(330px, 90vw);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 12px;
-      display: none;
-      z-index: 80;
-      animation: popIn 0.18s ease;
-    }
-
-    .notif-panel.open {
-      display: block;
-    }
-
-    .notif-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    .notif-item {
-      padding: 9px 10px;
-      border-radius: 10px;
-      background: var(--card-2);
-      margin-bottom: 7px;
-      font-size: 0.85rem;
-      border-right: 3px solid var(--primary);
-    }
-
-    .notif-item small {
-      display: block;
-      color: var(--muted);
-      font-size: 0.75rem;
-      margin-top: 3px;
-    }
-
-    /* Container */
     .container {
-      max-width: 1050px;
+      max-width: 1120px;
       margin: 18px auto 0;
       padding: 0 16px;
     }
 
-    /* Hero / Location Bar */
-    .hero {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(16, 185, 129, 0.12));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .hero-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .hero h1 {
-      font-size: 1.35rem;
-      font-weight: 800;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .location-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      background: rgba(11, 15, 23, 0.65);
-      border: 1px solid var(--border);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 0.88rem;
-    }
-
-    /* Tabs */
-    .tabs {
+    /* Separate Page Menu */
+    .page-menu {
       display: flex;
       gap: 8px;
       overflow-x: auto;
       padding-bottom: 6px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       scrollbar-width: none;
     }
 
-    .tabs::-webkit-scrollbar {
+    .page-menu::-webkit-scrollbar {
       display: none;
     }
 
-    .tab-btn {
+    .page-btn {
       background: var(--card);
       color: var(--muted);
       border: 1px solid var(--border);
-      padding: 10px 15px;
+      padding: 10px 14px;
       border-radius: 12px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       white-space: nowrap;
       transition: all 0.2s ease;
     }
 
-    .tab-btn.active {
+    .page-btn.active {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
       box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
     }
 
-    /* Sections & Cards */
-    .section {
+    /* Dedicated Single-Option Pages */
+    .dedicated-page {
       display: none;
-      animation: fadeUp 0.22s ease;
+      animation: fadeUp 0.2s ease;
     }
 
-    .section.active {
+    .dedicated-page.active {
       display: block;
+    }
+
+    .page-banner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .page-banner h1 {
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .page-banner p {
+      color: var(--muted);
+      font-size: 0.88rem;
     }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 18px;
       box-shadow: var(--shadow);
       margin-bottom: 16px;
     }
@@ -274,9 +171,6 @@
       font-size: 1.05rem;
       font-weight: 800;
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .grid-2 {
@@ -287,11 +181,10 @@
 
     .grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
       gap: 14px;
     }
 
-    /* Inputs & Buttons */
     label {
       display: block;
       font-size: 0.85rem;
@@ -308,8 +201,7 @@
       padding: 10px 12px;
       font-size: 0.92rem;
       outline: none;
-      transition: border-color 0.2s ease;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     input:focus, select:focus, textarea:focus {
@@ -351,13 +243,20 @@
       background: #059669;
     }
 
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
     .btn-ghost {
       background: var(--card-2);
       color: var(--text);
       border: 1px solid var(--border);
     }
 
-    /* Product Cards */
     .product-card {
       background: var(--card-2);
       border: 1px solid var(--border);
@@ -365,17 +264,11 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .product-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(59, 130, 246, 0.45);
     }
 
     .product-img {
       width: 100%;
-      height: 175px;
+      height: 170px;
       object-fit: cover;
       background: #0d131d;
     }
@@ -391,14 +284,26 @@
     .price {
       color: var(--accent);
       font-weight: 800;
-      font-size: 1rem;
+    }
+
+    .list-item {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .status-msg {
       padding: 10px 12px;
       border-radius: 11px;
       font-size: 0.86rem;
-      margin-top: 8px;
+      margin-top: 10px;
       display: none;
     }
 
@@ -422,11 +327,6 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes popIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
-    }
   </style>
 </head>
 <body>
@@ -438,103 +338,55 @@
         <span>خدمات wossol</span>
       </div>
 
-      <div class="header-actions">
-        <button class="icon-btn" id="notifBtn" onclick="toggleNotifications()" title="الإشعارات">
-          <span>🔔</span>
-          <span>الإشعارات</span>
-          <span class="notif-dot" id="notifDot"></span>
-        </button>
-
-        <button class="icon-btn" onclick="switchTab('auth')" id="authNavBtn">
-          <span>🔐</span>
-          <span id="authNavText">تحقق OTP</span>
-        </button>
-
-        <div class="notif-panel" id="notifPanel">
-          <div class="notif-header">
-            <span>🔔 الإشعارات الحديثة</span>
-            <button class="btn btn-ghost" style="padding:4px 8px;font-size:0.75rem;" onclick="markAllRead()">تعليم كمقروء</button>
-          </div>
-          <div id="notifList"></div>
-        </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <span class="pill" id="topRolePill">🎭 زبون</span>
+        <span class="pill" id="topLocPill">📍 خنشلة، بلدية ولاد رشاش</span>
+        <span class="pill" id="topAccountPill">🔐 غير مسجّل</span>
       </div>
     </div>
   </header>
 
   <div class="container">
-    <!-- Hero & Location -->
-    <section class="hero">
-      <div class="hero-top">
+    <!-- Dedicated Page Selector (One Option = One Dedicated Page) -->
+    <nav class="page-menu" aria-label="صفحات الخيارات">
+      <button class="page-btn active" data-page="store" onclick="openPage('store')">🏪 صفحة المتجر</button>
+      <button class="page-btn" data-page="new-order" onclick="openPage('new-order')">📝 صفحة تقديم طلب</button>
+      <button class="page-btn" data-page="orders" onclick="openPage('orders')">📦 صفحة الطلبيات</button>
+      <button class="page-btn" data-page="role" onclick="openPage('role')">🎭 صفحة تحديد الدور</button>
+      <button class="page-btn" data-page="location" onclick="openPage('location')">📍 صفحة مكان الإقامة</button>
+      <button class="page-btn" data-page="notifications" onclick="openPage('notifications')">🔔 صفحة الإشعارات</button>
+      <button class="page-btn" data-page="login" onclick="openPage('login')">🔐 صفحة الدخول والـ OTP</button>
+      <button class="page-btn" data-page="logout" onclick="openPage('logout')">🚪 صفحة تسجيل الخروج</button>
+    </nav>
+
+    <!-- 1. DEDICATED STORE PAGE -->
+    <section class="dedicated-page active" id="page-store">
+      <div class="page-banner">
         <div>
-          <h1>✨ أهلاً بك في منصة خدمات wossol</h1>
-          <p>تصفّح الخدمات، اطلب منتجات المتجر بالصور، وأكّد حسابك بسهولة عبر رمز البريد الإلكتروني.</p>
+          <h1>🏪 صفحة المتجر</h1>
+          <p>صفحة مخصصة لإضافة المنتجات ورفع صورها إلى حاوية product-images واستعراض المنتجات.</p>
         </div>
+        <button class="btn" onclick="openPage('new-order')">الانتقال إلى صفحة تقديم طلب ←</button>
       </div>
 
-      <div class="location-box">
-        <span>📍 مكان الإقامة الحالي:</span>
-        <strong id="locationDisplay">خنشلة، بلدية ولاد رشاش</strong>
-        <input type="text" id="locationInput" placeholder="اكتب الولاية أو البلدية..." style="width:auto;min-width:170px;margin:0;padding:6px 10px;font-size:0.84rem;" />
-        <button class="btn" style="padding:6px 11px;font-size:0.82rem;" onclick="saveLocation()">💾 حفظ الموقع</button>
-      </div>
-    </section>
-
-    <!-- Navigation Tabs with Emojis -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="services" onclick="switchTab('services')">⚡ الخدمات</button>
-      <button class="tab-btn" data-tab="store" onclick="switchTab('store')">🏪 المتجر والصور</button>
-      <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')">✉️ التحقق (OTP)</button>
-    </div>
-
-    <!-- Services Section -->
-    <section class="section active" id="sec-services">
       <div class="card">
-        <div class="card-title">⚡ اختر الخدمة المطلوبة</div>
-        <div class="grid-2">
-          <div class="card" style="margin:0;background:var(--card-2);">
-            <h3>🚚 توصيل سريع وطلبات</h3>
-            <p style="color:var(--muted);font-size:0.88rem;margin:6px 0 12px;">إرسال الطلبات وتنسيق الاستلام حسب موقعك المحدد.</p>
-            <button class="btn" onclick="quickRequest('🚚 خدمة التوصيل السريع')">طلب الخدمة الآن</button>
-          </div>
-          <div class="card" style="margin:0;background:var(--card-2);">
-            <h3>💳 شحن الرصيد والخدمات الرقمية</h3>
-            <p style="color:var(--muted);font-size:0.88rem;margin:6px 0 12px;">إتمام عمليات الشحن والخدمات اليومية بسرعة وأمان.</p>
-            <button class="btn btn-accent" onclick="quickRequest('💳 خدمة الشحن والخدمات الرقمية')">طلب الخدمة الآن</button>
-          </div>
-          <div class="card" style="margin:0;background:var(--card-2);">
-            <h3>💻 مستلزمات الحاسوب والألعاب</h3>
-            <p style="color:var(--muted);font-size:0.88rem;margin:6px 0 12px;">توفير ملحقات الحاسوب وأدوات الألعاب والطلبات الخاصة.</p>
-            <button class="btn" onclick="switchTab('store')">الانتقال إلى المتجر 🏪</button>
-          </div>
-          <div class="card" style="margin:0;background:var(--card-2);">
-            <h3>📩 متابعة الطلبات والإشعارات</h3>
-            <p style="color:var(--muted);font-size:0.88rem;margin:6px 0 12px;">استقبل التنبيهات الفورية لكل جديد عبر زر الجرس 🔔.</p>
-            <button class="btn btn-ghost" onclick="toggleNotifications()">فتح الإشعارات 🔔</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Store Section (Upload + Display Product Images via Supabase Storage) -->
-    <section class="section" id="sec-store">
-      <div class="card">
-        <div class="card-title">📸 إضافة منتج جديد ورفع صورته</div>
+        <div class="card-title">📸 إضافة منتج جديد ورفع الصورة</div>
         <form id="productForm" onsubmit="handleAddProduct(event)">
           <div class="grid-2">
             <div>
               <label for="prodName">اسم المنتج *</label>
-              <input type="text" id="prodName" placeholder="مثال: لوحة مفاتيح ميكانيكية" required />
+              <input type="text" id="prodName" placeholder="مثال: لوحة مفاتيح ألعاب" required />
             </div>
             <div>
               <label for="prodPrice">السعر (د.ج) *</label>
-              <input type="number" id="prodPrice" placeholder="مثال: 3500" min="0" step="any" required />
+              <input type="number" id="prodPrice" placeholder="مثال: 3800" min="0" step="any" required />
             </div>
           </div>
 
-          <label for="prodDesc">وصف مختصر</label>
-          <textarea id="prodDesc" rows="2" placeholder="اكتب تفاصيل المنتج وحالته..."></textarea>
+          <label for="prodDesc">وصف المنتج</label>
+          <textarea id="prodDesc" rows="2" placeholder="اكتب وصفاً مختصراً للمنتج..."></textarea>
 
-          <label for="prodImage">صورة المنتج (تُرفع إلى حاوية product-images) *</label>
+          <label for="prodImage">صورة المنتج (حاوية product-images) *</label>
           <input type="file" id="prodImage" accept="image/*" required />
 
           <button type="submit" class="btn btn-accent" id="uploadProdBtn">⬆️ رفع الصورة ونشر المنتج</button>
@@ -543,130 +395,182 @@
       </div>
 
       <div class="card">
-        <div class="card-title">🛍️ المنتجات المعروضة</div>
+        <div class="card-title">🛍️ قائمة المنتجات</div>
         <div class="grid-3" id="productsGrid"></div>
       </div>
     </section>
 
-    <!-- OTP Verification Section -->
-    <section class="section" id="sec-auth">
-      <div class="card">
-        <div class="card-title">✉️ التحقق من البريد الإلكتروني عبر رمز (OTP)</div>
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:14px;">
-          أدخل بريدك الإلكتروني لإرسال رمز التحقق (OTP)، ثم أدخل الرمز الذي وصلك لتأكيد الحساب.
-        </p>
+    <!-- 2. DEDICATED NEW ORDER PAGE -->
+    <section class="dedicated-page" id="page-new-order">
+      <div class="page-banner">
+        <div>
+          <h1>📝 صفحة تقديم طلب</h1>
+          <p>صفحة مخصصة لإنشاء وإرسال طلب جديد فقط.</p>
+        </div>
+        <button class="btn btn-ghost" onclick="openPage('orders')">عرض صفحة الطلبيات 📦</button>
+      </div>
 
-        <label for="otpEmail">البريد الإلكتروني</label>
-        <input type="email" id="otpEmail" placeholder="name@example.com" />
+      <div class="card">
+        <form id="orderForm" onsubmit="handleCreateOrder(event)">
+          <label for="orderProductSelect">اختيار منتج من المتجر (اختياري)</label>
+          <select id="orderProductSelect" onchange="syncOrderProduct()">
+            <option value="">-- طلب خدمة أو منتج مخصص --</option>
+          </select>
+
+          <label for="orderTitle">عنوان الطلب *</label>
+          <input type="text" id="orderTitle" placeholder="مثال: طلب منتج أو خدمة" required />
+
+          <div class="grid-2">
+            <div>
+              <label for="orderQty">الكمية *</label>
+              <input type="number" id="orderQty" value="1" min="1" required />
+            </div>
+            <div>
+              <label for="orderPhone">رقم الهاتف *</label>
+              <input type="tel" id="orderPhone" placeholder="06xxxxxxxx" required />
+            </div>
+          </div>
+
+          <label for="orderNotes">تفاصيل إضافية</label>
+          <textarea id="orderNotes" rows="2" placeholder="أضف ملاحظات الطلب..."></textarea>
+
+          <button type="submit" class="btn btn-accent">🚀 إرسال الطلب</button>
+          <div class="status-msg" id="orderStatus"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 3. DEDICATED ORDERS PAGE -->
+    <section class="dedicated-page" id="page-orders">
+      <div class="page-banner">
+        <div>
+          <h1>📦 صفحة الطلبيات</h1>
+          <p>صفحة مخصصة للاطلاع على جميع الطلبيات ومتابعة وتحديث حالتها.</p>
+        </div>
+        <button class="btn" onclick="openPage('new-order')">+ تقديم طلب جديد</button>
+      </div>
+
+      <div class="card">
+        <div id="ordersList"></div>
+      </div>
+    </section>
+
+    <!-- 4. DEDICATED USER ROLE PAGE -->
+    <section class="dedicated-page" id="page-role">
+      <div class="page-banner">
+        <div>
+          <h1>🎭 صفحة تحديد الدور</h1>
+          <p>صفحة مخصصة لاختيار وتحديد دور المستخدم في المنصة.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <label for="roleSelectPage">اختر دور المستخدم</label>
+        <select id="roleSelectPage">
+          <option value="زبون">🛒 زبون</option>
+          <option value="بائع / مقدم خدمة">🏪 بائع / مقدم خدمة</option>
+          <option value="مشرف">🛡️ مشرف</option>
+        </select>
+
+        <button class="btn btn-accent" onclick="saveRoleFromPage()">💾 حفظ الدور المحدد</button>
+        <div class="status-msg" id="roleStatus"></div>
+      </div>
+    </section>
+
+    <!-- 5. DEDICATED LOCATION PAGE -->
+    <section class="dedicated-page" id="page-location">
+      <div class="page-banner">
+        <div>
+          <h1>📍 صفحة مكان الإقامة</h1>
+          <p>صفحة مخصصة لتحديد وتحديث مكان الإقامة الحالي.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <label for="locationInputPage">مكان الإقامة (الولاية / البلدية)</label>
+        <input type="text" id="locationInputPage" placeholder="مثال: خنشلة، بلدية ولاد رشاش" />
+
+        <button class="btn btn-accent" onclick="saveLocationFromPage()">💾 حفظ مكان الإقامة</button>
+        <div class="status-msg" id="locationStatus"></div>
+      </div>
+    </section>
+
+    <!-- 6. DEDICATED NOTIFICATIONS PAGE -->
+    <section class="dedicated-page" id="page-notifications">
+      <div class="page-banner">
+        <div>
+          <h1>🔔 صفحة الإشعارات</h1>
+          <p>صفحة مخصصة للاطلاع على الإشعارات وإدارتها.</p>
+        </div>
+        <button class="btn btn-ghost" onclick="markAllRead()">تعليم الكل كمقروء</button>
+      </div>
+
+      <div class="card">
+        <div id="notificationsPageList"></div>
+      </div>
+    </section>
+
+    <!-- 7. DEDICATED LOGIN & OTP PAGE -->
+    <section class="dedicated-page" id="page-login">
+      <div class="page-banner">
+        <div>
+          <h1>🔐 صفحة الدخول والـ OTP</h1>
+          <p>صفحة مخصصة لتسجيل الدخول وتأكيد البريد الإلكتروني عبر رمز OTP.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <label for="loginEmail">البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="name@example.com" />
         <button class="btn" id="sendOtpBtn" onclick="sendOtpCode()">📨 إرسال رمز OTP</button>
 
-        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;" />
+        <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;" />
 
-        <label for="otpCode">رمز التحقق (OTP)</label>
-        <input type="text" id="otpCode" placeholder="أدخل الرمز المرسل إلى بريدك" />
-        <button class="btn btn-accent" id="verifyOtpBtn" onclick="verifyOtpCode()">✅ تأكيد الرمز</button>
+        <label for="loginOtpCode">رمز التحقق (OTP)</label>
+        <input type="text" id="loginOtpCode" placeholder="أدخل الرمز الذي وصلك في البريد" />
+        <button class="btn btn-accent" id="verifyOtpBtn" onclick="verifyOtpCode()">✅ تأكيد الرمز وتسجيل الدخول</button>
 
-        <div class="status-msg" id="authStatus"></div>
+        <div class="status-msg" id="loginStatus"></div>
+      </div>
+    </section>
+
+    <!-- 8. DEDICATED LOGOUT PAGE -->
+    <section class="dedicated-page" id="page-logout">
+      <div class="page-banner">
+        <div>
+          <h1>🚪 صفحة تسجيل الخروج</h1>
+          <p>صفحة مخصصة لتسجيل الخروج من الحساب الحالي.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <p style="margin-bottom:14px;">
+          <strong>الحساب الحالي:</strong> <span id="logoutCurrentUser">غير مسجّل</span>
+        </p>
+        <button class="btn btn-danger" onclick="performLogout()">🚪 تأكيد تسجيل الخروج</button>
+        <div class="status-msg" id="logoutStatus"></div>
       </div>
     </section>
   </div>
 
   <script>
-    // 1. إعداد Supabase
     const SUPABASE_URL = "https://nnozlrxxleutxwbznbza.supabase.co";
     const SUPABASE_ANON_KEY = "Sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
     const BUCKET_NAME = "product-images";
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // 2. الإشعارات 🔔
+    let currentRole = localStorage.getItem("wossol_role") || "زبون";
+    let currentLocation = localStorage.getItem("wossol_location") || "خنشلة، بلدية ولاد رشاش";
+    let currentUserEmail = localStorage.getItem("wossol_user_email") || "";
+
     let notifications = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
-      { id: 1, text: "✨ مرحباً بك في الواجهة المحدّثة لمنصة خدمات wossol!", time: "الآن", unread: true },
-      { id: 2, text: "🏪 قسم المتجر جاهز الآن لرفع وعرض صور المنتجات.", time: "اليوم", unread: true }
+      { id: 1, text: "✨ مرحباً بك في منصة خدمات wossol بنظام الصفحات المستقلة.", time: "الآن", unread: true }
     ];
 
-    function renderNotifications() {
-      const list = document.getElementById("notifList");
-      const dot = document.getElementById("notifDot");
-      const hasUnread = notifications.some(n => n.unread);
-      dot.classList.toggle("hidden", !hasUnread);
-
-      if (!notifications.length) {
-        list.innerHTML = `<div class="notif-item">لا توجد إشعارات حالياً.</div>`;
-        return;
-      }
-
-      list.innerHTML = notifications.map(n => `
-        <div class="notif-item" style="opacity:${n.unread ? 1 : 0.72}">
-          <div>${n.text}</div>
-          <small>${n.time}</small>
-        </div>
-      `).join("");
-      localStorage.setItem("wossol_notifs", JSON.stringify(notifications));
-    }
-
-    function pushNotification(text) {
-      notifications.unshift({
-        id: Date.now(),
-        text,
-        time: "الآن",
-        unread: true
-      });
-      renderNotifications();
-    }
-
-    function toggleNotifications() {
-      document.getElementById("notifPanel").classList.toggle("open");
-    }
-
-    function markAllRead() {
-      notifications = notifications.map(n => ({ ...n, unread: false }));
-      renderNotifications();
-    }
-
-    document.addEventListener("click", (e) => {
-      const panel = document.getElementById("notifPanel");
-      const btn = document.getElementById("notifBtn");
-      if (!panel.contains(e.target) && !btn.contains(e.target)) {
-        panel.classList.remove("open");
-      }
-    });
-
-    // 3. مكان الإقامة 📍
-    function loadLocation() {
-      const saved = localStorage.getItem("wossol_location") || "خنشلة، بلدية ولاد رشاش";
-      document.getElementById("locationDisplay").textContent = saved;
-      document.getElementById("locationInput").value = saved;
-    }
-
-    function saveLocation() {
-      const val = document.getElementById("locationInput").value.trim();
-      if (!val) return;
-      localStorage.setItem("wossol_location", val);
-      document.getElementById("locationDisplay").textContent = val;
-      pushNotification(`📍 تم تحديث مكان الإقامة إلى: ${val}`);
-    }
-
-    // 4. التنقل بين الأقسام
-    function switchTab(tabName) {
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.tab === tabName);
-      });
-      document.querySelectorAll(".section").forEach(sec => {
-        sec.classList.toggle("active", sec.id === `sec-${tabName}`);
-      });
-    }
-
-    function quickRequest(serviceName) {
-      const loc = localStorage.getItem("wossol_location") || "خنشلة، بلدية ولاد رشاش";
-      pushNotification(`⚡ تم تسجيل طلب: ${serviceName} (${loc})`);
-      alert(`تم تسجيل طلبك لـ "${serviceName}" في موقعك (${loc}).`);
-    }
-
-    // 5. المتجر ورفع الصور إلى Supabase Storage (product-images) 🏪
     let products = JSON.parse(localStorage.getItem("wossol_products") || "null") || [
       {
-        id: "demo-1",
+        id: "p-1",
         name: "سماعة ألعاب احترافية",
         price: 4200,
         desc: "صوت واضح ومريح للاستخدام الطويل.",
@@ -674,10 +578,87 @@
       }
     ];
 
+    let orders = JSON.parse(localStorage.getItem("wossol_orders") || "null") || [];
+
+    function openPage(pageName) {
+      document.querySelectorAll(".page-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.page === pageName);
+      });
+      document.querySelectorAll(".dedicated-page").forEach(sec => {
+        sec.classList.toggle("active", sec.id === `page-${pageName}`);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function syncTopBar() {
+      document.getElementById("topRolePill").textContent = `🎭 ${currentRole}`;
+      document.getElementById("topLocPill").textContent = `📍 ${currentLocation}`;
+      document.getElementById("topAccountPill").textContent = currentUserEmail ? `🔐 ${currentUserEmail}` : "🔐 غير مسجّل";
+      document.getElementById("logoutCurrentUser").textContent = currentUserEmail || "غير مسجّل";
+      document.getElementById("roleSelectPage").value = currentRole;
+      document.getElementById("locationInputPage").value = currentLocation;
+    }
+
+    function addNotif(text) {
+      notifications.unshift({ id: Date.now(), text, time: "الآن", unread: true });
+      localStorage.setItem("wossol_notifs", JSON.stringify(notifications));
+      renderNotificationsPage();
+    }
+
+    function markAllRead() {
+      notifications = notifications.map(n => ({ ...n, unread: false }));
+      localStorage.setItem("wossol_notifs", JSON.stringify(notifications));
+      renderNotificationsPage();
+    }
+
+    function renderNotificationsPage() {
+      const box = document.getElementById("notificationsPageList");
+      if (!notifications.length) {
+        box.innerHTML = `<p style="color:var(--muted);">لا توجد إشعارات.</p>`;
+        return;
+      }
+      box.innerHTML = notifications.map(n => `
+        <div class="list-item" style="opacity:${n.unread ? 1 : 0.72}">
+          <div>
+            <strong>${escapeHtml(n.text)}</strong>
+            <div style="color:var(--muted);font-size:0.78rem;">${escapeHtml(n.time)}</div>
+          </div>
+          <span class="pill">${n.unread ? "جديد" : "مقروء"}</span>
+        </div>
+      `).join("");
+    }
+
+    function saveRoleFromPage() {
+      currentRole = document.getElementById("roleSelectPage").value;
+      localStorage.setItem("wossol_role", currentRole);
+      syncTopBar();
+      showStatus("roleStatus", `✅ تم حفظ الدور: ${currentRole}`, "ok");
+      addNotif(`🎭 تم تحديث دور المستخدم إلى: ${currentRole}`);
+    }
+
+    function saveLocationFromPage() {
+      const val = document.getElementById("locationInputPage").value.trim();
+      if (!val) {
+        showStatus("locationStatus", "أدخل مكان الإقامة أولاً.", "err");
+        return;
+      }
+      currentLocation = val;
+      localStorage.setItem("wossol_location", currentLocation);
+      syncTopBar();
+      showStatus("locationStatus", `✅ تم حفظ مكان الإقامة: ${currentLocation}`, "ok");
+      addNotif(`📍 تم تحديث مكان الإقامة إلى: ${currentLocation}`);
+    }
+
     function renderProducts() {
       const grid = document.getElementById("productsGrid");
+      const select = document.getElementById("orderProductSelect");
+
+      select.innerHTML = `<option value="">-- طلب خدمة أو منتج مخصص --</option>` + products.map(p =>
+        `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)} (${Number(p.price).toLocaleString()} د.ج)</option>`
+      ).join("");
+
       if (!products.length) {
-        grid.innerHTML = `<p style="color:var(--muted);">لا توجد منتجات معروضة بعد.</p>`;
+        grid.innerHTML = `<p style="color:var(--muted);">لا توجد منتجات بعد.</p>`;
         return;
       }
 
@@ -688,10 +669,25 @@
             <strong>${escapeHtml(p.name)}</strong>
             <div class="price">${Number(p.price).toLocaleString()} د.ج</div>
             <p style="color:var(--muted);font-size:0.84rem;">${escapeHtml(p.desc || "")}</p>
+            <button class="btn" style="margin-top:auto;" onclick="goOrderWithProduct('${escapeJs(p.name)}')">
+              📝 طلب هذا المنتج
+            </button>
           </div>
         </article>
       `).join("");
+
       localStorage.setItem("wossol_products", JSON.stringify(products));
+    }
+
+    function goOrderWithProduct(name) {
+      openPage("new-order");
+      document.getElementById("orderProductSelect").value = name;
+      document.getElementById("orderTitle").value = name;
+    }
+
+    function syncOrderProduct() {
+      const val = document.getElementById("orderProductSelect").value;
+      if (val) document.getElementById("orderTitle").value = val;
     }
 
     async function handleAddProduct(e) {
@@ -699,12 +695,11 @@
       const name = document.getElementById("prodName").value.trim();
       const price = document.getElementById("prodPrice").value.trim();
       const desc = document.getElementById("prodDesc").value.trim();
-      const fileInput = document.getElementById("prodImage");
-      const file = fileInput.files[0];
+      const file = document.getElementById("prodImage").files[0];
       const btn = document.getElementById("uploadProdBtn");
 
       if (!file) {
-        showStatus("storeStatus", "يرجى اختيار صورة للمنتج أولاً.", "err");
+        showStatus("storeStatus", "اختر صورة أولاً.", "err");
         return;
       }
 
@@ -713,62 +708,120 @@
 
       try {
         const ext = file.name.split(".").pop() || "jpg";
-        const filePath = `items/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const path = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
         const { error: uploadError } = await supabaseClient.storage
           .from(BUCKET_NAME)
-          .upload(filePath, file, { cacheControl: "3600", upsert: false });
+          .upload(path, file, { cacheControl: "3600", upsert: false });
 
         if (uploadError) throw uploadError;
 
-        const { data: urlData } = supabaseClient.storage
+        const { data: pubData } = supabaseClient.storage
           .from(BUCKET_NAME)
-          .getPublicUrl(filePath);
+          .getPublicUrl(path);
 
-        const newProduct = {
+        products.unshift({
           id: String(Date.now()),
           name,
           price,
           desc,
-          imageUrl: urlData.publicUrl
-        };
+          imageUrl: pubData.publicUrl
+        });
 
-        products.unshift(newProduct);
         renderProducts();
         document.getElementById("productForm").reset();
         showStatus("storeStatus", "✅ تم رفع الصورة ونشر المنتج بنجاح!", "ok");
-        pushNotification(`🏪 تمت إضافة منتج جديد: ${name}`);
+        addNotif(`🏪 تمت إضافة منتج: ${name}`);
       } catch (err) {
-        showStatus("storeStatus", `❌ تعذر رفع الصورة: ${err.message || err}`, "err");
+        showStatus("storeStatus", `❌ تعذر الرفع: ${err.message || err}`, "err");
       } finally {
         btn.disabled = false;
         btn.textContent = "⬆️ رفع الصورة ونشر المنتج";
       }
     }
 
-    // 6. التحقق عبر رمز OTP بالبريد الإلكتروني ✉️
-    async function sendOtpCode() {
-      const email = document.getElementById("otpEmail").value.trim();
-      const btn = document.getElementById("sendOtpBtn");
+    function handleCreateOrder(e) {
+      e.preventDefault();
+      const title = document.getElementById("orderTitle").value.trim();
+      const qty = document.getElementById("orderQty").value;
+      const phone = document.getElementById("orderPhone").value.trim();
+      const notes = document.getElementById("orderNotes").value.trim();
 
-      if (!email) {
-        showStatus("authStatus", "يرجى إدخال البريد الإلكتروني أولاً.", "err");
+      const item = {
+        id: "ORD-" + String(Date.now()).slice(-6),
+        title,
+        qty,
+        phone,
+        notes,
+        role: currentRole,
+        location: currentLocation,
+        user: currentUserEmail || "زائر",
+        status: "قيد المعالجة",
+        date: new Date().toLocaleString("ar-DZ")
+      };
+
+      orders.unshift(item);
+      localStorage.setItem("wossol_orders", JSON.stringify(orders));
+      renderOrdersPage();
+      document.getElementById("orderForm").reset();
+      document.getElementById("orderQty").value = 1;
+      showStatus("orderStatus", `✅ تم إرسال الطلب رقم ${item.id} بنجاح!`, "ok");
+      addNotif(`📦 طلب جديد (${item.id}): ${title}`);
+    }
+
+    function changeOrderStatus(orderId, status) {
+      orders = orders.map(o => o.id === orderId ? { ...o, status } : o);
+      localStorage.setItem("wossol_orders", JSON.stringify(orders));
+      renderOrdersPage();
+      addNotif(`🔄 تحديث حالة الطلب ${orderId} إلى: ${status}`);
+    }
+
+    function renderOrdersPage() {
+      const box = document.getElementById("ordersList");
+      if (!orders.length) {
+        box.innerHTML = `<p style="color:var(--muted);">لا توجد طلبيات مسجلة حالياً.</p>`;
         return;
       }
 
+      box.innerHTML = orders.map(o => `
+        <div class="list-item">
+          <div>
+            <strong>${escapeHtml(o.title)}</strong> <span class="pill">${escapeHtml(o.status)}</span>
+            <p style="color:var(--muted);font-size:0.84rem;margin-top:4px;">
+              الرقم: <strong>${escapeHtml(o.id)}</strong> | الكمية: ${escapeHtml(String(o.qty))} | الهاتف: ${escapeHtml(o.phone)}
+            </p>
+            <p style="color:var(--muted);font-size:0.82rem;">
+              الدور: ${escapeHtml(o.role)} | الموقع: ${escapeHtml(o.location)} | ${escapeHtml(o.date)}
+            </p>
+            ${o.notes ? `<p style="font-size:0.84rem;margin-top:4px;">ملاحظات: ${escapeHtml(o.notes)}</p>` : ""}
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:0.8rem;" onclick="changeOrderStatus('${escapeJs(o.id)}', 'مؤكد')">مؤكد</button>
+            <button class="btn btn-accent" style="padding:6px 10px;font-size:0.8rem;" onclick="changeOrderStatus('${escapeJs(o.id)}', 'مكتمل')">مكتمل</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function sendOtpCode() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const btn = document.getElementById("sendOtpBtn");
+      if (!email) {
+        showStatus("loginStatus", "أدخل البريد الإلكتروني أولاً.", "err");
+        return;
+      }
       btn.disabled = true;
       btn.textContent = "⏳ جاري الإرسال...";
-
       try {
         const { error } = await supabaseClient.auth.signInWithOtp({
           email,
           options: { shouldCreateUser: true }
         });
         if (error) throw error;
-        showStatus("authStatus", `📨 تم إرسال رمز التحقق إلى ${email} (تحقق أيضاً من مجلد Spam).`, "ok");
-        pushNotification(`✉️ تم إرسال رمز OTP إلى ${email}`);
+        showStatus("loginStatus", `📨 تم إرسال رمز OTP إلى ${email} (تحقق من البريد أو Spam).`, "ok");
+        addNotif(`✉️ تم إرسال رمز OTP إلى ${email}`);
       } catch (err) {
-        showStatus("authStatus", `❌ خطأ أثناء إرسال الرمز: ${err.message || err}`, "err");
+        showStatus("loginStatus", `❌ خطأ في إرسال الرمز: ${err.message || err}`, "err");
       } finally {
         btn.disabled = false;
         btn.textContent = "📨 إرسال رمز OTP";
@@ -776,18 +829,16 @@
     }
 
     async function verifyOtpCode() {
-      const email = document.getElementById("otpEmail").value.trim();
-      const token = document.getElementById("otpCode").value.trim();
+      const email = document.getElementById("loginEmail").value.trim();
+      const token = document.getElementById("loginOtpCode").value.trim();
       const btn = document.getElementById("verifyOtpBtn");
 
       if (!email || !token) {
-        showStatus("authStatus", "أدخل البريد الإلكتروني ورمز التحقق معاً.", "err");
+        showStatus("loginStatus", "أدخل البريد الإلكتروني ورمز OTP معاً.", "err");
         return;
       }
-
       btn.disabled = true;
       btn.textContent = "⏳ جاري التحقق...";
-
       try {
         const { data, error } = await supabaseClient.auth.verifyOtp({
           email,
@@ -795,22 +846,33 @@
           type: "email"
         });
         if (error) throw error;
-
-        document.getElementById("authNavText").textContent = "حساب مفعّل";
-        showStatus("authStatus", `✅ تم التحقق بنجاح! مرحباً ${data.user?.email || email}.`, "ok");
-        pushNotification(`✅ تم تأكيد البريد الإلكتروني عبر OTP بنجاح.`);
+        currentUserEmail = data.user?.email || email;
+        localStorage.setItem("wossol_user_email", currentUserEmail);
+        syncTopBar();
+        showStatus("loginStatus", `✅ تم التحقق وتسجيل الدخول بنجاح (${currentUserEmail}).`, "ok");
+        addNotif(`🔐 تم تسجيل الدخول: ${currentUserEmail}`);
       } catch (err) {
-        showStatus("authStatus", `❌ الرمز غير صحيح أو منتهي الصلاحية: ${err.message || err}`, "err");
+        showStatus("loginStatus", `❌ تعذر التحقق: ${err.message || err}`, "err");
       } finally {
         btn.disabled = false;
-        btn.textContent = "✅ تأكيد الرمز";
+        btn.textContent = "✅ تأكيد الرمز وتسجيل الدخول";
       }
     }
 
-    // أدوات مساعدة
-    function showStatus(elId, message, type) {
-      const el = document.getElementById(elId);
-      el.textContent = message;
+    async function performLogout() {
+      try {
+        await supabaseClient.auth.signOut();
+      } catch (_) {}
+      currentUserEmail = "";
+      localStorage.removeItem("wossol_user_email");
+      syncTopBar();
+      showStatus("logoutStatus", "🚪 تم تسجيل الخروج بنجاح.", "ok");
+      addNotif("🚪 تم تسجيل الخروج.");
+    }
+
+    function showStatus(id, msg, type) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
       el.className = `status-msg show ${type}`;
     }
 
@@ -820,10 +882,14 @@
       }[m]));
     }
 
-    // تشغيل أولي
-    renderNotifications();
-    loadLocation();
+    function escapeJs(str) {
+      return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    }
+
+    syncTopBar();
+    renderNotificationsPage();
     renderProducts();
+    renderOrdersPage();
   </script>
 </body>
 </html>
