@@ -490,7 +490,7 @@
       </div>
     </section>
 
-    <!-- SOLO 3: NEW ORDER (No manual address input; GPS is captured automatically for Google Maps) -->
+    <!-- SOLO 3: NEW ORDER -->
     <section class="solo-view" id="v-new-order">
       <div class="box">
         <div class="box-head">
@@ -658,7 +658,7 @@
       </div>
     </section>
 
-    <!-- SOLO 7: NOTIFICATIONS (Clears unread counter on enter and on leave) -->
+    <!-- SOLO 7: NOTIFICATIONS -->
     <section class="solo-view" id="v-alerts">
       <div class="box">
         <div class="box-head">
@@ -686,7 +686,7 @@
 
   <script>
     const SUPABASE_URL = "https://nnozlrxxleutxwbznbza.supabase.co";
-    const SUPABASE_ANON_KEY = "Sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
+    const SUPABASE_ANON_KEY = "sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
     const BUCKET_NAME = "product-images";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1253,7 +1253,6 @@
       return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     }
 
-    // Boot: stay logged in if userEmail exists in localStorage; otherwise show OTP login gate
     if (userEmail) {
       backToMenu();
     } else {
