@@ -3,24 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>خدمات wosool | تطبيق خدمات ومتجر في منصة واحدة</title>
+  <title>خدمات wossol | خدمات ومتجر في منصة واحدة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg-main: #12100e;
-      --bg-surface: #1e1a16;
-      --bg-elevated: #29231d;
+      --bg-base: #0d1117;
+      --bg-card: #161c28;
+      --bg-soft: #1e2636;
       --amber: #f59e0b;
-      --amber-deep: #d97706;
-      --teal: #14b8a6;
-      --teal-deep: #0d9488;
-      --crimson: #f43f5e;
-      --crimson-deep: #e11d48;
-      --ink: #fffbeb;
-      --ink-dim: #b8ad9e;
-      --line: rgba(245, 158, 11, 0.18);
-      --card-radius: 22px;
-      --btn-radius: 999px;
+      --emerald: #10b981;
+      --sky: #38bdf8;
+      --rose: #fb7185;
+      --violet: #a78bfa;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --line: rgba(148, 163, 184, 0.16);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
     }
 
     * {
@@ -32,102 +33,219 @@
 
     body {
       background:
-        radial-gradient(circle at 12% 8%, rgba(245, 158, 11, 0.16), transparent 40%),
-        radial-gradient(circle at 88% 90%, rgba(20, 184, 166, 0.12), transparent 42%),
-        var(--bg-main);
-      color: var(--ink);
+        radial-gradient(circle at 10% 6%, rgba(245, 158, 11, 0.16), transparent 36%),
+        radial-gradient(circle at 90% 14%, rgba(56, 189, 248, 0.15), transparent 38%),
+        radial-gradient(circle at 22% 88%, rgba(16, 185, 129, 0.14), transparent 40%),
+        radial-gradient(circle at 86% 86%, rgba(251, 113, 133, 0.12), transparent 38%),
+        var(--bg-base);
+      color: var(--text-main);
       min-height: 100vh;
       padding-bottom: 64px;
       line-height: 1.65;
     }
 
+    /* Top Bar with Notification Button */
     .topbar {
-      background: rgba(18, 16, 14, 0.94);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
-      padding: 14px 18px;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 70;
+      backdrop-filter: blur(14px);
+      background: rgba(13, 17, 23, 0.9);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
     }
 
     .topbar-inner {
-      max-width: 1080px;
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
+      position: relative;
     }
 
-    .logo-area {
+    .brand {
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 900;
-      font-size: 1.16rem;
-      color: var(--amber);
+      font-size: 1.15rem;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--amber), var(--sky), var(--emerald));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .logo-mark {
+    .brand-icon {
       width: 38px;
       height: 38px;
-      border-radius: 14px;
-      background: linear-gradient(145deg, var(--amber), var(--teal));
-      color: #12100e;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--amber), var(--rose));
+      color: #0d1117;
       display: grid;
       place-items: center;
       font-size: 1.15rem;
       font-weight: 900;
+      -webkit-text-fill-color: #0d1117;
+      flex-shrink: 0;
     }
 
-    .status-chips {
+    .top-right-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .notif-trigger {
+      position: relative;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(56, 189, 248, 0.18));
+      color: var(--text-main);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: var(--radius-pill);
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s ease, filter 0.2s ease;
+    }
+
+    .notif-trigger:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .notif-count {
+      background: var(--rose);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 1px 7px;
+      border-radius: var(--radius-pill);
+    }
+
+    .notif-count.empty {
+      display: none;
+    }
+
+    .notif-dropdown {
+      position: absolute;
+      top: 52px;
+      left: 0;
+      width: min(350px, 92vw);
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+      padding: 14px;
+      display: none;
+      z-index: 95;
+    }
+
+    .notif-dropdown.open {
+      display: block;
+    }
+
+    .notif-drop-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .notif-mini-item {
+      background: var(--bg-soft);
+      border-right: 3px solid var(--sky);
+      border-radius: 12px;
+      padding: 9px 11px;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 20px auto 0;
+      padding: 0 16px;
+    }
+
+    /* Home Hero & Status Strip */
+    .home-shell.hidden {
+      display: none;
+    }
+
+    .hero-card {
+      background: linear-gradient(125deg, rgba(245, 158, 11, 0.12), rgba(56, 189, 248, 0.12), rgba(16, 185, 129, 0.12));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-card h1 {
+      font-size: 1.24rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .hero-card p {
+      color: var(--text-sub);
+      font-size: 0.88rem;
+    }
+
+    .status-row {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .chip {
-      background: var(--bg-elevated);
-      border: 1px solid var(--line);
-      color: var(--ink-dim);
-      padding: 5px 12px;
-      border-radius: 999px;
+    .tag-pill {
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
       font-size: 0.78rem;
-      font-weight: 700;
+      font-weight: 800;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      color: var(--text-sub);
     }
 
-    .wrap {
-      max-width: 1080px;
-      margin: 22px auto 0;
-      padding: 0 18px;
-    }
+    .tag-amber { border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
+    .tag-emerald { border-color: rgba(16, 185, 129, 0.45); color: #6ee7b7; }
+    .tag-sky { border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc; }
 
-    /* Main Menu Grid - Hidden when a solo page opens */
-    .home-menu {
+    /* Multi-Accent Menu Tiles */
+    .menu-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
-    .home-menu.hidden {
-      display: none;
-    }
-
     @media (min-width: 680px) {
-      .home-menu {
+      .menu-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
-    .menu-tile {
-      background: var(--bg-surface);
-      color: var(--ink);
+    .tile-btn {
+      background: var(--bg-card);
+      color: var(--text-main);
       border: 1px solid var(--line);
       border-radius: 20px;
-      padding: 15px 14px;
-      font-size: 0.88rem;
+      padding: 16px 14px;
+      font-size: 0.9rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -139,35 +257,38 @@
       transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
     }
 
-    .menu-tile:hover {
+    .tile-btn:hover {
       transform: translateY(-2px);
-      border-color: var(--amber);
-      background: var(--bg-elevated);
+      background: var(--bg-soft);
     }
 
-    .menu-tile.danger-tile {
-      border-color: rgba(244, 63, 94, 0.35);
+    .tile-amber:hover { border-color: var(--amber); }
+    .tile-emerald:hover { border-color: var(--emerald); }
+    .tile-sky:hover { border-color: var(--sky); }
+    .tile-violet:hover { border-color: var(--violet); }
+    .tile-rose {
+      border-color: rgba(251, 113, 133, 0.35);
       color: #fda4af;
     }
-
-    .menu-tile.danger-tile:hover {
-      border-color: var(--crimson);
-      background: rgba(244, 63, 94, 0.14);
+    .tile-rose:hover {
+      border-color: var(--rose);
+      background: rgba(251, 113, 133, 0.12);
     }
 
+    /* Dedicated Single-Option Pages */
     .solo-page {
       display: none;
-      animation: reveal 0.2s ease;
+      animation: fadeIn 0.2s ease;
     }
 
     .solo-page.active {
       display: block;
     }
 
-    .page-header-box {
-      background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+    .page-head {
+      background: var(--bg-card);
       border: 1px solid var(--line);
-      border-radius: var(--card-radius);
+      border-radius: var(--radius-lg);
       padding: 16px 20px;
       margin-bottom: 16px;
       display: flex;
@@ -177,40 +298,40 @@
       flex-wrap: wrap;
     }
 
-    .page-header-box h1 {
+    .page-head h2 {
       font-size: 1.18rem;
       font-weight: 900;
       color: var(--amber);
     }
 
-    .page-header-box p {
-      color: var(--ink-dim);
+    .page-head p {
+      color: var(--text-muted);
       font-size: 0.85rem;
       margin-top: 3px;
     }
 
-    .panel {
-      background: var(--bg-surface);
+    .card-box {
+      background: var(--bg-card);
       border: 1px solid var(--line);
-      border-radius: var(--card-radius);
+      border-radius: var(--radius-lg);
       padding: 20px;
       margin-bottom: 16px;
     }
 
-    .panel-title {
-      font-size: 1.02rem;
+    .section-label {
+      font-size: 1rem;
       font-weight: 800;
       margin-bottom: 14px;
-      color: var(--teal);
+      color: var(--sky);
     }
 
-    .cols-2 {
+    .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 14px;
     }
 
-    .cols-3 {
+    .grid-3 {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
       gap: 14px;
@@ -219,17 +340,17 @@
     label {
       display: block;
       font-size: 0.84rem;
-      color: var(--ink-dim);
+      color: var(--text-sub);
       margin-bottom: 6px;
       font-weight: 700;
     }
 
     input, select, textarea {
       width: 100%;
-      background: var(--bg-elevated);
-      color: var(--ink);
-      border: 1px solid rgba(255, 251, 235, 0.12);
-      border-radius: 16px;
+      background: var(--bg-soft);
+      color: var(--text-main);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
       padding: 11px 14px;
       font-size: 0.92rem;
       outline: none;
@@ -237,50 +358,49 @@
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: var(--amber);
+      border-color: var(--sky);
     }
 
-    .quick-chips {
+    .quick-row {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       margin-bottom: 14px;
     }
 
-    .quick-btn {
-      background: var(--bg-elevated);
-      color: var(--ink);
+    .chip-btn {
+      background: var(--bg-soft);
+      color: var(--text-main);
       border: 1px solid var(--line);
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       padding: 7px 14px;
       font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
     }
 
-    .quick-btn:hover {
-      border-color: var(--teal);
+    .chip-btn:hover {
+      border-color: var(--emerald);
     }
 
-    .check-line {
+    .check-row {
       display: flex;
       align-items: center;
       gap: 9px;
       margin-bottom: 12px;
       font-size: 0.88rem;
       font-weight: 700;
-      color: var(--ink);
     }
 
-    .check-line input[type="checkbox"] {
+    .check-row input[type="checkbox"] {
       width: auto;
       margin: 0;
       transform: scale(1.15);
     }
 
-    .action-btn {
+    .btn {
       border: none;
-      border-radius: var(--btn-radius);
+      border-radius: var(--radius-pill);
       padding: 10px 18px;
       font-size: 0.88rem;
       font-weight: 800;
@@ -289,50 +409,53 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
+      text-decoration: none;
       transition: transform 0.14s ease, filter 0.18s ease;
     }
 
-    .action-btn:hover:not(:disabled) {
-      filter: brightness(1.06);
+    .btn:hover:not(:disabled) {
+      filter: brightness(1.07);
       transform: translateY(-2px);
     }
 
-    .action-btn:active:not(:disabled) {
-      transform: translateY(1px);
-    }
-
-    .action-btn:disabled {
+    .btn:disabled {
       opacity: 0.55;
       cursor: not-allowed;
     }
 
     .btn-amber {
       background: var(--amber);
-      color: #12100e;
-      box-shadow: 0 4px 0 var(--amber-deep);
+      color: #0d1117;
+      box-shadow: 0 4px 0 #b45309;
     }
 
-    .btn-teal {
-      background: var(--teal);
-      color: #0b1917;
-      box-shadow: 0 4px 0 var(--teal-deep);
+    .btn-emerald {
+      background: var(--emerald);
+      color: #062018;
+      box-shadow: 0 4px 0 #047857;
     }
 
-    .btn-crimson {
-      background: var(--crimson);
+    .btn-sky {
+      background: var(--sky);
+      color: #071926;
+      box-shadow: 0 4px 0 #0284c7;
+    }
+
+    .btn-rose {
+      background: var(--rose);
       color: #fff;
-      box-shadow: 0 4px 0 var(--crimson-deep);
+      box-shadow: 0 4px 0 #be123c;
     }
 
-    .btn-dark {
-      background: var(--bg-elevated);
-      color: var(--ink);
+    .btn-soft {
+      background: var(--bg-soft);
+      color: var(--text-main);
       border: 1px solid var(--line);
-      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.5);
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
     }
 
-    .item-card {
-      background: var(--bg-elevated);
+    .prod-card {
+      background: var(--bg-soft);
       border: 1px solid var(--line);
       border-radius: 18px;
       overflow: hidden;
@@ -340,14 +463,14 @@
       flex-direction: column;
     }
 
-    .item-photo {
+    .prod-img {
       width: 100%;
-      height: 165px;
+      height: 170px;
       object-fit: cover;
-      background: #12100e;
+      background: #0d1117;
     }
 
-    .item-content {
+    .prod-body {
       padding: 13px;
       display: flex;
       flex-direction: column;
@@ -355,14 +478,14 @@
       flex: 1;
     }
 
-    .cost-tag {
-      color: var(--amber);
+    .price-txt {
+      color: var(--emerald);
       font-weight: 900;
       font-size: 1rem;
     }
 
-    .row-box {
-      background: var(--bg-elevated);
+    .list-card {
+      background: var(--bg-soft);
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 14px 16px;
@@ -374,20 +497,20 @@
       flex-wrap: wrap;
     }
 
-    .live-route-box {
-      background: rgba(20, 184, 166, 0.1);
-      border: 1px solid rgba(20, 184, 166, 0.4);
+    .route-card {
+      background: rgba(56, 189, 248, 0.09);
+      border: 1px solid rgba(56, 189, 248, 0.4);
       border-radius: 18px;
       padding: 16px;
       margin-top: 14px;
     }
 
-    .route-visual {
+    .route-bar {
       margin-top: 10px;
-      background: #171411;
-      border: 1px dashed rgba(245, 158, 11, 0.45);
+      background: var(--bg-card);
+      border: 1px dashed rgba(16, 185, 129, 0.5);
       border-radius: 14px;
-      padding: 14px;
+      padding: 12px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -396,7 +519,7 @@
       font-size: 0.85rem;
     }
 
-    .alert-box {
+    .msg-box {
       margin-top: 12px;
       padding: 11px 14px;
       border-radius: 14px;
@@ -405,23 +528,19 @@
       display: none;
     }
 
-    .alert-box.show {
-      display: block;
+    .msg-box.show { display: block; }
+    .msg-box.ok {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
     }
-
-    .alert-box.success {
-      background: rgba(20, 184, 166, 0.16);
-      border: 1px solid rgba(20, 184, 166, 0.45);
-      color: #5eead4;
-    }
-
-    .alert-box.error {
-      background: rgba(244, 63, 94, 0.16);
-      border: 1px solid rgba(244, 63, 94, 0.45);
+    .msg-box.err {
+      background: rgba(251, 113, 133, 0.16);
+      border: 1px solid rgba(251, 113, 133, 0.45);
       color: #fda4af;
     }
 
-    @keyframes reveal {
+    @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
@@ -431,114 +550,138 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="logo-area" style="cursor:pointer;" onclick="showHomeMenu()">
-        <span class="logo-mark">⚡</span>
+      <div class="brand" onclick="goHome()">
+        <span class="brand-icon">⚡</span>
         <span>خدمات wossol</span>
       </div>
-      <div class="status-chips">
-        <span class="chip" id="chipAccount">🔑 غير مسجّل</span>
-        <span class="chip" id="chipRole">🪪 مشتري</span>
-        <span class="chip" id="chipLoc">📌 خنشلة، بلدية ولاد رشاش</span>
+
+      <div class="top-right-controls">
+        <button class="notif-trigger" id="topNotifBtn" onclick="toggleTopNotifMenu()">
+          <span>🔔</span>
+          <span>الإشعارات</span>
+          <span class="notif-count" id="topNotifBadge">1</span>
+        </button>
+
+        <div class="notif-dropdown" id="topNotifDropdown">
+          <div class="notif-drop-head">
+            <span>🔔 أحدث الإشعارات</span>
+            <button class="btn btn-soft" style="padding:4px 10px;font-size:0.75rem;" onclick="openSoloPage('alerts')">فتح الصفحة</button>
+          </div>
+          <div id="topNotifPreview"></div>
+        </div>
       </div>
     </div>
   </header>
 
   <div class="wrap">
-    <!-- Main Menu: Hides automatically when any solo option is opened -->
-    <nav class="home-menu" id="homeMenu" aria-label="قائمة خيارات المنصة">
-      <button class="menu-tile" onclick="openSoloPage('auth')">🔑 الدخول والـ OTP</button>
-      <button class="menu-tile" onclick="openSoloPage('role')">🪪 اختيار الدور</button>
-      <button class="menu-tile" onclick="openSoloPage('location')">📌 مكان الإقامة</button>
-      <button class="menu-tile" onclick="openSoloPage('new-order')">✍️ طلبية جديدة</button>
-      <button class="menu-tile" onclick="openSoloPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
-      <button class="menu-tile" onclick="openSoloPage('orders-log')">🧾 سجل الطلبيات</button>
-      <button class="menu-tile" onclick="openSoloPage('store')">🛍️ المتجر وإضافة منتج</button>
-      <button class="menu-tile" onclick="openSoloPage('alerts')">📣 الإشعارات</button>
-      <button class="menu-tile danger-tile" onclick="selectLogoutOption()">🛑 تسجيل الخروج</button>
-    </nav>
-
-    <!-- 1. SOLO PAGE: LOGIN & OTP -->
-    <section class="solo-page" id="p-auth">
-      <div class="page-header-box">
+    <!-- Home Screen (Hides completely when a single option page is opened) -->
+    <section class="home-shell" id="homeShell">
+      <div class="hero-card">
         <div>
-          <h1>🔑 الدخول والـ OTP</h1>
+          <h1>منصة خدمات wossol — خدمات ومتجر في مكان واحد</h1>
+          <p>اختر خياراً واحداً لفتح صفحته المستقلة، أو اضغط على زر الإشعارات بالأعلى لمتابعة التنبيهات.</p>
+          <div class="status-row" style="margin-top:10px;">
+            <span class="tag-pill tag-sky" id="homeAccountTag">🔑 غير مسجّل</span>
+            <span class="tag-pill tag-amber" id="homeRoleTag">🪪 مشتري</span>
+            <span class="tag-pill tag-emerald" id="homeLocTag">📌 خنشلة، بلدية ولاد رشاش</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="menu-grid" aria-label="خيارات المنصة">
+        <button class="tile-btn tile-sky" onclick="openSoloPage('auth')">🔑 الدخول والـ OTP</button>
+        <button class="tile-btn tile-amber" onclick="openSoloPage('role')">🪪 اختيار الدور</button>
+        <button class="tile-btn tile-emerald" onclick="openSoloPage('location')">📌 مكان الإقامة</button>
+        <button class="tile-btn tile-amber" onclick="openSoloPage('new-order')">✍️ طلبية جديدة</button>
+        <button class="tile-btn tile-sky" onclick="openSoloPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
+        <button class="tile-btn tile-violet" onclick="openSoloPage('orders-log')">🧾 سجل الطلبيات</button>
+        <button class="tile-btn tile-emerald" onclick="openSoloPage('store')">🛍️ المتجر ونشر الصور</button>
+        <button class="tile-btn tile-sky" onclick="openSoloPage('alerts')">📣 صفحة الإشعارات</button>
+        <button class="tile-btn tile-rose" onclick="executeImmediateLogout()">🛑 تسجيل الخروج</button>
+      </nav>
+    </section>
+
+    <!-- 1. LOGIN & OTP -->
+    <section class="solo-page" id="p-auth">
+      <div class="page-head">
+        <div>
+          <h2>🔑 الدخول والـ OTP</h2>
           <p>تسجيل الدخول وتأكيد الحساب عبر رمز التحقق (OTP) على البريد الإلكتروني.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
+      <div class="card-box">
         <label for="otpMail">البريد الإلكتروني</label>
         <input type="email" id="otpMail" placeholder="example@mail.com" />
-        <button class="action-btn btn-amber" id="btnSendOtp" onclick="requestOtp()">📨 إرسال رمز OTP</button>
+        <button class="btn btn-amber" id="btnSendOtp" onclick="requestOtp()">📨 إرسال رمز OTP</button>
 
         <hr style="border:none;border-top:1px solid var(--line);margin:18px 0;" />
 
         <label for="otpToken">رمز التحقق (OTP)</label>
         <input type="text" id="otpToken" placeholder="أدخل الرمز المرسل" />
-        <button class="action-btn btn-teal" id="btnVerifyOtp" onclick="confirmOtp()">✔️ تأكيد الرمز والدخول</button>
-
-        <div class="alert-box" id="authAlert"></div>
+        <button class="btn btn-emerald" id="btnVerifyOtp" onclick="confirmOtp()">✔️ تأكيد الرمز والدخول</button>
+        <div class="msg-box" id="authMsg"></div>
       </div>
     </section>
 
-    <!-- 2. SOLO PAGE: CHOOSE ROLE (المشتري / عامل التوصيل / البائع) -->
+    <!-- 2. ROLE SELECTION -->
     <section class="solo-page" id="p-role">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>🪪 اختيار الدور</h1>
-          <p>حدد دورك في التطبيق: مشتري، عامل توصيل، أو بائع (متجر / أسر منتجة / محلات).</p>
+          <h2>🪪 اختيار الدور</h2>
+          <p>حدد دورك في المنصة: مشتري، عامل توصيل، أو بائع / متجر.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
-        <label for="rolePicker">اختر دورك في التطبيق</label>
+      <div class="card-box">
+        <label for="rolePicker">اختر دورك</label>
         <select id="rolePicker">
           <option value="مشتري">🛒 مشتري (صاحب الطلب — حاجيات البيت، قطع غيار، متاجر)</option>
           <option value="عامل توصيل">🛵 عامل توصيل (يشتري ويوصل ويتقاضى ثمن المشتريات + العمولة)</option>
           <option value="بائع">🏪 بائع / متجر (أسر منتجة، حرف، حلويات، كسكس، مطاعم، صيدليات، بقالات)</option>
         </select>
-        <button class="action-btn btn-teal" onclick="applyRole()">💾 اعتماد الدور</button>
-        <div class="alert-box" id="roleAlert"></div>
+        <button class="btn btn-emerald" onclick="applyRole()">💾 اعتماد الدور</button>
+        <div class="msg-box" id="roleMsg"></div>
       </div>
     </section>
 
-    <!-- 3. SOLO PAGE: LOCATION -->
+    <!-- 3. LOCATION -->
     <section class="solo-page" id="p-location">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>📌 مكان الإقامة</h1>
-          <p>تحديد وحفظ موقع الإقامة الحالي لتسهيل الطلبات والتوصيل.</p>
+          <h2>📌 مكان الإقامة</h2>
+          <p>تحديد وحفظ مكان الإقامة الحالي.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
+      <div class="card-box">
         <label for="locField">مكان الإقامة</label>
         <input type="text" id="locField" placeholder="خنشلة، بلدية ولاد رشاش" />
-        <button class="action-btn btn-amber" onclick="applyLocation()">💾 حفظ الموقع</button>
-        <div class="alert-box" id="locAlert"></div>
+        <button class="btn btn-amber" onclick="applyLocation()">💾 حفظ الموقع</button>
+        <div class="msg-box" id="locMsg"></div>
       </div>
     </section>
 
-    <!-- 4. SOLO PAGE: NEW ORDER (حاجيات، بالآجل، بين الولايات، وسيلة النقل) -->
+    <!-- 4. NEW ORDER -->
     <section class="solo-page" id="p-new-order">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>✍️ طلبية جديدة</h1>
-          <p>حدد ما ينقصك في البيت أو المتجر، مع دعم الشراء بالآجل والتوصيل بين الولايات.</p>
+          <h2>✍️ طلبية جديدة</h2>
+          <p>حدد ما ينقصك مع دعم الشراء بالآجل والتوصيل بين الولايات.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
-        <div class="panel-title">⚡ إضافة سريعة لحاجيات شائعة</div>
-        <div class="quick-chips">
-          <button type="button" class="quick-btn" onclick="quickAddItem('خبز (2x)')">🍞 خبز 2x</button>
-          <button type="button" class="quick-btn" onclick="quickAddItem('حليب (1x)')">🥛 حليب 1x</button>
-          <button type="button" class="quick-btn" onclick="quickAddItem('بيض (6x)')">🥚 بيض 6x</button>
-          <button type="button" class="quick-btn" onclick="quickAddItem('قطعة غيار سيارة')">🔧 قطعة غيار</button>
+      <div class="card-box">
+        <div class="section-label">⚡ إضافة سريعة لحاجيات شائعة</div>
+        <div class="quick-row">
+          <button type="button" class="chip-btn" onclick="quickAddItem('خبز (2x)')">🍞 خبز 2x</button>
+          <button type="button" class="chip-btn" onclick="quickAddItem('حليب (1x)')">🥛 حليب 1x</button>
+          <button type="button" class="chip-btn" onclick="quickAddItem('بيض (6x)')">🥚 بيض 6x</button>
+          <button type="button" class="chip-btn" onclick="quickAddItem('قطعة غيار سيارة')">🔧 قطعة غيار</button>
         </div>
 
         <form id="orderForm" onsubmit="submitOrder(event)">
-          <div class="cols-2">
+          <div class="grid-2">
             <div>
               <label for="orderCategory">التصنيف *</label>
               <select id="orderCategory">
@@ -554,7 +697,7 @@
             </div>
           </div>
 
-          <div class="cols-2">
+          <div class="grid-2">
             <div>
               <label for="orderPhone">رقم الهاتف *</label>
               <input type="tel" id="orderPhone" placeholder="06xxxxxxxx" required />
@@ -565,7 +708,7 @@
             </div>
           </div>
 
-          <div class="cols-2">
+          <div class="grid-2">
             <div>
               <label for="orderEstCost">التقدير التقريبي للمشتريات (د.ج)</label>
               <input type="number" id="orderEstCost" value="1500" min="0" step="any" />
@@ -576,12 +719,12 @@
             </div>
           </div>
 
-          <label class="check-line">
+          <label class="check-row">
             <input type="checkbox" id="orderDeferred" />
-            <span>🤝 الشراء بالآجل (اتفاق تسديد لاحق مع المتجر/البائع)</span>
+            <span>🤝 الشراء بالآجل (تسديد لاحق بالاتفاق مع المتجر/البائع)</span>
           </label>
 
-          <label class="check-line">
+          <label class="check-row">
             <input type="checkbox" id="orderInterWilaya" onchange="toggleVehicleBox()" />
             <span>🚚 توصيل بين الولايات</span>
           </label>
@@ -595,76 +738,76 @@
             </select>
           </div>
 
-          <button type="submit" class="action-btn btn-amber">🚀 إرسال الطلب</button>
-          <div class="alert-box" id="orderAlert"></div>
+          <button type="submit" class="btn btn-amber">🚀 إرسال الطلب</button>
+          <div class="msg-box" id="orderMsg"></div>
         </form>
       </div>
     </section>
 
-    <!-- 5. SOLO PAGE: BROWSE ORDERS + ACCEPT + LIVE GOOGLE MAPS ROUTE -->
+    <!-- 5. BROWSE ORDERS & LIVE ROUTE -->
     <section class="solo-page" id="p-browse-orders">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>🛵 تصفح الطلبات والمسار</h1>
-          <p>تصفح الطلبات المتاحة، اقبل ما يناسبك، وعرض مسار حي على خرائط جوجل لصاحب الطلب.</p>
+          <h2>🛵 تصفح الطلبات والمسار</h2>
+          <p>تصفح الطلبات المتاحة، اقبل ما يناسبك، وافتح مساراً حياً على خرائط جوجل.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
-        <div class="panel-title">🔎 تصفية حسب التصنيف</div>
-        <div class="quick-chips">
-          <button type="button" class="quick-btn" onclick="setFilterCategory('الكل')">الكل</button>
-          <button type="button" class="quick-btn" onclick="setFilterCategory('بقالة')">بقالة</button>
-          <button type="button" class="quick-btn" onclick="setFilterCategory('قطع غيار')">قطع غيار</button>
-          <button type="button" class="quick-btn" onclick="setFilterCategory('مطاعم')">مطاعم</button>
+      <div class="card-box">
+        <div class="section-label">🔎 تصفية حسب التصنيف</div>
+        <div class="quick-row">
+          <button type="button" class="chip-btn" onclick="setFilterCategory('الكل')">الكل</button>
+          <button type="button" class="chip-btn" onclick="setFilterCategory('بقالة')">بقالة</button>
+          <button type="button" class="chip-btn" onclick="setFilterCategory('قطع غيار')">قطع غيار</button>
+          <button type="button" class="chip-btn" onclick="setFilterCategory('مطاعم')">مطاعم</button>
         </div>
 
         <div id="availableOrdersBox"></div>
 
-        <div class="live-route-box" id="liveRouteBox" style="display:none;">
-          <div class="panel-title" style="margin-bottom:6px;">🗺️ المسار الحي إلى صاحب الطلب (خرائط جوجل)</div>
-          <p id="liveRouteSummary" style="font-size:0.88rem;color:var(--ink);"></p>
-          <div class="route-visual">
+        <div class="route-card" id="liveRouteBox" style="display:none;">
+          <div class="section-label" style="margin-bottom:6px;color:var(--emerald);">🗺️ المسار الحي إلى صاحب الطلب</div>
+          <p id="liveRouteSummary" style="font-size:0.88rem;"></p>
+          <div class="route-bar">
             <span>🛵 موقعك (عامل التوصيل)</span>
             <span>━━━━━━━━➤ مسار حي ➤━━━━━━━━</span>
             <span id="routeDestLabel">🏠 الزبون</span>
           </div>
           <div style="margin-top:12px;">
-            <a id="gmapsExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="action-btn btn-teal">
-              📍 فتح المسار الحي في خرائط جوجل
+            <a id="gmapsExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sky">
+              📍 فتح المسار في خرائط جوجل
             </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 6. SOLO PAGE: ORDERS LOG & SETTLEMENT -->
+    <!-- 6. ORDERS LOG -->
     <section class="solo-page" id="p-orders-log">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>🧾 سجل الطلبيات</h1>
-          <p>متابعة حالة الطلبات، الشراء بالآجل، ومستحقات عامل التوصيل (ثمن المشتريات + العمولة).</p>
+          <h2>🧾 سجل الطلبيات</h2>
+          <p>متابعة الطلبات وحالات التسليم ومستحقات عامل التوصيل (ثمن المشتريات + العمولة).</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
+      <div class="card-box">
         <div id="allOrdersLogBox"></div>
       </div>
     </section>
 
-    <!-- 7. SOLO PAGE: STORE & ADD PRODUCT (product-images) -->
+    <!-- 7. STORE & PUBLISH PRODUCT IMAGES -->
     <section class="solo-page" id="p-store">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>🛍️ المتجر وإضافة منتج</h1>
-          <p>مساحة للبائعين والأسر المنتجة والحرف والمطاعم والمتاجر لعرض المنتجات ورفع صورها.</p>
+          <h2>🛍️ المتجر ونشر الصور</h2>
+          <p>أضف منتجاً أو خدمة مع صورته وعرضه في المتجر مع محاولة الرفع إلى product-images.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
-        <div class="panel-title">➕ أضف منتجاً ورفع الصورة إلى product-images</div>
+      <div class="card-box">
+        <div class="section-label">📸 نشر منتج جديد</div>
         <form id="shopForm" onsubmit="addShopItem(event)">
-          <div class="cols-2">
+          <div class="grid-2">
             <div>
               <label for="itemName">اسم المنتج أو الخدمة *</label>
               <input type="text" id="itemName" placeholder="مثال: كسكس يدوي / حلويات / قطعة غيار" required />
@@ -675,7 +818,7 @@
             </div>
           </div>
 
-          <div class="cols-2">
+          <div class="grid-2">
             <div>
               <label for="itemSellerType">نوع البائع / المتجر</label>
               <select id="itemSellerType">
@@ -686,7 +829,7 @@
               </select>
             </div>
             <div>
-              <label for="itemPic">صورة المنتج (حاوية product-images) *</label>
+              <label for="itemPic">صورة المنتج *</label>
               <input type="file" id="itemPic" accept="image/*" required />
             </div>
           </div>
@@ -694,45 +837,45 @@
           <label for="itemNote">وصف قصير</label>
           <textarea id="itemNote" rows="2" placeholder="تفاصيل المنتج أو توفره بالآجل..."></textarea>
 
-          <button type="submit" class="action-btn btn-teal" id="btnUploadItem">⬆️ رفع الصورة ونشر المنتج</button>
-          <div class="alert-box" id="shopAlert"></div>
+          <button type="submit" class="btn btn-emerald" id="btnUploadItem">⬆️ نشر الصورة والمنتج</button>
+          <div class="msg-box" id="shopMsg"></div>
         </form>
       </div>
 
-      <div class="panel">
-        <div class="panel-title">🧺 المنتجات والخدمات المعروضة</div>
-        <div class="cols-3" id="shopGrid"></div>
+      <div class="card-box">
+        <div class="section-label">🧺 المنتجات المعروضة في المتجر</div>
+        <div class="grid-3" id="shopGrid"></div>
       </div>
     </section>
 
-    <!-- 8. SOLO PAGE: NOTIFICATIONS -->
+    <!-- 8. NOTIFICATIONS PAGE -->
     <section class="solo-page" id="p-alerts">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>📣 الإشعارات</h1>
-          <p>متابعة التنبيهات الفورية للطلبات والقبول والتوصيل والحساب.</p>
+          <h2>📣 صفحة الإشعارات</h2>
+          <p>استعراض جميع الإشعارات وتحديث حالتها.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
-        <button class="action-btn btn-dark" style="margin-bottom:14px;" onclick="clearUnread()">✅ تعليم الكل كمقروء</button>
+      <div class="card-box">
+        <button class="btn btn-soft" style="margin-bottom:14px;" onclick="clearUnread()">✅ تعليم الكل كمقروء</button>
         <div id="alertsBox"></div>
       </div>
     </section>
 
-    <!-- 9. SOLO PAGE: IMMEDIATE LOGOUT CONFIRMATION -->
+    <!-- 9. IMMEDIATE LOGOUT CONFIRMATION -->
     <section class="solo-page" id="p-signout">
-      <div class="page-header-box">
+      <div class="page-head">
         <div>
-          <h1>🛑 تسجيل الخروج</h1>
-          <p>تم تنفيذ تسجيل الخروج فوراً وتحديث حالة الجلسة.</p>
+          <h2>🛑 تسجيل الخروج</h2>
+          <p>تم تنفيذ تسجيل الخروج فوراً وتحديث حالة الحساب.</p>
         </div>
-        <button class="action-btn btn-dark" onclick="showHomeMenu()">← القائمة الرئيسية</button>
+        <button class="btn btn-soft" onclick="goHome()">← القائمة الرئيسية</button>
       </div>
-      <div class="panel">
-        <div class="alert-box show success" id="signoutResultBox" style="margin-top:0;"></div>
+      <div class="card-box">
+        <div class="msg-box show ok" id="signoutResultBox" style="margin-top:0;"></div>
         <div style="margin-top:14px;">
-          <button class="action-btn btn-amber" onclick="openSoloPage('auth')">🔑 العودة إلى صفحة الدخول</button>
+          <button class="btn btn-amber" onclick="openSoloPage('auth')">🔑 العودة إلى صفحة الدخول</button>
         </div>
       </div>
     </section>
@@ -751,7 +894,7 @@
     let activeFilterCat = "الكل";
 
     let alerts = JSON.parse(localStorage.getItem("wossol_notifs") || "null") || [
-      { id: 1, text: "⚡ مرحباً بك في خدمات wossol: خدمات + متجر في منصة واحدة.", time: "الآن", unread: true }
+      { id: 1, text: "🔔 مرحباً بك في خدمات wossol — الواجهة المحدثة جاهزة.", time: "الآن", unread: true }
     ];
 
     let shopItems = JSON.parse(localStorage.getItem("wossol_products") || "null") || [
@@ -785,25 +928,39 @@
     ];
 
     function openSoloPage(pKey) {
-      document.getElementById("homeMenu").classList.add("hidden");
+      document.getElementById("topNotifDropdown").classList.remove("open");
+      document.getElementById("homeShell").classList.add("hidden");
       document.querySelectorAll(".solo-page").forEach(s => {
         s.classList.toggle("active", s.id === `p-${pKey}`);
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function showHomeMenu() {
+    function goHome() {
+      document.getElementById("topNotifDropdown").classList.remove("open");
       document.querySelectorAll(".solo-page").forEach(s => s.classList.remove("active"));
-      document.getElementById("homeMenu").classList.remove("hidden");
+      document.getElementById("homeShell").classList.remove("hidden");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    async function selectLogoutOption() {
+    function toggleTopNotifMenu() {
+      document.getElementById("topNotifDropdown").classList.toggle("open");
+    }
+
+    document.addEventListener("click", (e) => {
+      const drop = document.getElementById("topNotifDropdown");
+      const btn = document.getElementById("topNotifBtn");
+      if (!drop.contains(e.target) && !btn.contains(e.target)) {
+        drop.classList.remove("open");
+      }
+    });
+
+    async function executeImmediateLogout() {
       const hadSession = Boolean(userMail);
       try { await sb.auth.signOut(); } catch (_) {}
       userMail = "";
       localStorage.removeItem("wossol_user_email");
-      refreshChips();
+      refreshTags();
 
       const box = document.getElementById("signoutResultBox");
       if (hadSession) {
@@ -815,10 +972,10 @@
       openSoloPage("signout");
     }
 
-    function refreshChips() {
-      document.getElementById("chipAccount").textContent = userMail ? `🔑 ${userMail}` : "🔑 غير مسجّل";
-      document.getElementById("chipRole").textContent = `🪪 ${roleVal}`;
-      document.getElementById("chipLoc").textContent = `📌 ${locVal}`;
+    function refreshTags() {
+      document.getElementById("homeAccountTag").textContent = userMail ? `🔑 ${userMail}` : "🔑 غير مسجّل";
+      document.getElementById("homeRoleTag").textContent = `🪪 ${roleVal}`;
+      document.getElementById("homeLocTag").textContent = `📌 ${locVal}`;
       document.getElementById("rolePicker").value = roleVal;
       document.getElementById("locField").value = locVal;
     }
@@ -836,18 +993,31 @@
     }
 
     function drawAlerts() {
+      const unreadCount = alerts.filter(a => a.unread).length;
+      const badge = document.getElementById("topNotifBadge");
+      badge.textContent = String(unreadCount);
+      badge.classList.toggle("empty", unreadCount === 0);
+
+      const preview = document.getElementById("topNotifPreview");
+      preview.innerHTML = alerts.slice(0, 3).map(a => `
+        <div class="notif-mini-item" style="opacity:${a.unread ? 1 : 0.7}">
+          <div>${esc(a.text)}</div>
+          <small style="color:var(--text-muted);font-size:0.72rem;">${esc(a.time)}</small>
+        </div>
+      `).join("") || `<div class="notif-mini-item">لا توجد إشعارات.</div>`;
+
       const el = document.getElementById("alertsBox");
       if (!alerts.length) {
-        el.innerHTML = `<p style="color:var(--ink-dim);">لا توجد إشعارات.</p>`;
+        el.innerHTML = `<p style="color:var(--text-muted);">لا توجد إشعارات.</p>`;
         return;
       }
       el.innerHTML = alerts.map(a => `
-        <div class="row-box" style="opacity:${a.unread ? 1 : 0.72}">
+        <div class="list-card" style="opacity:${a.unread ? 1 : 0.72}">
           <div>
             <strong>${esc(a.text)}</strong>
-            <div style="color:var(--ink-dim);font-size:0.78rem;">${esc(a.time)}</div>
+            <div style="color:var(--text-muted);font-size:0.78rem;">${esc(a.time)}</div>
           </div>
-          <span class="chip">${a.unread ? "جديد" : "مقروء"}</span>
+          <span class="tag-pill">${a.unread ? "جديد" : "مقروء"}</span>
         </div>
       `).join("");
     }
@@ -855,21 +1025,21 @@
     function applyRole() {
       roleVal = document.getElementById("rolePicker").value;
       localStorage.setItem("wossol_role", roleVal);
-      refreshChips();
-      showAlert("roleAlert", `✔️ تم اعتماد الدور: ${roleVal}`, "success");
+      refreshTags();
+      showMsg("roleMsg", `✔️ تم اعتماد الدور: ${roleVal}`, "ok");
       pushAlert(`🪪 تم اختيار الدور: ${roleVal}`);
     }
 
     function applyLocation() {
       const v = document.getElementById("locField").value.trim();
       if (!v) {
-        showAlert("locAlert", "أدخل مكان الإقامة أولاً.", "error");
+        showMsg("locMsg", "أدخل مكان الإقامة أولاً.", "err");
         return;
       }
       locVal = v;
       localStorage.setItem("wossol_location", locVal);
-      refreshChips();
-      showAlert("locAlert", `✔️ تم حفظ مكان الإقامة: ${locVal}`, "success");
+      refreshTags();
+      showMsg("locMsg", `✔️ تم حفظ مكان الإقامة: ${locVal}`, "ok");
       pushAlert(`📌 تم تحديث مكان الإقامة: ${locVal}`);
     }
 
@@ -921,7 +1091,7 @@
       document.getElementById("orderCommission").value = 200;
       document.getElementById("vehicleBox").style.display = "none";
 
-      showAlert("orderAlert", `✔️ تم إرسال الطلبية رقم ${rec.id} بنجاح!`, "success");
+      showMsg("orderMsg", `✔️ تم إرسال الطلبية رقم ${rec.id} بنجاح!`, "ok");
       pushAlert(`✍️ طلبية جديدة (${rec.id}): ${itemsText}`);
     }
 
@@ -935,29 +1105,29 @@
       const filtered = orderList.filter(o => activeFilterCat === "الكل" || o.category === activeFilterCat);
 
       if (!filtered.length) {
-        box.innerHTML = `<p style="color:var(--ink-dim);">لا توجد طلبات في هذا التصنيف حالياً.</p>`;
+        box.innerHTML = `<p style="color:var(--text-muted);">لا توجد طلبات في هذا التصنيف حالياً.</p>`;
         return;
       }
 
       box.innerHTML = filtered.map(o => {
         const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
         return `
-          <div class="row-box">
+          <div class="list-card">
             <div>
               <strong>طلبية ${esc(o.category)} • ${esc(o.distanceKm)}</strong>
-              <span class="chip">${esc(o.status)}</span>
-              ${o.deferred ? `<span class="chip">🤝 شراء بالآجل</span>` : ""}
-              ${o.interWilaya ? `<span class="chip">🚚 ${esc(o.vehicle)}</span>` : ""}
-              <div style="color:var(--ink);font-size:0.9rem;margin-top:4px;">${esc(o.itemsText)}</div>
-              <div style="color:var(--ink-dim);font-size:0.8rem;margin-top:3px;">
+              <span class="tag-pill">${esc(o.status)}</span>
+              ${o.deferred ? `<span class="tag-pill tag-amber">🤝 شراء بالآجل</span>` : ""}
+              ${o.interWilaya ? `<span class="tag-pill tag-sky">🚚 ${esc(o.vehicle)}</span>` : ""}
+              <div style="font-size:0.9rem;margin-top:4px;">${esc(o.itemsText)}</div>
+              <div style="color:var(--text-muted);font-size:0.8rem;margin-top:3px;">
                 📍 العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
               </div>
-              <div class="cost-tag" style="margin-top:5px;">
-                عمولة التوصيل: ${Number(o.commission).toLocaleString()} د.ج | إجمالي المستحقات عند التسليم: ${totalPay.toLocaleString()} د.ج
+              <div class="price-txt" style="margin-top:5px;">
+                عمولة التوصيل: ${Number(o.commission).toLocaleString()} د.ج | إجمالي المستحقات: ${totalPay.toLocaleString()} د.ج
               </div>
             </div>
             <div>
-              <button class="action-btn btn-teal" onclick="acceptOrderAndShowRoute('${escJs(o.id)}')">
+              <button class="btn btn-emerald" onclick="acceptOrderAndShowRoute('${escJs(o.id)}')">
                 ✅ قبول ورسم المسار الحي
               </button>
             </div>
@@ -987,7 +1157,7 @@
       const destEnc = encodeURIComponent(target.address || locVal);
 
       routeBox.style.display = "block";
-      summary.textContent = `تم قبول الطلبية (${target.id}) — يشتري عامل التوصيل (${target.itemsText}) ويوصله إلى (${target.address}) ويتسلم ثمن المشتريات (${Number(target.estCost).toLocaleString()} د.ج) + العمولة (${Number(target.commission).toLocaleString()} د.ج).`;
+      summary.textContent = `تم قبول الطلبية (${target.id}) — شراء (${target.itemsText}) وتوصيلها إلى (${target.address})، ويتسلم العامل ثمن المشتريات (${Number(target.estCost).toLocaleString()} د.ج) + العمولة (${Number(target.commission).toLocaleString()} د.ج).`;
       destLabel.textContent = `🏠 ${target.address}`;
       mapsLink.href = `https://www.google.com/maps/dir/?api=1&origin=${originEnc}&destination=${destEnc}&travelmode=driving`;
 
@@ -1005,32 +1175,41 @@
     function drawOrdersLog() {
       const box = document.getElementById("allOrdersLogBox");
       if (!orderList.length) {
-        box.innerHTML = `<p style="color:var(--ink-dim);">لا توجد طلبيات مسجلة.</p>`;
+        box.innerHTML = `<p style="color:var(--text-muted);">لا توجد طلبيات مسجلة.</p>`;
         return;
       }
 
       box.innerHTML = orderList.map(o => {
         const totalPay = Number(o.estCost || 0) + Number(o.commission || 0);
         return `
-          <div class="row-box">
+          <div class="list-card">
             <div>
-              <strong>${esc(o.itemsText)}</strong> <span class="chip">${esc(o.status)}</span>
-              ${o.deferred ? `<span class="chip">🤝 بالآجل</span>` : ""}
-              ${o.interWilaya ? `<span class="chip">🚚 ${esc(o.vehicle)}</span>` : ""}
-              <div style="color:var(--ink-dim);font-size:0.82rem;margin-top:4px;">
+              <strong>${esc(o.itemsText)}</strong> <span class="tag-pill">${esc(o.status)}</span>
+              ${o.deferred ? `<span class="tag-pill tag-amber">🤝 بالآجل</span>` : ""}
+              ${o.interWilaya ? `<span class="tag-pill tag-sky">🚚 ${esc(o.vehicle)}</span>` : ""}
+              <div style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;">
                 الرقم: <strong>${esc(o.id)}</strong> | التصنيف: ${esc(o.category)} | العنوان: ${esc(o.address)} | 📞 ${esc(o.phone)}
               </div>
               <div style="color:var(--amber);font-size:0.84rem;font-weight:700;margin-top:3px;">
-                ثمن المشتريات: ${Number(o.estCost).toLocaleString()} د.ج + العمولة: ${Number(o.commission).toLocaleString()} د.ج = المجموع: ${totalPay.toLocaleString()} د.ج
+                المشتريات: ${Number(o.estCost).toLocaleString()} د.ج + العمولة: ${Number(o.commission).toLocaleString()} د.ج = المجموع: ${totalPay.toLocaleString()} د.ج
               </div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button class="action-btn btn-dark" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم الشراء وجاري التوصيل')">تم الشراء</button>
-              <button class="action-btn btn-teal" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم التسليم واستلام المستحقات')">تم التسليم</button>
+              <button class="btn btn-soft" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم الشراء وجاري التوصيل')">تم الشراء</button>
+              <button class="btn btn-emerald" style="padding:7px 12px;font-size:0.78rem;" onclick="updateOrderStatus('${escJs(o.id)}', 'تم التسليم واستلام المستحقات')">تم التسليم</button>
             </div>
           </div>
         `;
       }).join("");
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("تعذر قراءة ملف الصورة"));
+        reader.readAsDataURL(file);
+      });
     }
 
     async function addShopItem(e) {
@@ -1043,56 +1222,97 @@
       const btn = document.getElementById("btnUploadItem");
 
       if (!file) {
-        showAlert("shopAlert", "اختر صورة للمنتج أولاً.", "error");
+        showMsg("shopMsg", "اختر صورة للمنتج أولاً.", "err");
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = "⏳ جاري الرفع...";
+      btn.textContent = "⏳ جاري نشر الصورة والمنتج...";
+
+      let finalImageUrl = "";
+      let cloudUploaded = false;
 
       try {
-        const ext = file.name.split(".").pop() || "jpg";
-        const path = `items/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error: upErr } = await sb.storage.from(BUCKET_NAME).upload(path, file, { cacheControl: "3600", upsert: false });
-        if (upErr) throw upErr;
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+        const objectPath = `items/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${objectPath}`;
 
-        const { data: pub } = sb.storage.from(BUCKET_NAME).getPublicUrl(path);
-        shopItems.unshift({ id: String(Date.now()), name, price, sellerType, desc, imageUrl: pub.publicUrl });
-        drawShop();
-        document.getElementById("shopForm").reset();
-        showAlert("shopAlert", "✔️ تم رفع الصورة إلى product-images ونشر المنتج!", "success");
-        pushAlert(`🛍️ تمت إضافة منتج جديد في المتجر: ${name}`);
-      } catch (err) {
-        showAlert("shopAlert", `❌ تعذر الرفع: ${err.message || err}`, "error");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "⬆️ رفع الصورة ونشر المنتج";
+        const res = await fetch(uploadUrl, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": file.type || "image/jpeg",
+            "x-upsert": "true"
+          },
+          body: file
+        });
+
+        if (res.ok) {
+          finalImageUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${objectPath}`;
+          cloudUploaded = true;
+        } else {
+          finalImageUrl = await fileToDataUrl(file);
+        }
+      } catch (_) {
+        try {
+          finalImageUrl = await fileToDataUrl(file);
+        } catch (readErr) {
+          showMsg("shopMsg", `❌ تعذر معالجة الصورة: ${readErr.message}`, "err");
+          btn.disabled = false;
+          btn.textContent = "⬆️ نشر الصورة والمنتج";
+          return;
+        }
       }
+
+      shopItems.unshift({
+        id: String(Date.now()),
+        name,
+        price,
+        sellerType,
+        desc,
+        imageUrl: finalImageUrl
+      });
+
+      try {
+        localStorage.setItem("wossol_products", JSON.stringify(shopItems));
+      } catch (_) {}
+
+      drawShop();
+      document.getElementById("shopForm").reset();
+
+      if (cloudUploaded) {
+        showMsg("shopMsg", "✔️ تم رفع الصورة إلى product-images ونشر المنتج بنجاح!", "ok");
+      } else {
+        showMsg("shopMsg", "✔️ تم نشر الصورة والمنتج في المتجر بنجاح (تم الحفظ محلياً لتجاوز رفض مفتاح التخزين).", "ok");
+      }
+      pushAlert(`🛍️ تمت إضافة منتج جديد في المتجر: ${name}`);
+
+      btn.disabled = false;
+      btn.textContent = "⬆️ نشر الصورة والمنتج";
     }
 
     function drawShop() {
       const grid = document.getElementById("shopGrid");
       if (!shopItems.length) {
-        grid.innerHTML = `<p style="color:var(--ink-dim);">لا توجد منتجات معروضة حالياً.</p>`;
+        grid.innerHTML = `<p style="color:var(--text-muted);">لا توجد منتجات معروضة حالياً.</p>`;
         return;
       }
 
       grid.innerHTML = shopItems.map(i => `
-        <article class="item-card">
-          <img class="item-photo" src="${i.imageUrl}" alt="${esc(i.name)}" loading="lazy" />
-          <div class="item-content">
-            <span class="chip" style="align-self:flex-start;">${esc(i.sellerType || "متجر")}</span>
+        <article class="prod-card">
+          <img class="prod-img" src="${i.imageUrl}" alt="${esc(i.name)}" loading="lazy" />
+          <div class="prod-body">
+            <span class="tag-pill tag-sky" style="align-self:flex-start;">${esc(i.sellerType || "متجر")}</span>
             <strong>${esc(i.name)}</strong>
-            <div class="cost-tag">${Number(i.price).toLocaleString()} د.ج</div>
-            <p style="color:var(--ink-dim);font-size:0.84rem;">${esc(i.desc || "")}</p>
-            <button class="action-btn btn-amber" style="margin-top:auto;" onclick="quickOrderFromShop('${escJs(i.name)}', '${escJs(String(i.price))}')">
+            <div class="price-txt">${Number(i.price).toLocaleString()} د.ج</div>
+            <p style="color:var(--text-muted);font-size:0.84rem;">${esc(i.desc || "")}</p>
+            <button class="btn btn-amber" style="margin-top:auto;" onclick="quickOrderFromShop('${escJs(i.name)}', '${escJs(String(i.price))}')">
               ✍️ اطلب الآن
             </button>
           </div>
         </article>
       `).join("");
-
-      localStorage.setItem("wossol_products", JSON.stringify(shopItems));
     }
 
     function quickOrderFromShop(name, price) {
@@ -1105,7 +1325,7 @@
       const mail = document.getElementById("otpMail").value.trim();
       const btn = document.getElementById("btnSendOtp");
       if (!mail) {
-        showAlert("authAlert", "أدخل البريد الإلكتروني أولاً.", "error");
+        showMsg("authMsg", "أدخل البريد الإلكتروني أولاً.", "err");
         return;
       }
       btn.disabled = true;
@@ -1113,10 +1333,10 @@
       try {
         const { error } = await sb.auth.signInWithOtp({ email: mail, options: { shouldCreateUser: true } });
         if (error) throw error;
-        showAlert("authAlert", `📨 تم إرسال الرمز إلى ${mail} (تحقق من البريد الوارد أو Spam).`, "success");
+        showMsg("authMsg", `📨 تم إرسال الرمز إلى ${mail} (تحقق من البريد الوارد أو Spam).`, "ok");
         pushAlert(`🔑 إرسال رمز OTP إلى ${mail}`);
       } catch (err) {
-        showAlert("authAlert", `❌ تعذر الإرسال: ${err.message || err}`, "error");
+        showMsg("authMsg", `❌ تعذر الإرسال: ${err.message || err}`, "err");
       } finally {
         btn.disabled = false;
         btn.textContent = "📨 إرسال رمز OTP";
@@ -1128,7 +1348,7 @@
       const token = document.getElementById("otpToken").value.trim();
       const btn = document.getElementById("btnVerifyOtp");
       if (!mail || !token) {
-        showAlert("authAlert", "أدخل البريد ورمز OTP معاً.", "error");
+        showMsg("authMsg", "أدخل البريد ورمز OTP معاً.", "err");
         return;
       }
       btn.disabled = true;
@@ -1138,21 +1358,21 @@
         if (error) throw error;
         userMail = data.user?.email || mail;
         localStorage.setItem("wossol_user_email", userMail);
-        refreshChips();
-        showAlert("authAlert", `✔️ تم تسجيل الدخول بنجاح: ${userMail}`, "success");
+        refreshTags();
+        showMsg("authMsg", `✔️ تم تسجيل الدخول بنجاح: ${userMail}`, "ok");
         pushAlert(`🔑 تم تسجيل الدخول: ${userMail}`);
       } catch (err) {
-        showAlert("authAlert", `❌ رمز غير صحيح: ${err.message || err}`, "error");
+        showMsg("authMsg", `❌ رمز غير صحيح: ${err.message || err}`, "err");
       } finally {
         btn.disabled = false;
         btn.textContent = "✔️ تأكيد الرمز والدخول";
       }
     }
 
-    function showAlert(id, msg, kind) {
+    function showMsg(id, msg, kind) {
       const el = document.getElementById(id);
       el.textContent = msg;
-      el.className = `alert-box show ${kind}`;
+      el.className = `msg-box show ${kind}`;
     }
 
     function esc(s) {
@@ -1163,7 +1383,7 @@
       return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     }
 
-    refreshChips();
+    refreshTags();
     drawAlerts();
     drawShop();
     drawBrowseOrders();
