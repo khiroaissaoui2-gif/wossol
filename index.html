@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>wossol — توصيل الطلبات</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
     --bg:#0a0f1a;--surface:#121a2a;--surface2:#172136;--line:#26334d;
@@ -56,11 +58,9 @@
   .steps{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
   .steps span{font-size:.74rem;font-weight:800;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
   .steps span.done{color:var(--ok);border-color:rgba(52,211,153,.4)}
-  #otp{text-align:center;letter-spacing:.5em;font-size:1.3rem;font-weight:900;font-family:ui-monospace,monospace;padding-left:.5em}
   .pill{font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--surface2)}
   .pill.amber{color:var(--accent);border-color:rgba(245,165,36,.4);background:rgba(245,165,36,.09)}
   .pill.teal{color:var(--accent2);border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.09)}
-  .pill.danger{color:var(--danger);border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.09)}
   .stat{display:flex;flex-direction:column;gap:4px}
   .stat b{font-size:1.25rem;font-weight:900}
   .stat small{color:var(--muted);font-size:.75rem;font-weight:800}
@@ -80,9 +80,6 @@
   .msg.ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);color:#a7f3d0}
   .msg.err{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.4);color:#fecdd3}
   .note{background:rgba(245,165,36,.08);border:1px solid rgba(245,165,36,.3);color:#fcd34d;border-radius:12px;padding:10px 13px;font-size:.8rem;font-weight:700;margin-bottom:13px}
-  details{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--bg);margin-top:14px}
-  summary{cursor:pointer;font-size:.82rem;font-weight:800;color:var(--muted)}
-  #diag{font-family:ui-monospace,monospace;font-size:.75rem;margin-top:10px;white-space:pre-wrap;color:var(--muted)}
   .check{display:flex;align-items:center;gap:9px;font-size:.87rem;font-weight:700;margin-bottom:11px;cursor:pointer}
   .check input{width:auto;margin:0;accent-color:var(--accent)}
   .quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}
@@ -109,18 +106,18 @@
 
 <main>
 
-  <!-- AUTH -->
+  <!-- AUTH / DIRECT LOGIN -->
   <section class="view on" id="v-auth">
     <div class="hero">
       <h1>وصل طلبك <em>بلا تعقيد</em></h1>
-      <p>اطلب من محيطك، وتابع من ينقلها إليك على الخريطة. الدخول برمز يُرسل لبريدك، بلا كلمة سر.</p>
+      <p>اطلب من محيطك، وتابع من ينقلها إليك على الخريطة. دخول مباشر دون انتظار رمز تحقق.</p>
       <div class="steps">
-        <span id="st1">١ بياناتك</span><span id="st2">٢ رمز البريد</span><span id="st3">٣ موقعك</span>
+        <span id="st1">١ بياناتك</span><span id="st3">٢ موقعك</span>
       </div>
     </div>
 
     <div class="card">
-      <div class="head"><h2>الدخول أو إنشاء حساب</h2><span class="pill" id="gpsPill">الموقع غير محدد</span></div>
+      <div class="head"><h2>الدخول المباشر</h2><span class="pill" id="gpsPill">الموقع غير محدد</span></div>
       <div class="grid2">
         <div><label for="fName">الاسم الكامل</label><input id="fName" type="text" placeholder="اسمك كما يظهر للطرف الآخر" /></div>
         <div><label for="fEmail">البريد الإلكتروني</label><input id="fEmail" type="email" inputmode="email" placeholder="name@example.com" autocomplete="email" /></div>
@@ -131,22 +128,11 @@
           <select id="fRole"><option value="مشتري">مشتري</option><option value="عامل توصيل">عامل توصيل</option><option value="بائع">بائع / متجر</option></select>
         </div>
       </div>
-      <button class="btn btn-solid" id="bLoc" onclick="askLocation()">تحديد موقعي الآن</button>
-      <hr style="border:none;border-top:1px solid var(--line);margin:16px 0" />
-      <button class="btn btn-ghost" id="bSend" onclick="sendOtp()" style="width:100%">إرسال رمز التحقق إلى بريدي</button>
-      <div style="margin-top:13px">
-        <label for="otp">الرمز المكوّن من ٦ أرقام</label>
-        <input id="otp" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="——————" />
-        <button class="btn btn-teal" id="bVerify" onclick="verifyOtp()" style="width:100%">تأكيد الرمز والدخول</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="bLoc" onclick="askLocation()">تحديد موقعي الآن</button>
+        <button class="btn btn-solid" id="bEnter" onclick="directLogin()" style="flex:1;min-width:180px">دخول مباشر</button>
       </div>
       <div class="msg" id="authMsg"></div>
-
-      <details>
-        <summary>لم يصل الرمز؟ تشخيص سريع</summary>
-        <p class="lead" style="margin:10px 0 0;font-size:.8rem">يفحص الاتصال بالمشروع وحالة المفتاح ومزوّد البريد.</p>
-        <button class="btn btn-ghost btn-sm" onclick="runDiag()" style="margin-top:9px">تشغيل الفحص</button>
-        <div id="diag"></div>
-      </details>
     </div>
   </section>
 
@@ -300,13 +286,13 @@
 const U = "https://nnozlrxxleutxwbznbza.supabase.co";
 const KEY = "sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
 const BUCKET = "product-images";
-const SKEY = "wossol_s3";
+const SKEY = "wossol_direct_user_v1";
 const MAXB = 2.5 * 1024 * 1024;
 
-let sess = null, me = null, prof = { full_name:"", phone:"", role:"مشتري", lat:null, lng:null };
+let me = null, prof = { full_name:"", phone:"", role:"مشتري", lat:null, lng:null };
 let coords = null, cat = "الكل", tab = "mine";
 let orders = [], products = [], alerts = [];
-let cooldown = null, poll = null, mapObj = null, layer = null;
+let poll = null, mapObj = null, layer = null;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -322,34 +308,17 @@ function say(id, txt, kind) {
 function ls(key, fb) { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fb; } catch { return fb; } }
 function lsSet(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch {} }
 
-/* ---------- transport ---------- */
-async function refresh() {
-  if (!sess?.refresh_token) throw new Error("لا توجد جلسة");
-  const r = await fetch(U + "/auth/v1/token?grant_type=refresh_token", {
-    method: "POST",
-    headers: { apikey: KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: sess.refresh_token })
-  });
-  if (!r.ok) { await signOut(); throw new Error("انتهت الجلسة، سجّل الدخول من جديد"); }
-  saveSess(await r.json());
+function makeUserId(email) {
+  let h = 2166136261;
+  for (let i = 0; i < email.length; i++) {
+    h ^= email.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return "usr_" + (h >>> 0).toString(16);
 }
-function saveSess(d) {
-  sess = {
-    access_token: d.access_token, refresh_token: d.refresh_token,
-    expires_at: Date.now() + (d.expires_in || 3600) * 1000 - 30000,
-    user: d.user || sess?.user || null
-  };
-  if (d.user) me = d.user;
-  lsSet(SKEY, sess);
-}
-async function token() {
-  if (!sess) throw new Error("غير مسجل");
-  if (Date.now() > sess.expires_at) await refresh();
-  return sess.access_token;
-}
-async function api(path, { method = "GET", body, auth = true, headers = {} } = {}) {
-  const h = { apikey: KEY, ...headers };
-  if (auth || sess) h.Authorization = "Bearer " + await token();
+
+async function api(path, { method = "GET", body, headers = {} } = {}) {
+  const h = { apikey: KEY, Authorization: "Bearer " + KEY, ...headers };
   if (body !== undefined && !(body instanceof Blob)) h["Content-Type"] = "application/json";
   const r = await fetch(U + path, {
     method, headers: h,
@@ -365,75 +334,42 @@ async function api(path, { method = "GET", body, auth = true, headers = {} } = {
   return data;
 }
 
-/* ---------- auth ---------- */
-async function sendOtp() {
-  const email = $("fEmail").value.trim().toLowerCase();
+/* ---------- direct login ---------- */
+async function directLogin() {
   const name = $("fName").value.trim();
+  const email = $("fEmail").value.trim().toLowerCase();
   const phone = $("fPhone").value.trim();
   const role = $("fRole").value;
   if (!name) return say("authMsg", "أدخل اسمك أولاً.", "err");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say("authMsg", "صيغة البريد غير صحيحة.", "err");
 
-  const b = $("bSend");
-  b.disabled = true; b.textContent = "جارٍ الإرسال…";
+  const b = $("bEnter");
+  b.disabled = true; b.textContent = "جارٍ الدخول…";
   say("authMsg", "", "");
   try {
-    await api("/auth/v1/otp", { method: "POST", auth: false, body: {
-      email, create_user: true, data: { full_name: name, phone, role }
-    }});
-    lsSet("wossol_pending", { email, full_name: name, phone, role });
-    $("st2").classList.add("done");
-    $("otp").focus();
-    say("authMsg", "أُرسل الرمز إلى " + email + " — افحص البريد والمهملات.", "ok");
-    tick();
-  } catch (e) {
-    const m = String(e.message);
-    say("authMsg", m.includes("rate") ? "تجاوزت حد الإرسال. انتظر دقيقة ثم أعد المحاولة."
-      : "تعذر الإرسال: " + m, "err");
-    b.disabled = false; b.textContent = "إعادة إرسال الرمز";
-  }
-}
-function tick() {
-  const b = $("bSend"); let s = 60;
-  clearInterval(cooldown); b.disabled = true;
-  b.textContent = "إعادة الإرسال بعد " + s + "ث";
-  cooldown = setInterval(() => {
-    s--;
-    if (s <= 0) { clearInterval(cooldown); b.disabled = false; b.textContent = "إعادة إرسال الرمز"; }
-    else b.textContent = "إعادة الإرسال بعد " + s + "ث";
-  }, 1000);
-}
-
-async function verifyOtp() {
-  const code = $("otp").value.replace(/\D/g, "");
-  const email = $("fEmail").value.trim().toLowerCase();
-  if (code.length !== 6) return say("authMsg", "أدخل الرمز المكوّن من ٦ أرقام.", "err");
-  const b = $("bVerify");
-  b.disabled = true; b.textContent = "جارٍ التحقق…";
-  try {
-    const d = await api("/auth/v1/verify", { method: "POST", auth: false, body: { type: "email", email, token: code } });
-    saveSess(d);
-    const pending = ls("wossol_pending", null);
-    if (!coords) { try { coords = await geo(); lsSet("wossol_coords", coords); } catch {} }
-    await boot();
-    if (pending) {
-      await saveProfile({ full_name: pending.full_name, phone: pending.phone, role: pending.role });
-      localStorage.removeItem("wossol_pending");
+    if (!coords) {
+      try { coords = await geo(); lsSet("wossol_coords", coords); } catch {}
     }
-    await pushAlert("تم الدخول بحساب " + me.email);
+    me = { id: makeUserId(email), email };
+    prof = { full_name: name, phone, role, lat: coords?.lat ?? null, lng: coords?.lng ?? null };
+    lsSet(SKEY, { me, prof });
+    $("st1").classList.add("done");
+    if (coords) $("st3").classList.add("done");
+
+    try { await saveProfile({ full_name: name, phone, role }); } catch {}
+    try { await pushAlert("تم الدخول بحساب " + me.email); } catch {}
+    await boot();
     go("home");
   } catch (e) {
-    const m = String(e.message);
-    say("authMsg", /expired|invalid/i.test(m) ? "الرمز غير صحيح أو منتهي. اطلب رمزاً جديداً." : "فشل التحقق: " + m, "err");
+    say("authMsg", "تعذر الدخول: " + e.message, "err");
   } finally {
-    b.disabled = false; b.textContent = "تأكيد الرمز والدخول";
+    b.disabled = false; b.textContent = "دخول مباشر";
   }
 }
 
 async function signOut() {
   clearInterval(poll);
-  try { await api("/auth/v1/logout", { method: "POST" }); } catch {}
-  sess = null; me = null; orders = []; products = []; alerts = [];
+  me = null; orders = []; products = []; alerts = [];
   localStorage.removeItem(SKEY);
   renderAuth();
 }
@@ -443,28 +379,36 @@ function renderAuth() {
   $("v-auth").classList.add("on");
   $("nav").classList.remove("on");
   $("bell").classList.add("hide");
-  $("otp").value = "";
-  $("st2").classList.remove("done");
   say("authMsg", "", "");
   window.scrollTo({ top: 0 });
 }
 
 /* ---------- profile ---------- */
 async function boot() {
-  const rows = await api("/rest/v1/profiles?select=*&id=eq." + me.id);
-  if (rows?.length) prof = { ...prof, ...rows[0] };
-  else await saveProfile({ role: "مشتري" });
+  try {
+    const rows = await api("/rest/v1/profiles?select=*&id=eq." + encodeURIComponent(me.id));
+    if (rows?.length) prof = { ...prof, ...rows[0] };
+  } catch {}
+  lsSet(SKEY, { me, prof });
   renderShell();
   startPoll();
   await Promise.all([loadOrders(), loadAlerts()]);
 }
 async function saveProfile(patch) {
   prof = { ...prof, ...patch };
+  lsSet(SKEY, { me, prof });
   await api("/rest/v1/profiles?on_conflict=id", {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-    body: { id: me.id, full_name: prof.full_name, phone: prof.phone, role: prof.role,
-      lat: coords?.lat ?? null, lng: coords?.lng ?? null, updated_at: new Date().toISOString() }
+    body: {
+      id: me.id,
+      full_name: prof.full_name,
+      phone: prof.phone,
+      role: prof.role,
+      lat: coords?.lat ?? prof.lat ?? null,
+      lng: coords?.lng ?? prof.lng ?? null,
+      updated_at: new Date().toISOString()
+    }
   });
 }
 
@@ -487,7 +431,7 @@ function renderShell() {
   drawBrowse(); drawLog();
 }
 function go(v) {
-  if (!sess && v !== "auth") return renderAuth();
+  if (!me && v !== "auth") return renderAuth();
   document.querySelectorAll(".view").forEach(x => x.classList.remove("on"));
   $("v-" + v).classList.add("on");
   document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
@@ -497,7 +441,7 @@ function go(v) {
   if (v === "store") loadProducts();
   if (v === "alerts") { loadAlerts(); markRead(); }
 }
-function brandClick() { if (sess) go("home"); else renderAuth(); }
+function brandClick() { if (me) go("home"); else renderAuth(); }
 
 /* ---------- location ---------- */
 function geo(t = 20000) {
@@ -692,11 +636,10 @@ async function shrink(file) {
   return blob;
 }
 async function upload(blob) {
-  const t = await token();
   const path = `${me.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
   const r = await fetch(`${U}/storage/v1/object/${BUCKET}/${path}`, {
     method: "POST",
-    headers: { apikey: KEY, Authorization: "Bearer " + t, "Content-Type": "image/jpeg", "x-upsert": "true" },
+    headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "image/jpeg", "x-upsert": "true" },
     body: blob
   });
   if (!r.ok) throw new Error("فشل رفع الصورة: " + (await r.text()).slice(0, 120));
@@ -764,39 +707,18 @@ async function markRead() {
 function startPoll() {
   clearInterval(poll);
   poll = setInterval(() => {
-    if (document.visibilityState === "visible" && sess) { loadOrders(); loadAlerts(); }
+    if (document.visibilityState === "visible" && me) { loadOrders(); loadAlerts(); }
   }, 12000);
-}
-
-/* ---------- diagnostics ---------- */
-async function runDiag() {
-  const d = $("diag"); d.textContent = "…";
-  const out = [];
-  const probe = async (label, fn) => {
-    try { const r = await fn(); out.push(`${label}: ${r}`); }
-    catch (e) { out.push(`${label}: فشل — ${e.message}`); }
-  };
-  await probe("المشروع", async () => (await fetch(U + "/auth/v1/settings", { headers: { apikey: KEY } })).status);
-  await probe("الجداول", async () => (await fetch(U + "/rest/v1/", { headers: { apikey: KEY } })).status);
-  await probe("البريد", async () => {
-    const r = await fetch(U + "/auth/v1/otp", {
-      method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ email: $("fEmail").value.trim() || "test@example.com", create_user: true })
-    });
-    return r.status + " " + (await r.text()).slice(0, 90);
-  });
-  out.push("");
-  out.push("200 = سليم · 401 = المفتاح لا يخص المشروع · 429 = حد الإرسال · 5xx = المشروع موقوف");
-  d.textContent = out.join("\n");
 }
 
 /* ---------- init ---------- */
 (async () => {
   coords = ls("wossol_coords", null);
-  sess = ls(SKEY, null);
-  if (sess?.user) {
-    me = sess.user;
-    try { await token(); await boot(); go("home"); }
+  const saved = ls(SKEY, null);
+  if (saved?.me) {
+    me = saved.me;
+    prof = { ...prof, ...(saved.prof || {}) };
+    try { await boot(); go("home"); }
     catch { renderAuth(); }
   } else renderAuth();
 })();
