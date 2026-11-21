@@ -106,7 +106,6 @@
 
 <main>
 
-  <!-- AUTH / DIRECT LOGIN -->
   <section class="view on" id="v-auth">
     <div class="hero">
       <h1>وصل طلبك <em>بلا تعقيد</em></h1>
@@ -115,7 +114,6 @@
         <span id="st1">١ بياناتك</span><span id="st3">٢ موقعك</span>
       </div>
     </div>
-
     <div class="card">
       <div class="head"><h2>الدخول المباشر</h2><span class="pill" id="gpsPill">الموقع غير محدد</span></div>
       <div class="grid2">
@@ -136,7 +134,6 @@
     </div>
   </section>
 
-  <!-- HOME -->
   <section class="view" id="v-home">
     <div class="card">
       <div class="head">
@@ -158,7 +155,6 @@
     </div>
   </section>
 
-  <!-- NEW ORDER -->
   <section class="view" id="v-new">
     <div class="card">
       <div class="head"><h2>طلب جديد</h2><span class="pill" id="gpsPill2">الموقع غير محدد</span></div>
@@ -193,7 +189,6 @@
     </div>
   </section>
 
-  <!-- BROWSE -->
   <section class="view" id="v-browse">
     <div class="card">
       <div class="head"><h2>طلبات متاحة</h2><span class="pill amber" id="openPill">0</span></div>
@@ -214,7 +209,6 @@
     </div>
   </section>
 
-  <!-- LOG -->
   <section class="view" id="v-log">
     <div class="card">
       <div class="head"><h2>سجلي</h2></div>
@@ -227,7 +221,6 @@
     </div>
   </section>
 
-  <!-- STORE -->
   <section class="view" id="v-store">
     <div class="card">
       <div class="head"><h2>نشر منتج</h2><span class="pill" id="storePill"></span></div>
@@ -255,7 +248,6 @@
     </div>
   </section>
 
-  <!-- ALERTS -->
   <section class="view" id="v-alerts">
     <div class="card">
       <div class="head"><h2>الإشعارات</h2><button class="btn btn-ghost btn-sm" onclick="markRead()">تحديد كمقروء</button></div>
@@ -263,7 +255,6 @@
     </div>
   </section>
 
-  <!-- ACCOUNT -->
   <section class="view" id="v-account">
     <div class="card">
       <div class="head"><h2>حسابي</h2></div>
@@ -287,18 +278,22 @@ const U = "https://nnozlrxxleutxwbznbza.supabase.co";
 const KEY = "sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
 const BUCKET = "product-images";
 const SKEY = "wossol_direct_user_v1";
+const CKEY = "wossol_coords";
 const MAXB = 2.5 * 1024 * 1024;
 
-let me = null, prof = { full_name:"", phone:"", role:"مشتري", lat:null, lng:null };
+let me = null;
+let prof = { full_name:"", phone:"", role:"مشتري", lat:null, lng:null };
 let coords = null, cat = "الكل", tab = "mine";
 let orders = [], products = [], alerts = [];
 let poll = null, mapObj = null, layer = null;
+let alive = true;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const js = s => String(s ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+const js = s => String(s ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 const num = n => { const v = Number(n); return Number.isFinite(v) ? v : 0; };
 const money = n => num(n).toLocaleString("ar-DZ");
+const isPhone = p => /^0[5-7]\d{8}$/.test(String(p || "").replace(/\s|-/g,""));
 
 function say(id, txt, kind) {
   const el = $(id); if (!el) return;
@@ -317,12 +312,13 @@ function makeUserId(email) {
   return "usr_" + (h >>> 0).toString(16);
 }
 
-async function api(path, { method = "GET", body, headers = {} } = {}) {
+async function api(path, { method = "GET", body, headers = {}, signal } = {}) {
   const h = { apikey: KEY, Authorization: "Bearer " + KEY, ...headers };
-  if (body !== undefined && !(body instanceof Blob)) h["Content-Type"] = "application/json";
+  const isBlob = body instanceof Blob;
+  if (body !== undefined && !isBlob) h["Content-Type"] = "application/json";
   const r = await fetch(U + path, {
-    method, headers: h,
-    body: body === undefined ? undefined : (body instanceof Blob ? body : JSON.stringify(body))
+    method, headers: h, signal,
+    body: body === undefined ? undefined : (isBlob ? body : JSON.stringify(body))
   });
   const txt = await r.text();
   let data = null;
@@ -334,41 +330,48 @@ async function api(path, { method = "GET", body, headers = {} } = {}) {
   return data;
 }
 
-/* ---------- direct login ---------- */
-async function directLogin() {
+/* ===================== AUTH ===================== */
+function directLogin() {
   const name = $("fName").value.trim();
   const email = $("fEmail").value.trim().toLowerCase();
   const phone = $("fPhone").value.trim();
   const role = $("fRole").value;
+
   if (!name) return say("authMsg", "أدخل اسمك أولاً.", "err");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say("authMsg", "صيغة البريد غير صحيحة.", "err");
+  if (phone && !isPhone(phone)) return say("authMsg", "رقم الهاتف غير صحيح (مثال: 06xxxxxxxx).", "err");
 
   const b = $("bEnter");
   b.disabled = true; b.textContent = "جارٍ الدخول…";
   say("authMsg", "", "");
-  try {
-    if (!coords) {
-      try { coords = await geo(); lsSet("wossol_coords", coords); } catch {}
-    }
-    me = { id: makeUserId(email), email };
-    prof = { full_name: name, phone, role, lat: coords?.lat ?? null, lng: coords?.lng ?? null };
-    lsSet(SKEY, { me, prof });
-    $("st1").classList.add("done");
-    if (coords) $("st3").classList.add("done");
 
-    try { await saveProfile({ full_name: name, phone, role }); } catch {}
-    try { await pushAlert("تم الدخول بحساب " + me.email); } catch {}
-    await boot();
-    go("home");
-  } catch (e) {
-    say("authMsg", "تعذر الدخول: " + e.message, "err");
-  } finally {
-    b.disabled = false; b.textContent = "دخول مباشر";
-  }
+  (async () => {
+    try {
+      if (!coords) {
+        try { coords = await geo(); lsSet(CKEY, coords); } catch {}
+      }
+      me = { id: makeUserId(email), email };
+      prof = { full_name: name, phone, role, lat: coords?.lat ?? null, lng: coords?.lng ?? null };
+      lsSet(SKEY, { me, prof });
+      $("st1").classList.add("done");
+      if (coords) $("st3").classList.add("done");
+
+      try { await saveProfile({ full_name: name, phone, role }); } catch {}
+      try { await pushAlert("تم الدخول بحساب " + me.email); } catch {}
+      await boot();
+      go("home");
+    } catch (e) {
+      say("authMsg", "تعذر الدخول: " + e.message, "err");
+    } finally {
+      b.disabled = false; b.textContent = "دخول مباشر";
+    }
+  })();
 }
 
-async function signOut() {
-  clearInterval(poll);
+function signOut() {
+  alive = false;
+  clearInterval(poll); poll = null;
+  if (mapObj) { try { mapObj.remove(); } catch {} mapObj = null; layer = null; }
   me = null; orders = []; products = []; alerts = [];
   localStorage.removeItem(SKEY);
   renderAuth();
@@ -383,8 +386,9 @@ function renderAuth() {
   window.scrollTo({ top: 0 });
 }
 
-/* ---------- profile ---------- */
+/* ===================== PROFILE ===================== */
 async function boot() {
+  alive = true;
   try {
     const rows = await api("/rest/v1/profiles?select=*&id=eq." + encodeURIComponent(me.id));
     if (rows?.length) prof = { ...prof, ...rows[0] };
@@ -394,6 +398,7 @@ async function boot() {
   startPoll();
   await Promise.all([loadOrders(), loadAlerts()]);
 }
+
 async function saveProfile(patch) {
   prof = { ...prof, ...patch };
   lsSet(SKEY, { me, prof });
@@ -412,8 +417,9 @@ async function saveProfile(patch) {
   });
 }
 
-/* ---------- ui shell ---------- */
+/* ===================== SHELL ===================== */
 function renderShell() {
+  if (!me) return;
   $("nav").classList.add("on");
   $("bell").classList.remove("hide");
   $("hello").textContent = "مرحباً " + (prof.full_name?.split(" ")[0] || "");
@@ -425,11 +431,13 @@ function renderShell() {
   $("storePill").textContent = prof.role === "بائع" ? "مسموح" : "مقيّد";
   $("storeNote").classList.toggle("hide", prof.role === "بائع");
   $("acceptNote").classList.toggle("hide", prof.role === "عامل توصيل");
-  $("gpsPill").textContent = coords ? coords.lat.toFixed(3) + ", " + coords.lng.toFixed(3) : "الموقع غير محدد";
-  $("gpsPill2").textContent = $("gpsPill").textContent;
+  const g = coords ? coords.lat.toFixed(3) + ", " + coords.lng.toFixed(3) : "الموقع غير محدد";
+  $("gpsPill").textContent = g;
+  $("gpsPill2").textContent = g;
   document.querySelectorAll(".chip[data-r]").forEach(c => c.classList.toggle("hide", c.dataset.r !== prof.role));
-  drawBrowse(); drawLog();
+  drawBrowse(); drawLog(); drawFeed();
 }
+
 function go(v) {
   if (!me && v !== "auth") return renderAuth();
   document.querySelectorAll(".view").forEach(x => x.classList.remove("on"));
@@ -437,291 +445,15 @@ function go(v) {
   document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
   window.scrollTo({ top: 0, behavior: "smooth" });
   if (v === "browse") { loadOrders(); if (mapObj) setTimeout(() => mapObj.invalidateSize(), 120); }
-  if (v === "log") loadOrders();
-  if (v === "store") loadProducts();
-  if (v === "alerts") { loadAlerts(); markRead(); }
+  else if (v === "log") loadOrders();
+  else if (v === "store") loadProducts();
+  else if (v === "alerts") loadAlerts(); // لم نعد نستدعي markRead تلقائياً
 }
 function brandClick() { if (me) go("home"); else renderAuth(); }
 
-/* ---------- location ---------- */
+/* ===================== LOCATION ===================== */
 function geo(t = 20000) {
   return new Promise((res, rej) => {
     if (!navigator.geolocation) return rej(new Error("المتصفح لا يدعم تحديد الموقع"));
     navigator.geolocation.getCurrentPosition(
-      p => res({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      e => rej(new Error(e.message || "تعذر تحديد الموقع")),
-      { enableHighAccuracy: false, timeout: t, maximumAge: 60000 }
-    );
-  });
-}
-async function askLocation() {
-  const b = $("bLoc"); b.disabled = true; b.textContent = "جارٍ التحديد…";
-  try {
-    coords = await geo(); lsSet("wossol_coords", coords);
-    $("gpsPill").textContent = coords.lat.toFixed(3) + ", " + coords.lng.toFixed(3);
-    $("st3").classList.add("done");
-    say("authMsg", "تم حفظ موقعك.", "ok");
-  } catch (e) { say("authMsg", "تعذر تحديد الموقع: " + e.message, "err"); }
-  finally { b.disabled = false; b.textContent = "تحديد موقعي الآن"; }
-}
-async function refreshCoords() {
-  try { coords = await geo(); lsSet("wossol_coords", coords); await saveProfile({}); renderShell(); say("accMsg", "تم تحديث الموقع.", "ok"); }
-  catch (e) { say("accMsg", e.message, "err"); }
-}
-async function saveRole() {
-  prof.role = $("accRole").value;
-  await saveProfile({ role: prof.role });
-  renderShell(); say("accMsg", "تم حفظ الدور: " + prof.role, "ok");
-  await pushAlert("تغيير الدور إلى " + prof.role);
-}
-
-/* ---------- orders ---------- */
-const quickAdd = t => { const i = $("oItems"); i.value = i.value.trim() ? i.value.trim() + "، " + t : t; };
-const toggleTransport = () => $("transportWrap").classList.toggle("hide", !$("oInter").checked);
-const setCat = c => { cat = c; drawBrowse(); };
-const setTab = t => { tab = t; $("tabMine").classList.toggle("on", t === "mine"); $("tabTaken").classList.toggle("on", t === "taken"); drawLog(); };
-
-async function submitOrder(e) {
-  e.preventDefault();
-  const b = $("bOrder"); b.disabled = true; b.textContent = "جارٍ النشر…";
-  say("orderMsg", "", "");
-  try {
-    let c = coords;
-    try { c = await geo(); coords = c; lsSet("wossol_coords", c); }
-    catch (err) { if (!c) throw new Error("تعذر تحديد الموقع: " + err.message); }
-
-    const id = "ORD-" + Date.now().toString(36).toUpperCase();
-    await api("/rest/v1/orders", { method: "POST", headers: { Prefer: "return=minimal" }, body: {
-      id, requester_id: me.id, requester_name: prof.full_name || me.email,
-      phone: $("oPhone").value.trim(), cat: $("oCat").value,
-      items: $("oItems").value.trim(), cost: num($("oCost").value), fee: num($("oFee").value),
-      deferred: $("oDeferred").checked, inter_state: $("oInter").checked,
-      vehicle: $("oInter").checked ? $("oVehicle").value : "محلي",
-      lat: c.lat, lng: c.lng, status: "متاحة"
-    }});
-    $("orderForm").reset(); $("transportWrap").classList.add("hide");
-    say("orderMsg", "نُشر الطلب " + id + ".", "ok");
-    await pushAlert("طلب جديد " + id + ": " + $("oItems").value);
-    await loadOrders(); go("log");
-  } catch (err) { say("orderMsg", err.message, "err"); }
-  finally { b.disabled = false; b.textContent = "نشر الطلب"; }
-}
-
-async function loadOrders() {
-  try {
-    orders = await api("/rest/v1/orders?select=*&order=created_at.desc&limit=200") || [];
-  } catch { return; }
-  drawBrowse(); drawLog(); drawFeed();
-  $("statOpen").textContent = orders.filter(o => o.status === "متاحة").length;
-  $("statMine").textContent = orders.filter(o => o.requester_id === me?.id).length;
-  $("openPill").textContent = orders.filter(o => o.status === "متاحة").length;
-}
-
-function drawBrowse() {
-  const box = $("browseList"); if (!box) return;
-  const open = orders.filter(o => o.status === "متاحة" && (cat === "الكل" || o.cat === cat));
-  if (!open.length) { box.innerHTML = '<p class="empty">لا توجد طلبات متاحة الآن.</p>'; return; }
-  const can = prof.role === "عامل توصيل";
-  box.innerHTML = open.map(o => `
-    <div class="row">
-      <div style="flex:1;min-width:200px">
-        <div class="t">${esc(o.items)}</div>
-        <div class="m">${esc(o.cat)} · ${esc(o.requester_name || "")} · ${esc(o.phone)}</div>
-        <div class="m">عمولة ${money(o.fee)} د.ج ${o.deferred ? " · بالآجل" : ""}${o.inter_state ? " · " + esc(o.vehicle) : ""}</div>
-      </div>
-      ${can ? `<button class="btn btn-solid btn-sm" onclick="accept('${js(o.id)}')">قبول</button>` : '<span class="pill">متاح</span>'}
-    </div>`).join("");
-}
-
-function drawLog() {
-  const box = $("logList"); if (!box) return;
-  const list = tab === "mine" ? orders.filter(o => o.requester_id === me?.id) : orders.filter(o => o.accepted_by === me?.id);
-  if (!list.length) { box.innerHTML = '<p class="empty">لا شيء هنا بعد.</p>'; return; }
-  box.innerHTML = list.map(o => {
-    const cls = o.status === "متاحة" ? "teal" : o.status === "مقبولة" ? "amber" : "";
-    const fin = o.accepted_by === me?.id && o.status === "مقبولة";
-    return `<div class="row">
-      <div style="flex:1;min-width:200px">
-        <div class="t">${esc(o.items)} <span class="pill ${cls}">${esc(o.status)}</span></div>
-        <div class="m">${esc(o.id)} · ${money(num(o.cost) + num(o.fee))} د.ج</div>
-      </div>
-      ${fin ? `<div style="display:flex;gap:6px">
-        <button class="btn btn-ghost btn-sm" onclick="finish('${js(o.id)}','تم الشراء')">تم الشراء</button>
-        <button class="btn btn-teal btn-sm" onclick="finish('${js(o.id)}','تم التسليم')">تم التسليم</button></div>` : ""}
-    </div>`;
-  }).join("");
-}
-
-function drawFeed() {
-  const mine = orders.filter(o => o.requester_id === me?.id || o.accepted_by === me?.id).slice(0, 3);
-  $("homeFeed").innerHTML = mine.length
-    ? mine.map(o => `<div class="row"><div class="t">${esc(o.items)}</div><span class="pill">${esc(o.status)}</span></div>`).join("")
-    : '<p class="empty">لا نشاط بعد — ابدأ بطلب.</p>';
-}
-
-async function accept(id) {
-  const o = orders.find(x => x.id === id);
-  if (!o) return;
-  let c = coords;
-  try { c = await geo(); coords = c; lsSet("wossol_coords", c); }
-  catch (e) { if (!c) return say("browseMsg", "تعذر تحديد موقعك: " + e.message, "err"); }
-
-  const km = dist({ lat: o.lat, lng: o.lng }, c);
-  try {
-    const rows = await api(`/rest/v1/orders?id=eq.${encodeURIComponent(id)}&accepted_by=is.null&status=eq.${encodeURIComponent("متاحة")}`, {
-      method: "PATCH",
-      headers: { Prefer: "return=representation" },
-      body: { status: "مقبولة", accepted_by: me.id, accepted_email: me.email,
-        accepted_lat: c.lat, accepted_lng: c.lng, dist_km: km, accepted_at: new Date().toISOString() }
-    });
-    if (!rows?.length) return say("browseMsg", "سبقك أحد إلى هذا الطلب.", "err");
-
-    $("routeBox").classList.remove("hide");
-    $("routeTxt").textContent = `المسافة الهوائية ${km} كم — منك إلى الطلب.`;
-    $("gmaps").href = `https://www.google.com/maps/dir/?api=1&origin=${c.lat},${c.lng}&destination=${o.lat},${o.lng}&travelmode=driving`;
-    drawMap(c, { lat: o.lat, lng: o.lng });
-    say("browseMsg", "قبلت الطلب. المسار ظاهر.", "ok");
-    await pushAlert("قبلت الطلب " + id);
-    await notify(o.requester_id, "قُبل طلبك " + id + " — المسافة " + km + " كم.");
-    await loadOrders();
-  } catch (e) { say("browseMsg", e.message, "err"); }
-}
-
-function dist(a, b) {
-  const r = x => x * Math.PI / 180;
-  const dA = r(b.lat - a.lat), dB = r(b.lng - a.lng);
-  const s = Math.sin(dA/2)**2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dB/2)**2;
-  return +(2 * 6371 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))).toFixed(2);
-}
-
-function drawMap(from, to) {
-  if (!window.L) return;
-  if (!mapObj) {
-    mapObj = L.map("map").setView([from.lat, from.lng], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(mapObj);
-    layer = L.layerGroup().addTo(mapObj);
-  }
-  layer.clearLayers();
-  const a = [from.lat, from.lng], b = [to.lat, to.lng];
-  L.circleMarker(a, { radius: 8, color: "#22d3ee", fillColor: "#22d3ee", fillOpacity: .9 }).bindPopup("أنت").addTo(layer);
-  L.circleMarker(b, { radius: 8, color: "#f5a524", fillColor: "#f5a524", fillOpacity: .9 }).bindPopup("الطلب").addTo(layer);
-  const line = L.polyline([a, b], { color: "#fb7185", weight: 4, dashArray: "6 8" }).addTo(layer);
-  mapObj.fitBounds(line.getBounds(), { padding: [30, 30] });
-  setTimeout(() => mapObj.invalidateSize(), 150);
-}
-
-async function finish(id, status) {
-  try { await api("/rest/v1/orders?id=eq." + encodeURIComponent(id), { method: "PATCH", body: { status } }); await loadOrders(); }
-  catch (e) { say("logMsg", e.message, "err"); }
-}
-
-/* ---------- store ---------- */
-async function shrink(file) {
-  if (!file.type.startsWith("image/")) throw new Error("الملف ليس صورة");
-  if (!window.createImageBitmap) {
-    if (file.size > MAXB) throw new Error("الصورة كبيرة");
-    return file;
-  }
-  const bmp = await createImageBitmap(file);
-  const k = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
-  const cv = document.createElement("canvas");
-  cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
-  cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
-  bmp.close?.();
-  const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", .75));
-  if (!blob) throw new Error("تعذر الضغط");
-  if (blob.size > MAXB) throw new Error("الصورة كبيرة حتى بعد الضغط");
-  return blob;
-}
-async function upload(blob) {
-  const path = `${me.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
-  const r = await fetch(`${U}/storage/v1/object/${BUCKET}/${path}`, {
-    method: "POST",
-    headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "image/jpeg", "x-upsert": "true" },
-    body: blob
-  });
-  if (!r.ok) throw new Error("فشل رفع الصورة: " + (await r.text()).slice(0, 120));
-  return `${U}/storage/v1/object/public/${BUCKET}/${path}`;
-}
-async function publishProduct(e) {
-  e.preventDefault();
-  if (prof.role !== "بائع") return say("storeMsg", "النشر لدور البائع فقط.", "err");
-  const f = $("pFile").files[0];
-  if (!f) return say("storeMsg", "اختر صورة.", "err");
-  const b = $("bPublish"); b.disabled = true; b.textContent = "جارٍ الرفع…";
-  say("storeMsg", "", "");
-  try {
-    const url = await upload(await shrink(f));
-    await api("/rest/v1/products", { method: "POST", headers: { Prefer: "return=minimal" }, body: {
-      seller_id: me.id, title: $("pTitle").value.trim(), cost: num($("pCost").value),
-      kind: $("pKind").value, notes: $("pNotes").value.trim(), image_url: url
-    }});
-    $("storeForm").reset();
-    say("storeMsg", "نُشر المنتج.", "ok");
-    await pushAlert("منتج جديد: " + $("pTitle").value);
-    await loadProducts();
-  } catch (err) { say("storeMsg", err.message, "err"); }
-  finally { b.disabled = false; b.textContent = "رفع ونشر"; }
-}
-async function loadProducts() {
-  try { products = await api("/rest/v1/products?select=*&order=created_at.desc&limit=100") || []; }
-  catch { return; }
-  const g = $("storeGrid");
-  g.innerHTML = products.length ? products.map(p => `
-    <article class="tile">
-      <img src="${esc(p.image_url)}" alt="${esc(p.title)}" loading="lazy" />
-      <div class="in"><span class="pill">${esc(p.kind)}</span><strong>${esc(p.title)}</strong>
-      <span class="money">${money(p.cost)} د.ج</span><p class="m">${esc(p.notes || "")}</p></div>
-    </article>`).join("") : '<p class="empty">لا منتجات بعد.</p>';
-}
-
-/* ---------- alerts ---------- */
-async function pushAlert(text) {
-  if (!me) return;
-  try { await api("/rest/v1/notifications", { method: "POST", headers: { Prefer: "return=minimal" }, body: { user_id: me.id, text } }); } catch {}
-  loadAlerts();
-}
-async function notify(uid, text) {
-  if (!uid) return;
-  try { await api("/rest/v1/notifications", { method: "POST", headers: { Prefer: "return=minimal" }, body: { user_id: uid, text } }); } catch {}
-}
-async function loadAlerts() {
-  try { alerts = await api("/rest/v1/notifications?select=*&order=created_at.desc&limit=60") || []; } catch { return; }
-  const n = alerts.filter(a => !a.read).length;
-  $("dot").textContent = n; $("dot").classList.toggle("off", n === 0);
-  $("alertList").innerHTML = alerts.length ? alerts.map(a => `
-    <div class="row" style="opacity:${a.read ? .65 : 1}">
-      <div><div class="t">${esc(a.text)}</div><div class="m">${new Date(a.created_at).toLocaleString("ar-DZ")}</div></div>
-      <span class="pill ${a.read ? "" : "amber"}">${a.read ? "مقروء" : "جديد"}</span>
-    </div>`).join("") : '<p class="empty">لا إشعارات.</p>';
-}
-async function markRead() {
-  if (!alerts.some(a => !a.read)) return;
-  try { await api("/rest/v1/notifications?read=eq.false", { method: "PATCH", body: { read: true } }); } catch {}
-  loadAlerts();
-}
-
-/* ---------- polling ---------- */
-function startPoll() {
-  clearInterval(poll);
-  poll = setInterval(() => {
-    if (document.visibilityState === "visible" && me) { loadOrders(); loadAlerts(); }
-  }, 12000);
-}
-
-/* ---------- init ---------- */
-(async () => {
-  coords = ls("wossol_coords", null);
-  const saved = ls(SKEY, null);
-  if (saved?.me) {
-    me = saved.me;
-    prof = { ...prof, ...(saved.prof || {}) };
-    try { await boot(); go("home"); }
-    catch { renderAuth(); }
-  } else renderAuth();
-})();
-</script>
-</body>
-</html>
+      p => res
