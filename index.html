@@ -3,274 +3,292 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>wossol | دخول مؤكد + خدمات ومتجر</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>wossol — توصيل الطلبات</title>
 <style>
-  :root{--bg-page:#f1f5f9;--bg-card:#fff;--bg-tint:#f8fafc;--royal:#1d4ed8;--royal-dark:#1e3a8a;--mint:#059669;--coral:#e11d48;--sun:#d97706;--ink:#0f172a;--ink-muted:#475569;--line:#cbd5e1;--r-card:16px;--r-btn:12px}
-  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Kufi Arabic",sans-serif}
-  body{background:var(--bg-page);color:var(--ink);min-height:100vh;padding-bottom:60px;line-height:1.65}
-  .app-bar{background:var(--royal-dark);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:80;box-shadow:0 2px 10px rgba(15,23,42,.18)}
-  .app-bar-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .app-title{font-weight:900;font-size:1.12rem;cursor:pointer}
-  .notif-top-btn{background:#fff;color:var(--royal-dark);border:none;border-radius:var(--r-btn);padding:7px 13px;font-weight:800;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-  .notif-badge{background:var(--coral);color:#fff;border-radius:999px;padding:1px 7px;font-size:.72rem}
-  .notif-badge.hide{display:none}
-  .main-wrap{max-width:980px;margin:20px auto 0;padding:0 16px}
-  .entry-gate.hidden{display:none}
-  .hub-menu{display:none}.hub-menu.active{display:block}
-  .hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
-  @media(min-width:650px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-  .hub-btn{background:var(--bg-card);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-btn);padding:14px 12px;font-weight:800;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,border-color .15s}
-  .hub-btn:hover{background:#eff6ff;border-color:var(--royal)}
-  .hub-btn[hidden]{display:none}
-  .hub-btn.exit-btn{color:var(--coral);border-color:#fecdd3}
-  .hub-btn.exit-btn:hover{background:#fff1f2;border-color:var(--coral)}
-  .solo-view{display:none}.solo-view.active{display:block}
-  .box{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-card);padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(15,23,42,.04)}
-  .box-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-  .box-head h1,.box-head h2{font-size:1.12rem;font-weight:900;color:var(--royal-dark)}
-  .sub-note{color:var(--ink-muted);font-size:.85rem;margin-bottom:12px}
-  .hint{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:9px 12px;font-size:.82rem;font-weight:700;margin-bottom:12px}
-  .row-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-  .row-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-  label{display:block;font-size:.84rem;font-weight:700;margin-bottom:5px}
-  input,select,textarea{width:100%;background:var(--bg-tint);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.92rem;outline:none;margin-bottom:12px}
-  input:focus,select:focus,textarea:focus{border-color:var(--royal);background:#fff}
-  .check-opt{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;margin-bottom:10px}
-  .check-opt input[type=checkbox]{width:auto;margin:0}
-  .btn{border:none;border-radius:var(--r-btn);padding:10px 16px;font-size:.88rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
-  .btn:disabled{opacity:.55;cursor:not-allowed}
-  .btn-royal{background:var(--royal);color:#fff}
-  .btn-mint{background:var(--mint);color:#fff}
-  .btn-coral{background:var(--coral);color:#fff}
-  .btn-sun{background:var(--sun);color:#fff}
-  .btn-light{background:var(--bg-tint);color:var(--ink);border:1px solid var(--line)}
-  .meta-strip{display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem;font-weight:700}
-  .badge{background:#eff6ff;color:var(--royal-dark);border:1px solid #bfdbfe;padding:4px 10px;border-radius:999px}
-  .badge-mint{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
-  .badge-expired{background:#fff1f2;color:#9f1239;border-color:#fecdd3}
-  .prod-tile{background:var(--bg-tint);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-  .prod-pic{width:100%;height:165px;object-fit:cover;background:#e2e8f0}
-  .prod-info{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
-  .card-row{background:var(--bg-tint);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
-  #mapBox{width:100%;height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:10px;z-index:1}
-  .tabs{display:flex;gap:6px;margin-bottom:12px}
-  .tab{padding:6px 12px;font-size:.82rem;font-weight:800;border-radius:999px;border:1px solid var(--line);background:var(--bg-tint);cursor:pointer}
-  .tab.on{background:var(--royal);color:#fff;border-color:var(--royal)}
-  .feedback{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}
-  .feedback.show{display:block}
-  .feedback.ok{background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7}
-  .feedback.err{background:#fff1f2;color:#9f1239;border:1px solid #fda4af}
+  :root{
+    --bg:#0a0f1a;--surface:#121a2a;--surface2:#172136;--line:#26334d;
+    --text:#e9eef9;--muted:#8fa0bd;--accent:#f5a524;--accent2:#22d3ee;
+    --danger:#fb7185;--ok:#34d399;--r:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI","Noto Kufi Arabic",sans-serif}
+  body{background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:70px;line-height:1.6;
+    background-image:radial-gradient(900px 400px at 90% -10%,rgba(245,165,36,.12),transparent),radial-gradient(700px 350px at 0% 0%,rgba(34,211,238,.10),transparent)}
+  .bar{position:sticky;top:0;z-index:90;background:rgba(10,15,26,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:900px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{font-weight:900;font-size:1.25rem;letter-spacing:-.5px;cursor:pointer}
+  .brand span{color:var(--accent)}
+  .bell{background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:7px 12px;font-weight:800;font-size:.82rem;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+  .dot{background:var(--danger);color:#0a0f1a;border-radius:999px;padding:0 6px;font-size:.7rem;font-weight:900}
+  .dot.off{display:none}
+  nav.chips{display:none;gap:8px;overflow-x:auto;padding:0 16px 12px;max-width:900px;margin:0 auto;scrollbar-width:none}
+  nav.chips.on{display:flex}
+  nav.chips::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;background:var(--surface);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:8px 15px;font-size:.83rem;font-weight:800;cursor:pointer;white-space:nowrap;transition:.15s}
+  .chip:hover{color:var(--text);border-color:#3a4a6b}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#141414}
+  main{max-width:900px;margin:0 auto;padding:20px 16px 0}
+  .view{display:none;animation:fade .22s ease}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+  .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .head h1,.head h2{font-size:1.08rem;font-weight:900}
+  .lead{color:var(--muted);font-size:.86rem;margin-bottom:14px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  label{display:block;font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:6px}
+  input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:11px 13px;font-size:.92rem;outline:none;margin-bottom:13px;transition:.15s}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,165,36,.14)}
+  .btn{border:none;border-radius:12px;padding:11px 18px;font-size:.87rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:.15s}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-solid{background:var(--accent);color:#141414}
+  .btn-solid:hover:not(:disabled){background:#ffb844}
+  .btn-teal{background:var(--accent2);color:#04222a}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn-ghost:hover{border-color:#3a4a6b}
+  .btn-danger{background:transparent;border:1px solid rgba(251,113,133,.45);color:var(--danger)}
+  .btn-danger:hover{background:rgba(251,113,133,.1)}
+  .btn-sm{padding:6px 11px;font-size:.77rem;border-radius:10px}
+  .hero{padding:26px 4px 18px}
+  .hero h1{font-size:1.75rem;font-weight:900;line-height:1.25;letter-spacing:-.6px}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{color:var(--muted);font-size:.9rem;margin-top:8px;max-width:44ch}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+  .steps span{font-size:.74rem;font-weight:800;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+  .steps span.done{color:var(--ok);border-color:rgba(52,211,153,.4)}
+  #otp{text-align:center;letter-spacing:.5em;font-size:1.3rem;font-weight:900;font-family:ui-monospace,monospace;padding-left:.5em}
+  .pill{font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--surface2)}
+  .pill.amber{color:var(--accent);border-color:rgba(245,165,36,.4);background:rgba(245,165,36,.09)}
+  .pill.teal{color:var(--accent2);border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.09)}
+  .pill.danger{color:var(--danger);border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.09)}
+  .stat{display:flex;flex-direction:column;gap:4px}
+  .stat b{font-size:1.25rem;font-weight:900}
+  .stat small{color:var(--muted);font-size:.75rem;font-weight:800}
+  .row{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start}
+  .row .t{font-weight:800;margin-bottom:4px}
+  .row .m{color:var(--muted);font-size:.79rem}
+  .tile{background:var(--surface2);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .tile img{width:100%;height:150px;object-fit:cover;background:#0e1626}
+  .tile .in{padding:12px;display:flex;flex-direction:column;gap:6px}
+  .money{color:var(--ok);font-weight:900}
+  .seg{display:inline-flex;background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px;margin-bottom:13px}
+  .seg button{background:transparent;border:none;color:var(--muted);font-weight:800;font-size:.8rem;padding:7px 15px;border-radius:999px;cursor:pointer}
+  .seg button.on{background:var(--accent);color:#141414}
+  #map{height:280px;border-radius:14px;border:1px solid var(--line);margin-top:12px;z-index:1}
+  .msg{margin-top:11px;padding:11px 13px;border-radius:11px;font-size:.83rem;font-weight:700;display:none}
+  .msg.on{display:block}
+  .msg.ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);color:#a7f3d0}
+  .msg.err{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.4);color:#fecdd3}
+  .note{background:rgba(245,165,36,.08);border:1px solid rgba(245,165,36,.3);color:#fcd34d;border-radius:12px;padding:10px 13px;font-size:.8rem;font-weight:700;margin-bottom:13px}
+  details{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--bg);margin-top:14px}
+  summary{cursor:pointer;font-size:.82rem;font-weight:800;color:var(--muted)}
+  #diag{font-family:ui-monospace,monospace;font-size:.75rem;margin-top:10px;white-space:pre-wrap;color:var(--muted)}
+  .check{display:flex;align-items:center;gap:9px;font-size:.87rem;font-weight:700;margin-bottom:11px;cursor:pointer}
+  .check input{width:auto;margin:0;accent-color:var(--accent)}
+  .quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}
+  .empty{color:var(--muted);font-size:.84rem;padding:8px 0}
+  .hide{display:none!important}
+  @media(max-width:520px){.hero h1{font-size:1.45rem}}
 </style>
 </head>
 <body>
 
-<header class="app-bar">
-  <div class="app-bar-inner">
-    <div class="app-title" onclick="handleHeaderBrandClick()"><span>wossol</span></div>
-    <button class="notif-top-btn" id="notifBtn" onclick="openNotificationsPage()">
-      <span>🔔 الإشعارات</span><span class="notif-badge hide" id="notifCount">0</span>
-    </button>
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand" onclick="brandClick()">wossol<span>.</span></div>
+    <button class="bell hide" id="bell" onclick="go('alerts')">إشعارات <span class="dot off" id="dot">0</span></button>
   </div>
+  <nav class="chips" id="nav">
+    <button class="chip" data-r="مشتري" onclick="go('new')">طلب جديد</button>
+    <button class="chip" onclick="go('browse')">الطلبات المتاحة</button>
+    <button class="chip" onclick="go('log')">سجلي</button>
+    <button class="chip" data-r="بائع" onclick="go('store')">المتجر</button>
+    <button class="chip" onclick="go('account')">حسابي</button>
+  </nav>
 </header>
 
-<main class="main-wrap">
+<main>
 
-  <section class="entry-gate" id="entryGate">
-    <div class="box">
-      <div class="box-head">
-        <h1>تسجيل الدخول وإنشاء حساب — wossol</h1>
-        <span class="badge" id="gpsStatusBadge">📍 الموقع: بانتظار السماح</span>
+  <!-- AUTH -->
+  <section class="view on" id="v-auth">
+    <div class="hero">
+      <h1>وصل طلبك <em>بلا تعقيد</em></h1>
+      <p>اطلب من محيطك، وتابع من ينقلها إليك على الخريطة. الدخول برمز يُرسل لبريدك، بلا كلمة سر.</p>
+      <div class="steps">
+        <span id="st1">١ بياناتك</span><span id="st2">٢ رمز البريد</span><span id="st3">٣ موقعك</span>
       </div>
-      <p class="sub-note">لا يمكن الدخول إلا بعد إرسال رمز التحقق (OTP) إلى بريدك وإدخاله لتأكيد الحساب.</p>
-      <div style="margin-bottom:14px">
-        <button type="button" class="btn btn-mint" id="requestGpsEntryBtn" onclick="requestLocationAtLogin()">📍 السماح بالوصول إلى الموقع الآن</button>
+    </div>
+
+    <div class="card">
+      <div class="head"><h2>الدخول أو إنشاء حساب</h2><span class="pill" id="gpsPill">الموقع غير محدد</span></div>
+      <div class="grid2">
+        <div><label for="fName">الاسم الكامل</label><input id="fName" type="text" placeholder="اسمك كما يظهر للطرف الآخر" /></div>
+        <div><label for="fEmail">البريد الإلكتروني</label><input id="fEmail" type="email" inputmode="email" placeholder="name@example.com" autocomplete="email" /></div>
       </div>
-      <div class="row-2">
-        <div><label for="entryName">الاسم الكامل *</label><input type="text" id="entryName" placeholder="اكتب اسمك الكامل" /></div>
-        <div><label for="entryEmail">البريد الإلكتروني *</label><input type="email" id="entryEmail" placeholder="name@example.com" /></div>
-      </div>
-      <div class="row-2">
-        <div><label for="entryPhone">رقم الهاتف</label><input type="tel" id="entryPhone" placeholder="06xxxxxxxx" /></div>
-        <div><label for="entryRole">اختر دورك</label>
-          <select id="entryRole">
-            <option value="مشتري">مشتري</option>
-            <option value="عامل توصيل">عامل توصيل</option>
-            <option value="بائع">بائع / متجر</option>
-          </select>
+      <div class="grid2">
+        <div><label for="fPhone">الهاتف</label><input id="fPhone" type="tel" placeholder="06xxxxxxxx" /></div>
+        <div><label for="fRole">دورك</label>
+          <select id="fRole"><option value="مشتري">مشتري</option><option value="عامل توصيل">عامل توصيل</option><option value="بائع">بائع / متجر</option></select>
         </div>
       </div>
-      <button type="button" class="btn btn-royal" id="sendOtpBtn" onclick="sendLoginOtp()">📨 إرسال رمز التحقق (OTP) إلى البريد</button>
+      <button class="btn btn-solid" id="bLoc" onclick="askLocation()">تحديد موقعي الآن</button>
       <hr style="border:none;border-top:1px solid var(--line);margin:16px 0" />
-      <label for="entryOtpCode">رمز التحقق (OTP) المرسل لبريدك *</label>
-      <input type="text" id="entryOtpCode" inputmode="numeric" autocomplete="one-time-code" placeholder="أدخل الرمز الذي وصلك في البريد" />
-      <button type="button" class="btn btn-mint" id="verifyOtpBtn" onclick="verifyLoginOtp()">✔️ تأكيد الرمز وإنشاء الحساب / الدخول</button>
-      <div class="feedback" id="entryFeedback"></div>
-    </div>
-  </section>
-
-  <section class="hub-menu" id="hubMenu">
-    <div class="box">
-      <div class="box-head">
-        <h2>القائمة الرئيسية — wossol</h2>
-        <div class="meta-strip">
-          <span class="badge" id="hubUserBadge">غير مسجّل</span>
-          <span class="badge badge-mint" id="hubRoleBadge">مشتري</span>
-          <span class="badge" id="hubGpsBadge">📍 غير محدد</span>
-        </div>
+      <button class="btn btn-ghost" id="bSend" onclick="sendOtp()" style="width:100%">إرسال رمز التحقق إلى بريدي</button>
+      <div style="margin-top:13px">
+        <label for="otp">الرمز المكوّن من ٦ أرقام</label>
+        <input id="otp" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="——————" />
+        <button class="btn btn-teal" id="bVerify" onclick="verifyOtp()" style="width:100%">تأكيد الرمز والدخول</button>
       </div>
-      <div class="hub-grid">
-        <button class="hub-btn" onclick="openPage('role')">🪪 اختيار الدور</button>
-        <button class="hub-btn" onclick="openPage('location')">📌 تحديث الموقع</button>
-        <button class="hub-btn" data-roles="مشتري" onclick="openPage('new-order')">✍️ طلبية جديدة</button>
-        <button class="hub-btn" onclick="openPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
-        <button class="hub-btn" onclick="openPage('orders-log')">🧾 سجل الطلبيات</button>
-        <button class="hub-btn" onclick="openPage('store')">🛍️ المتجر ونشر الصور</button>
-        <button class="hub-btn" onclick="openNotificationsPage()">📣 صفحة الإشعارات</button>
-        <button class="hub-btn exit-btn" onclick="logoutImmediately()">🛑 تسجيل الخروج</button>
+      <div class="msg" id="authMsg"></div>
+
+      <details>
+        <summary>لم يصل الرمز؟ تشخيص سريع</summary>
+        <p class="lead" style="margin:10px 0 0;font-size:.8rem">يفحص الاتصال بالمشروع وحالة المفتاح ومزوّد البريد.</p>
+        <button class="btn btn-ghost btn-sm" onclick="runDiag()" style="margin-top:9px">تشغيل الفحص</button>
+        <div id="diag"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section class="view" id="v-home">
+    <div class="card">
+      <div class="head">
+        <div><h2 id="hello">مرحباً</h2><p class="lead" style="margin:4px 0 0" id="subline">—</p></div>
+        <span class="pill teal" id="rolePill">مشتري</span>
+      </div>
+      <div class="grid2">
+        <div class="row" style="margin:0"><div class="stat"><b id="statOpen">0</b><small>طلبات متاحة</small></div></div>
+        <div class="row" style="margin:0"><div class="stat"><b id="statMine">0</b><small>طلباتي</small></div></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        <button class="btn btn-solid" onclick="go('new')">اطلب الآن</button>
+        <button class="btn btn-ghost" onclick="go('browse')">تصفح الطلبات</button>
       </div>
     </div>
-  </section>
-
-  <section class="solo-view" id="v-role">
-    <div class="box">
-      <div class="box-head"><h2>🪪 اختيار الدور</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
-      <label for="roleSelectSolo">دور المستخدم</label>
-      <select id="roleSelectSolo">
-        <option value="مشتري">مشتري</option>
-        <option value="عامل توصيل">عامل توصيل</option>
-        <option value="بائع">بائع / متجر</option>
-      </select>
-      <button class="btn btn-royal" onclick="saveRoleSolo()">💾 حفظ الدور</button>
-      <div class="feedback" id="roleFeedback"></div>
+    <div class="card">
+      <div class="head"><h2>آخر نشاط</h2></div>
+      <div id="homeFeed"></div>
     </div>
   </section>
 
-  <section class="solo-view" id="v-location">
-    <div class="box">
-      <div class="box-head"><h2>📌 تحديث الموقع</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
-      <p class="sub-note">تُستخدم إحداثيات GPS الفعلية لتحديد موقع الطلبية وموقع القبول على الخريطة.</p>
-      <button type="button" class="btn btn-mint" onclick="refreshCoordsNow()">📍 تحديث إحداثياتي الحالية (GPS)</button>
-      <div class="feedback" id="locFeedback"></div>
-    </div>
-  </section>
-
-  <section class="solo-view" id="v-new-order">
-    <div class="box">
-      <div class="box-head"><h2>✍️ طلبية جديدة</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
-      <p class="sub-note">يُثبَّت موقع الطلبية آلياً عبر GPS ويُرسم المسار إليها عند قبولها.</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('خبز 2x')">+ خبز 2x</button>
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('حليب 1x')">+ حليب 1x</button>
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('بيض 6x')">+ بيض 6x</button>
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('قطعة غيار')">+ قطعة غيار</button>
+  <!-- NEW ORDER -->
+  <section class="view" id="v-new">
+    <div class="card">
+      <div class="head"><h2>طلب جديد</h2><span class="pill" id="gpsPill2">الموقع غير محدد</span></div>
+      <p class="lead">يُلتقط موقعك تلقائياً عند الإرسال، ويُرسم المسار لمن يقبل.</p>
+      <div class="quick">
+        <button class="btn btn-ghost btn-sm" onclick="quickAdd('خبز 2x')">خبز 2x</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickAdd('حليب 1x')">حليب 1x</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickAdd('بيض 6x')">بيض 6x</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickAdd('قطعة غيار')">قطعة غيار</button>
       </div>
-      <form id="orderForm" onsubmit="createOrderItem(event)">
-        <div class="row-2">
-          <div><label for="ordCat">التصنيف</label>
-            <select id="ordCat">
-              <option value="بقالة">بقالة</option>
-              <option value="قطع غيار">قطع غيار</option>
-              <option value="مطاعم">مطاعم وأسر منتجة</option>
-            </select>
+      <form id="orderForm" onsubmit="submitOrder(event)">
+        <div class="grid2">
+          <div><label for="oCat">التصنيف</label>
+            <select id="oCat"><option value="بقالة">بقالة</option><option value="قطع غيار">قطع غيار</option><option value="مطاعم">مطاعم</option></select>
           </div>
-          <div><label for="ordItems">تفاصيل الطلبية *</label><input type="text" id="ordItems" placeholder="مثال: خبز 2x، حليب 1x" required /></div>
+          <div><label for="oItems">تفاصيل الطلب</label><input id="oItems" type="text" required placeholder="خبز 2x، حليب 1x" /></div>
         </div>
-        <div class="row-2">
-          <div><label for="ordPhone">رقم الهاتف للتواصل *</label><input type="tel" id="ordPhone" placeholder="06xxxxxxxx" required /></div>
-          <div><label for="ordCost">ثمن المشتريات التقريبي (د.ج)</label><input type="number" id="ordCost" value="1200" min="0" step="any" /></div>
+        <div class="grid2">
+          <div><label for="oPhone">هاتف التواصل</label><input id="oPhone" type="tel" required placeholder="06xxxxxxxx" /></div>
+          <div><label for="oCost">قيمة المشتريات (د.ج)</label><input id="oCost" type="number" value="1200" min="0" step="any" /></div>
         </div>
-        <div><label for="ordFee">عمولة التوصيل (د.ج)</label><input type="number" id="ordFee" value="200" min="0" step="any" /></div>
-        <label class="check-opt"><input type="checkbox" id="ordDeferred" /><span>الشراء بالآجل</span></label>
-        <label class="check-opt"><input type="checkbox" id="ordInterState" onchange="toggleTransport()" /><span>توصيل بين الولايات</span></label>
-        <div id="transportWrap" style="display:none">
-          <label for="ordVehicle">وسيلة النقل بحسب حجم الطلبية</label>
-          <select id="ordVehicle"><option value="دراجة">دراجة</option><option value="سيارة">سيارة</option><option value="شاحنة">شاحنة</option></select>
+        <div><label for="oFee">عمولة التوصيل (د.ج)</label><input id="oFee" type="number" value="200" min="0" step="any" /></div>
+        <label class="check"><input type="checkbox" id="oDeferred" /><span>شراء بالآجل</span></label>
+        <label class="check"><input type="checkbox" id="oInter" onchange="toggleTransport()" /><span>توصيل بين الولايات</span></label>
+        <div id="transportWrap" class="hide">
+          <label for="oVehicle">وسيلة النقل</label>
+          <select id="oVehicle"><option value="دراجة">دراجة</option><option value="سيارة">سيارة</option><option value="شاحنة">شاحنة</option></select>
         </div>
-        <button type="submit" class="btn btn-royal" id="submitOrderBtn">🚀 إرسال الطلبية</button>
-        <div class="feedback" id="orderFeedback"></div>
+        <button class="btn btn-solid" id="bOrder" type="submit" style="width:100%">نشر الطلب</button>
+        <div class="msg" id="orderMsg"></div>
       </form>
     </div>
   </section>
 
-  <section class="solo-view" id="v-browse-orders">
-    <div class="box">
-      <div class="box-head"><h2>🛵 تصفح الطلبات والمسار الحي</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
-      <div class="hint" id="browseHint" hidden>دورك الحالي لا يسمح بقبول الطلبات. بدّل الدور إلى «عامل توصيل» للقبول.</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('الكل')">الكل</button>
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('بقالة')">بقالة</button>
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('قطع غيار')">قطع غيار</button>
-        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('مطاعم')">مطاعم</button>
+  <!-- BROWSE -->
+  <section class="view" id="v-browse">
+    <div class="card">
+      <div class="head"><h2>طلبات متاحة</h2><span class="pill amber" id="openPill">0</span></div>
+      <div class="note hide" id="acceptNote">دورك الحالي لا يسمح بالقبول — بدّله إلى «عامل توصيل» من حسابي.</div>
+      <div class="quick" id="catFilter">
+        <button class="btn btn-ghost btn-sm" onclick="setCat('الكل')">الكل</button>
+        <button class="btn btn-ghost btn-sm" onclick="setCat('بقالة')">بقالة</button>
+        <button class="btn btn-ghost btn-sm" onclick="setCat('قطع غيار')">قطع غيار</button>
+        <button class="btn btn-ghost btn-sm" onclick="setCat('مطاعم')">مطاعم</button>
       </div>
-      <div id="browseOrdersList"><p class="sub-note">جارٍ التحميل...</p></div>
-      <div class="feedback" id="routeFeedback"></div>
-      <div id="routePanel" style="display:none;margin-top:14px">
-        <strong style="color:var(--mint)">🗺️ المسار الحي: من موقعك الحالي إلى موقع الطلبية</strong>
-        <p class="sub-note" id="routeSummaryTxt" style="margin-top:4px"></p>
-        <div id="mapBox"></div>
-        <div style="margin-top:10px"><a id="gmapsLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-royal">فتح في خرائط جوجل</a></div>
+      <div id="browseList"><p class="empty">جارٍ التحميل…</p></div>
+      <div class="msg" id="browseMsg"></div>
+      <div id="routeBox" class="hide" style="margin-top:14px">
+        <p class="lead" id="routeTxt"></p>
+        <div id="map"></div>
+        <a id="gmaps" class="btn btn-teal" target="_blank" rel="noopener noreferrer" style="margin-top:11px">فتح المسار في خرائط جوجل</a>
       </div>
     </div>
   </section>
 
-  <section class="solo-view" id="v-orders-log">
-    <div class="box">
-      <div class="box-head"><h2>🧾 سجل الطلبيات</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
-      <div class="tabs">
-        <button class="tab on" id="tabMine" onclick="switchLogTab('mine')">طلباتي</button>
-        <button class="tab" id="tabTaken" onclick="switchLogTab('taken')">طلبات قبلتها</button>
+  <!-- LOG -->
+  <section class="view" id="v-log">
+    <div class="card">
+      <div class="head"><h2>سجلي</h2></div>
+      <div class="seg">
+        <button class="on" id="tabMine" onclick="setTab('mine')">طلباتي</button>
+        <button id="tabTaken" onclick="setTab('taken')">قبلتها</button>
       </div>
-      <div id="ordersLogList"></div>
+      <div id="logList"></div>
+      <div class="msg" id="logMsg"></div>
     </div>
   </section>
 
-  <section class="solo-view" id="v-store">
-    <div class="box">
-      <div class="box-head"><h2>🛍️ المتجر ونشر الصور</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
-      <div class="hint" id="storeHint" hidden>النشر متاح لدور «بائع / متجر» فقط.</div>
+  <!-- STORE -->
+  <section class="view" id="v-store">
+    <div class="card">
+      <div class="head"><h2>نشر منتج</h2><span class="pill" id="storePill"></span></div>
+      <div class="note hide" id="storeNote">النشر متاح لدور «بائع» فقط.</div>
       <form id="storeForm" onsubmit="publishProduct(event)">
-        <div class="row-2">
-          <div><label for="prodTitle">اسم المنتج أو الخدمة *</label><input type="text" id="prodTitle" placeholder="مثال: كسكس يدوي / حلويات" required /></div>
-          <div><label for="prodCost">السعر (د.ج) *</label><input type="number" id="prodCost" placeholder="2000" min="0" step="any" required /></div>
+        <div class="grid2">
+          <div><label for="pTitle">اسم المنتج</label><input id="pTitle" type="text" required placeholder="كسكس يدوي" /></div>
+          <div><label for="pCost">السعر (د.ج)</label><input id="pCost" type="number" required min="0" step="any" /></div>
         </div>
-        <div class="row-2">
-          <div><label for="prodKind">الجهة / المتجر</label>
-            <select id="prodKind">
-              <option value="أسرة منتجة">أسرة منتجة</option>
-              <option value="متجر / بقالة">متجر / بقالة</option>
-              <option value="مطعم">مطعم</option>
-              <option value="قطع غيار / صيدلية">قطع غيار / صيدلية</option>
-            </select>
+        <div class="grid2">
+          <div><label for="pKind">الجهة</label>
+            <select id="pKind"><option>أسرة منتجة</option><option>متجر / بقالة</option><option>مطعم</option><option>قطع غيار / صيدلية</option></select>
           </div>
-          <div><label for="prodFile">صورة المنتج *</label><input type="file" id="prodFile" accept="image/*" required /></div>
+          <div><label for="pFile">صورة</label><input id="pFile" type="file" accept="image/*" required /></div>
         </div>
-        <label for="prodNotes">وصف المنتج</label>
-        <textarea id="prodNotes" rows="2" placeholder="تفاصيل إضافية..."></textarea>
-        <button type="submit" class="btn btn-mint" id="publishProdBtn">⬆️ نشر المنتج والصورة</button>
-        <div class="feedback" id="storeFeedback"></div>
+        <label for="pNotes">وصف</label>
+        <textarea id="pNotes" rows="2" placeholder="تفاصيل إضافية"></textarea>
+        <button class="btn btn-teal" id="bPublish" type="submit" style="width:100%">رفع ونشر</button>
+        <div class="msg" id="storeMsg"></div>
       </form>
     </div>
-    <div class="box">
-      <div class="box-head"><h2>المنتجات المعروضة</h2></div>
-      <div class="row-3" id="storeGrid"><p class="sub-note">جارٍ التحميل...</p></div>
+    <div class="card">
+      <div class="head"><h2>المعروض</h2></div>
+      <div class="grid3" id="storeGrid"><p class="empty">جارٍ التحميل…</p></div>
     </div>
   </section>
 
-  <section class="solo-view" id="v-alerts">
-    <div class="box">
-      <div class="box-head"><h2>📣 صفحة الإشعارات</h2><button class="btn btn-light" onclick="leaveNotificationsPage()">← القائمة الرئيسية</button></div>
-      <div id="alertsFullList"></div>
+  <!-- ALERTS -->
+  <section class="view" id="v-alerts">
+    <div class="card">
+      <div class="head"><h2>الإشعارات</h2><button class="btn btn-ghost btn-sm" onclick="markRead()">تحديد كمقروء</button></div>
+      <div id="alertList"></div>
     </div>
   </section>
 
-  <section class="solo-view" id="v-logout">
-    <div class="box">
-      <div class="box-head"><h2>🛑 تسجيل الخروج</h2></div>
-      <div class="feedback show ok" style="margin-top:0">✔️ تم تسجيل الخروج بنجاح.</div>
-      <div style="margin-top:12px"><button type="button" class="btn btn-royal" onclick="showEntryGate()">تسجيل الدخول بحساب آخر</button></div>
+  <!-- ACCOUNT -->
+  <section class="view" id="v-account">
+    <div class="card">
+      <div class="head"><h2>حسابي</h2></div>
+      <div class="row" style="margin:0 0 12px"><div><div class="t" id="accName">—</div><div class="m" id="accEmail">—</div></div></div>
+      <label for="accRole">الدور</label>
+      <select id="accRole"><option value="مشتري">مشتري</option><option value="عامل توصيل">عامل توصيل</option><option value="بائع">بائع / متجر</option></select>
+      <button class="btn btn-solid" onclick="saveRole()" style="width:100%">حفظ الدور</button>
+      <div class="msg" id="accMsg"></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:16px 0" />
+      <button class="btn btn-ghost" onclick="refreshCoords()" style="width:100%;margin-bottom:9px">تحديث موقعي (GPS)</button>
+      <button class="btn btn-danger" onclick="signOut()" style="width:100%">تسجيل الخروج</button>
     </div>
   </section>
 
@@ -279,665 +297,509 @@
 <script>
 "use strict";
 
-const SUPABASE_URL = "https://nnozlrxxleutxwbznbza.supabase.co";
-const SUPABASE_ANON_KEY = "Sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
+const U = "https://nnozlrxxleutxwbznbza.supabase.co";
+const KEY = "Sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
 const BUCKET = "product-images";
-const MAX_UPLOAD_BYTES = 2.5 * 1024 * 1024;
-const OTP_COOLDOWN_MS = 60000;
+const SKEY = "wossol_s3";
+const MAXB = 2.5 * 1024 * 1024;
 
-let sb = null;
-let session = null;
-let me = null;
-let profile = { full_name: "", phone: "", role: "مشتري", lat: null, lng: null };
-let cachedCoords = null;
-let catFilter = "الكل";
-let logTab = "mine";
-let ordersCache = [];
-let productsCache = [];
-let alertsCache = [];
-let otpCooldownTimer = null;
-let channels = [];
+let sess = null, me = null, prof = { full_name:"", phone:"", role:"مشتري", lat:null, lng:null };
+let coords = null, cat = "الكل", tab = "mine";
+let orders = [], products = [], alerts = [];
+let cooldown = null, poll = null, mapObj = null, layer = null;
 
-let mapObj = null, mapLayer = null;
-
-/* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const js = s => String(s ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+const num = n => { const v = Number(n); return Number.isFinite(v) ? v : 0; };
+const money = n => num(n).toLocaleString("ar-DZ");
 
-function esc(s) {
-  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+function say(id, txt, kind) {
+  const el = $(id); if (!el) return;
+  if (!txt) { el.className = "msg"; el.textContent = ""; return; }
+  el.textContent = txt; el.className = "msg on " + kind;
 }
-function escJs(s) { return String(s ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
-function money(n) { const v = Number(n); return Number.isFinite(v) ? v.toLocaleString("ar-DZ") : "0"; }
-function num(n) { const v = Number(n); return Number.isFinite(v) ? v : 0; }
+function ls(key, fb) { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fb; } catch { return fb; } }
+function lsSet(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch {} }
 
-function readJSON(key, fallback) {
-  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
-  catch { return fallback; }
-}
-function writeJSON(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); return true; }
-  catch { return false; }
-}
-function writeStr(key, val) { try { localStorage.setItem(key, val); return true; } catch { return false; } }
-
-function showFb(id, msg, kind) {
-  const el = $(id);
-  if (!el) return;
-  if (!msg) { el.className = "feedback"; el.textContent = ""; return; }
-  el.textContent = msg;
-  el.className = "feedback show " + kind;
-}
-
-function readCoords(timeoutMs = 20000) {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject(new Error("المتصفح لا يدعم تحديد الموقع"));
-    navigator.geolocation.getCurrentPosition(
-      p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      e => reject(new Error(e.message || "تعذر الوصول إلى الموقع")),
-      { enableHighAccuracy: false, timeout: timeoutMs, maximumAge: 60000 }
-    );
+/* ---------- transport ---------- */
+async function refresh() {
+  if (!sess?.refresh_token) throw new Error("لا توجد جلسة");
+  const r = await fetch(U + "/auth/v1/token?grant_type=refresh_token", {
+    method: "POST",
+    headers: { apikey: KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: sess.refresh_token })
   });
+  if (!r.ok) { await signOut(); throw new Error("انتهت الجلسة، سجّل الدخول من جديد"); }
+  saveSess(await r.json());
 }
-
-function distKm(a, b) {
-  const rad = x => x * Math.PI / 180;
-  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
-  const s = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng/2)**2;
-  return +(2 * 6371 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))).toFixed(2);
+function saveSess(d) {
+  sess = {
+    access_token: d.access_token, refresh_token: d.refresh_token,
+    expires_at: Date.now() + (d.expires_in || 3600) * 1000 - 30000,
+    user: d.user || sess?.user || null
+  };
+  if (d.user) me = d.user;
+  lsSet(SKEY, sess);
 }
-
-/* ---------- navigation ---------- */
-function hideAllSolo() { document.querySelectorAll(".solo-view").forEach(v => v.classList.remove("active")); }
-
-function showEntryGate() {
-  hideAllSolo();
-  $("hubMenu").classList.remove("active");
-  $("entryGate").classList.remove("hidden");
-  $("entryOtpCode").value = "";
-  showFb("entryFeedback", "", "");
+async function token() {
+  if (!sess) throw new Error("غير مسجل");
+  if (Date.now() > sess.expires_at) await refresh();
+  return sess.access_token;
 }
-
-function backToMenu() {
-  if (!session) { showEntryGate(); return; }
-  hideAllSolo();
-  $("entryGate").classList.add("hidden");
-  $("hubMenu").classList.add("active");
-  refreshHubBadges();
-  applyRoleUI();
-}
-
-function openPage(key) {
-  if (!session) { showEntryGate(); return; }
-  $("entryGate").classList.add("hidden");
-  $("hubMenu").classList.remove("active");
-  hideAllSolo();
-  $("v-" + key).classList.add("active");
-  window.scrollTo({ top: 0, behavior: "smooth" });
-  if (key === "browse-orders") { loadOrders(); if (mapObj) setTimeout(() => mapObj.invalidateSize(), 120); }
-  if (key === "orders-log") loadOrders();
-  if (key === "store") loadProducts();
-}
-
-function handleHeaderBrandClick() {
-  if (!session) { showEntryGate(); return; }
-  backToMenu();
-}
-
-function applyRoleUI() {
-  const role = profile.role || "مشتري";
-  document.querySelectorAll(".hub-btn[data-roles]").forEach(btn => {
-    btn.hidden = !btn.dataset.roles.split(",").includes(role);
+async function api(path, { method = "GET", body, auth = true, headers = {} } = {}) {
+  const h = { apikey: KEY, ...headers };
+  if (auth || sess) h.Authorization = "Bearer " + await token();
+  if (body !== undefined && !(body instanceof Blob)) h["Content-Type"] = "application/json";
+  const r = await fetch(U + path, {
+    method, headers: h,
+    body: body === undefined ? undefined : (body instanceof Blob ? body : JSON.stringify(body))
   });
-  const canAccept = role === "عامل توصيل";
-  $("browseHint").hidden = canAccept;
-  $("storeHint").hidden = role === "بائع";
-}
-
-function refreshHubBadges() {
-  $("hubUserBadge").textContent = me?.email || "غير مسجّل";
-  $("hubRoleBadge").textContent = profile.role || "مشتري";
-  $("hubGpsBadge").textContent = cachedCoords
-    ? `📍 ${cachedCoords.lat.toFixed(3)}, ${cachedCoords.lng.toFixed(3)}` : "📍 غير محدد";
-  $("roleSelectSolo").value = profile.role || "مشتري";
+  const txt = await r.text();
+  let data = null;
+  try { data = txt ? JSON.parse(txt) : null; } catch { data = txt; }
+  if (!r.ok) {
+    const m = data?.msg || data?.message || data?.error_description || data?.error || r.status;
+    throw new Error(typeof m === "string" ? m : "خطأ " + r.status);
+  }
+  return data;
 }
 
 /* ---------- auth ---------- */
-async function initAuth() {
-  if (!window.supabase) {
-    $("entryFeedback").className = "feedback show err";
-    $("entryFeedback").textContent = "تعذر تحميل مكتبة الاتصال. تحقق من الشبكة وأعد تحميل الصفحة.";
-    return;
+async function sendOtp() {
+  const email = $("fEmail").value.trim().toLowerCase();
+  const name = $("fName").value.trim();
+  const phone = $("fPhone").value.trim();
+  const role = $("fRole").value;
+  if (!name) return say("authMsg", "أدخل اسمك أولاً.", "err");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say("authMsg", "صيغة البريد غير صحيحة.", "err");
+
+  const b = $("bSend");
+  b.disabled = true; b.textContent = "جارٍ الإرسال…";
+  say("authMsg", "", "");
+  try {
+    await api("/auth/v1/otp", { method: "POST", auth: false, body: {
+      email, create_user: true, data: { full_name: name, phone, role }
+    }});
+    lsSet("wossol_pending", { email, full_name: name, phone, role });
+    $("st2").classList.add("done");
+    $("otp").focus();
+    say("authMsg", "أُرسل الرمز إلى " + email + " — افحص البريد والمهملات.", "ok");
+    tick();
+  } catch (e) {
+    const m = String(e.message);
+    say("authMsg", m.includes("rate") ? "تجاوزت حد الإرسال. انتظر دقيقة ثم أعد المحاولة."
+      : "تعذر الإرسال: " + m, "err");
+    b.disabled = false; b.textContent = "إعادة إرسال الرمز";
   }
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const { data } = await sb.auth.getSession();
-  session = data.session || null;
-
-  if (session) {
-    await onSignedIn(session);
-  } else {
-    showEntryGate();
-  }
-
-  sb.auth.onAuthStateChange(async (event, s) => {
-    if (event === "SIGNED_IN" && s) {
-      session = s;
-      if (location.hash.includes("access_token")) history.replaceState(null, "", location.pathname);
-      await onSignedIn(s);
-    }
-    if (event === "SIGNED_OUT") { session = null; me = null; }
-    if (event === "TOKEN_REFRESHED" && s) session = s;
-  });
 }
-
-async function onSignedIn(s) {
-  me = s.user;
-  await loadProfile();
-  const pending = readJSON("wossol_pending_signup", null);
-  if (pending && (!profile.full_name || profile.full_name !== pending.full_name)) {
-    await saveProfile({ full_name: pending.full_name, phone: pending.phone, role: pending.role });
-    writeJSON("wossol_pending_signup", null);
-  }
-  await pushAlert(`تم تأكيد الحساب والدخول (${profile.role}): ${me.email}`);
-  subscribeRealtime();
-  backToMenu();
-  loadOrders(); loadProducts(); loadAlerts();
-}
-
-async function loadProfile() {
-  const { data, error } = await sb.from("profiles").select("*").eq("id", me.id).maybeSingle();
-  if (!error && data) { profile = { ...profile, ...data }; return; }
-  const meta = me.user_metadata || {};
-  await saveProfile({
-    full_name: meta.full_name || "", phone: meta.phone || "",
-    role: meta.role || "مشتري"
-  });
-}
-
-async function saveProfile(patch) {
-  profile = { ...profile, ...patch };
-  if (!me) return;
-  const row = {
-    id: me.id, full_name: profile.full_name, phone: profile.phone,
-    role: profile.role, lat: cachedCoords?.lat ?? null, lng: cachedCoords?.lng ?? null,
-    updated_at: new Date().toISOString()
-  };
-  const { error } = await sb.from("profiles").upsert(row, { onConflict: "id" });
-  if (error) showFb("roleFeedback", "تعذر حفظ البيانات: " + error.message, "err");
-}
-
-function startOtpCooldown() {
-  const btn = $("sendOtpBtn");
-  let left = Math.floor(OTP_COOLDOWN_MS / 1000);
-  clearInterval(otpCooldownTimer);
-  btn.disabled = true;
-  btn.textContent = `⏳ إعادة الإرسال بعد ${left}ث`;
-  otpCooldownTimer = setInterval(() => {
-    left -= 1;
-    if (left <= 0) {
-      clearInterval(otpCooldownTimer);
-      btn.disabled = false;
-      btn.textContent = "📨 إعادة إرسال رمز التحقق";
-    } else btn.textContent = `⏳ إعادة الإرسال بعد ${left}ث`;
+function tick() {
+  const b = $("bSend"); let s = 60;
+  clearInterval(cooldown); b.disabled = true;
+  b.textContent = "إعادة الإرسال بعد " + s + "ث";
+  cooldown = setInterval(() => {
+    s--;
+    if (s <= 0) { clearInterval(cooldown); b.disabled = false; b.textContent = "إعادة إرسال الرمز"; }
+    else b.textContent = "إعادة الإرسال بعد " + s + "ث";
   }, 1000);
 }
 
-async function sendLoginOtp() {
-  const email = $("entryEmail").value.trim().toLowerCase();
-  const name = $("entryName").value.trim();
-  const phone = $("entryPhone").value.trim();
-  const role = $("entryRole").value;
-
-  if (!name) return showFb("entryFeedback", "أدخل الاسم الكامل أولاً.", "err");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showFb("entryFeedback", "صيغة البريد غير صحيحة.", "err");
-
-  const btn = $("sendOtpBtn");
-  btn.disabled = true;
-  btn.textContent = "⏳ جاري الإرسال...";
-
+async function verifyOtp() {
+  const code = $("otp").value.replace(/\D/g, "");
+  const email = $("fEmail").value.trim().toLowerCase();
+  if (code.length !== 6) return say("authMsg", "أدخل الرمز المكوّن من ٦ أرقام.", "err");
+  const b = $("bVerify");
+  b.disabled = true; b.textContent = "جارٍ التحقق…";
   try {
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true,
-        emailRedirectTo: location.origin + location.pathname,
-        data: { full_name: name, phone, role }
-      }
-    });
-    if (error) throw error;
-    writeJSON("wossol_pending_signup", { full_name: name, phone, role, email });
-    showFb("entryFeedback", `📨 تم إرسال رمز التحقق إلى ${email}. أدخل الرمز أدناه.`, "ok");
-    startOtpCooldown();
-  } catch (err) {
-    showFb("entryFeedback", "❌ تعذر إرسال الرمز: " + (err.message || err), "err");
-    btn.disabled = false;
-    btn.textContent = "📨 إرسال رمز التحقق (OTP) إلى البريد";
-  }
-}
-
-async function verifyLoginOtp() {
-  const email = $("entryEmail").value.trim().toLowerCase();
-  const token = $("entryOtpCode").value.trim();
-  if (!email) return showFb("entryFeedback", "أدخل البريد الإلكتروني.", "err");
-  if (!token) return showFb("entryFeedback", "أدخل رمز التحقق.", "err");
-
-  const btn = $("verifyOtpBtn");
-  btn.disabled = true;
-  btn.textContent = "⏳ جاري التحقق...";
-
-  try {
-    const payload = /^\d{4,10}$/.test(token)
-      ? { email, token, type: "email" }
-      : { token_hash: token, type: "magiclink" };
-    const { data, error } = await sb.auth.verifyOtp(payload);
-    if (error) throw error;
-    if (data?.session) session = data.session;
-    if (!cachedCoords) {
-      try { cachedCoords = await readCoords(15000); writeJSON("wossol_coords", cachedCoords); } catch {}
+    const d = await api("/auth/v1/verify", { method: "POST", auth: false, body: { type: "email", email, token: code } });
+    saveSess(d);
+    const pending = ls("wossol_pending", null);
+    if (!coords) { try { coords = await geo(); lsSet("wossol_coords", coords); } catch {} }
+    await boot();
+    if (pending) {
+      await saveProfile({ full_name: pending.full_name, phone: pending.phone, role: pending.role });
+      localStorage.removeItem("wossol_pending");
     }
-    showFb("entryFeedback", "✔️ تم التأكيد بنجاح.", "ok");
-    await onSignedIn(data.session);
-  } catch (err) {
-    showFb("entryFeedback", "❌ رمز غير صحيح أو منتهي: " + (err.message || err), "err");
+    await pushAlert("تم الدخول بحساب " + me.email);
+    go("home");
+  } catch (e) {
+    const m = String(e.message);
+    say("authMsg", /expired|invalid/i.test(m) ? "الرمز غير صحيح أو منتهي. اطلب رمزاً جديداً." : "فشل التحقق: " + m, "err");
   } finally {
-    btn.disabled = false;
-    btn.textContent = "✔️ تأكيد الرمز وإنشاء الحساب / الدخول";
+    b.disabled = false; b.textContent = "تأكيد الرمز والدخول";
   }
 }
 
-async function logoutImmediately() {
-  channels.forEach(c => { try { sb.removeChannel(c); } catch {} });
-  channels = [];
-  try { await sb.auth.signOut(); } catch {}
-  session = null; me = null; ordersCache = []; productsCache = []; alertsCache = [];
-  hideAllSolo();
-  $("entryGate").classList.add("hidden");
-  $("hubMenu").classList.remove("active");
-  $("v-logout").classList.add("active");
+async function signOut() {
+  clearInterval(poll);
+  try { await api("/auth/v1/logout", { method: "POST" }); } catch {}
+  sess = null; me = null; orders = []; products = []; alerts = [];
+  localStorage.removeItem(SKEY);
+  renderAuth();
 }
 
-async function requestLocationAtLogin() {
-  const btn = $("requestGpsEntryBtn");
-  btn.disabled = true;
-  btn.textContent = "📍 جاري طلب الموقع...";
+function renderAuth() {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("on"));
+  $("v-auth").classList.add("on");
+  $("nav").classList.remove("on");
+  $("bell").classList.add("hide");
+  $("otp").value = "";
+  $("st2").classList.remove("done");
+  say("authMsg", "", "");
+  window.scrollTo({ top: 0 });
+}
+
+/* ---------- profile ---------- */
+async function boot() {
+  const rows = await api("/rest/v1/profiles?select=*&id=eq." + me.id);
+  if (rows?.length) prof = { ...prof, ...rows[0] };
+  else await saveProfile({ role: "مشتري" });
+  renderShell();
+  startPoll();
+  await Promise.all([loadOrders(), loadAlerts()]);
+}
+async function saveProfile(patch) {
+  prof = { ...prof, ...patch };
+  await api("/rest/v1/profiles?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: { id: me.id, full_name: prof.full_name, phone: prof.phone, role: prof.role,
+      lat: coords?.lat ?? null, lng: coords?.lng ?? null, updated_at: new Date().toISOString() }
+  });
+}
+
+/* ---------- ui shell ---------- */
+function renderShell() {
+  $("nav").classList.add("on");
+  $("bell").classList.remove("hide");
+  $("hello").textContent = "مرحباً " + (prof.full_name?.split(" ")[0] || "");
+  $("subline").textContent = prof.phone || me.email;
+  $("rolePill").textContent = prof.role;
+  $("accName").textContent = prof.full_name || "بلا اسم";
+  $("accEmail").textContent = me.email;
+  $("accRole").value = prof.role;
+  $("storePill").textContent = prof.role === "بائع" ? "مسموح" : "مقيّد";
+  $("storeNote").classList.toggle("hide", prof.role === "بائع");
+  $("acceptNote").classList.toggle("hide", prof.role === "عامل توصيل");
+  $("gpsPill").textContent = coords ? coords.lat.toFixed(3) + ", " + coords.lng.toFixed(3) : "الموقع غير محدد";
+  $("gpsPill2").textContent = $("gpsPill").textContent;
+  document.querySelectorAll(".chip[data-r]").forEach(c => c.classList.toggle("hide", c.dataset.r !== prof.role));
+  drawBrowse(); drawLog();
+}
+function go(v) {
+  if (!sess && v !== "auth") return renderAuth();
+  document.querySelectorAll(".view").forEach(x => x.classList.remove("on"));
+  $("v-" + v).classList.add("on");
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (v === "browse") { loadOrders(); if (mapObj) setTimeout(() => mapObj.invalidateSize(), 120); }
+  if (v === "log") loadOrders();
+  if (v === "store") loadProducts();
+  if (v === "alerts") { loadAlerts(); markRead(); }
+}
+function brandClick() { if (sess) go("home"); else renderAuth(); }
+
+/* ---------- location ---------- */
+function geo(t = 20000) {
+  return new Promise((res, rej) => {
+    if (!navigator.geolocation) return rej(new Error("المتصفح لا يدعم تحديد الموقع"));
+    navigator.geolocation.getCurrentPosition(
+      p => res({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      e => rej(new Error(e.message || "تعذر تحديد الموقع")),
+      { enableHighAccuracy: false, timeout: t, maximumAge: 60000 }
+    );
+  });
+}
+async function askLocation() {
+  const b = $("bLoc"); b.disabled = true; b.textContent = "جارٍ التحديد…";
   try {
-    cachedCoords = await readCoords(20000);
-    writeJSON("wossol_coords", cachedCoords);
-    $("gpsStatusBadge").textContent = `📍 تم السماح (${cachedCoords.lat.toFixed(4)}, ${cachedCoords.lng.toFixed(4)})`;
-    showFb("entryFeedback", "✔️ تم حفظ إحداثياتك.", "ok");
-  } catch (err) {
-    showFb("entryFeedback", "⚠️ لم يكتمل تحديد الموقع: " + err.message, "err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "📍 السماح بالوصول إلى الموقع الآن";
-  }
+    coords = await geo(); lsSet("wossol_coords", coords);
+    $("gpsPill").textContent = coords.lat.toFixed(3) + ", " + coords.lng.toFixed(3);
+    $("st3").classList.add("done");
+    say("authMsg", "تم حفظ موقعك.", "ok");
+  } catch (e) { say("authMsg", "تعذر تحديد الموقع: " + e.message, "err"); }
+  finally { b.disabled = false; b.textContent = "تحديد موقعي الآن"; }
 }
-
-async function refreshCoordsNow() {
-  try {
-    cachedCoords = await readCoords(20000);
-    writeJSON("wossol_coords", cachedCoords);
-    refreshHubBadges();
-    await saveProfile({});
-    showFb("locFeedback", `✔️ تم التحديث: ${cachedCoords.lat.toFixed(5)}, ${cachedCoords.lng.toFixed(5)}`, "ok");
-  } catch (err) {
-    showFb("locFeedback", "❌ " + err.message, "err");
-  }
+async function refreshCoords() {
+  try { coords = await geo(); lsSet("wossol_coords", coords); await saveProfile({}); renderShell(); say("accMsg", "تم تحديث الموقع.", "ok"); }
+  catch (e) { say("accMsg", e.message, "err"); }
 }
-
-async function saveRoleSolo() {
-  profile.role = $("roleSelectSolo").value;
-  await saveProfile({ role: profile.role });
-  refreshHubBadges();
-  applyRoleUI();
-  showFb("roleFeedback", "✔️ تم حفظ الدور: " + profile.role, "ok");
-  await pushAlert("تغيير الدور إلى: " + profile.role);
+async function saveRole() {
+  prof.role = $("accRole").value;
+  await saveProfile({ role: prof.role });
+  renderShell(); say("accMsg", "تم حفظ الدور: " + prof.role, "ok");
+  await pushAlert("تغيير الدور إلى " + prof.role);
 }
 
 /* ---------- orders ---------- */
-function addQuickText(t) {
-  const i = $("ordItems");
-  i.value = i.value.trim() ? `${i.value.trim()}، ${t}` : t;
-}
-function toggleTransport() {
-  $("transportWrap").style.display = $("ordInterState").checked ? "block" : "none";
-}
-function filterOrders(c) { catFilter = c; drawBrowse(); }
+const quickAdd = t => { const i = $("oItems"); i.value = i.value.trim() ? i.value.trim() + "، " + t : t; };
+const toggleTransport = () => $("transportWrap").classList.toggle("hide", !$("oInter").checked);
+const setCat = c => { cat = c; drawBrowse(); };
+const setTab = t => { tab = t; $("tabMine").classList.toggle("on", t === "mine"); $("tabTaken").classList.toggle("on", t === "taken"); drawLog(); };
 
-async function createOrderItem(e) {
+async function submitOrder(e) {
   e.preventDefault();
-  const btn = $("submitOrderBtn");
-  btn.disabled = true;
-  btn.textContent = "⏳ جاري الإرسال...";
-
+  const b = $("bOrder"); b.disabled = true; b.textContent = "جارٍ النشر…";
+  say("orderMsg", "", "");
   try {
-    let coords = cachedCoords;
-    try {
-      coords = await readCoords(20000);
-      cachedCoords = coords;
-      writeJSON("wossol_coords", coords);
-    } catch (err) {
-      if (!coords) throw new Error("تعذر تحديد موقع الطلبية: " + err.message);
-    }
+    let c = coords;
+    try { c = await geo(); coords = c; lsSet("wossol_coords", c); }
+    catch (err) { if (!c) throw new Error("تعذر تحديد الموقع: " + err.message); }
 
     const id = "ORD-" + Date.now().toString(36).toUpperCase();
-    const row = {
-      id, requester_id: me.id,
-      requester_name: profile.full_name || me.email,
-      phone: $("ordPhone").value.trim(),
-      cat: $("ordCat").value,
-      items: $("ordItems").value.trim(),
-      cost: num($("ordCost").value), fee: num($("ordFee").value),
-      deferred: $("ordDeferred").checked,
-      inter_state: $("ordInterState").checked,
-      vehicle: $("ordInterState").checked ? $("ordVehicle").value : "محلي",
-      lat: coords.lat, lng: coords.lng,
-      status: "متاحة"
-    };
-
-    const { error } = await sb.from("orders").insert(row);
-    if (error) throw error;
-
-    $("orderForm").reset();
-    $("transportWrap").style.display = "none";
-    showFb("orderFeedback", `✔️ تم إرسال الطلبية (${id}).`, "ok");
-    await pushAlert(`طلبية جديدة (${id}): ${row.items}`);
-    await loadOrders();
-  } catch (err) {
-    showFb("orderFeedback", "❌ " + (err.message || err), "err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "🚀 إرسال الطلبية";
-  }
+    await api("/rest/v1/orders", { method: "POST", headers: { Prefer: "return=minimal" }, body: {
+      id, requester_id: me.id, requester_name: prof.full_name || me.email,
+      phone: $("oPhone").value.trim(), cat: $("oCat").value,
+      items: $("oItems").value.trim(), cost: num($("oCost").value), fee: num($("oFee").value),
+      deferred: $("oDeferred").checked, inter_state: $("oInter").checked,
+      vehicle: $("oInter").checked ? $("oVehicle").value : "محلي",
+      lat: c.lat, lng: c.lng, status: "متاحة"
+    }});
+    $("orderForm").reset(); $("transportWrap").classList.add("hide");
+    say("orderMsg", "نُشر الطلب " + id + ".", "ok");
+    await pushAlert("طلب جديد " + id + ": " + $("oItems").value);
+    await loadOrders(); go("log");
+  } catch (err) { say("orderMsg", err.message, "err"); }
+  finally { b.disabled = false; b.textContent = "نشر الطلب"; }
 }
 
 async function loadOrders() {
-  const { data, error } = await sb.from("orders").select("*").order("created_at", { ascending: false }).limit(300);
-  if (error) {
-    $("browseOrdersList").innerHTML = `<p class="sub-note">تعذر تحميل الطلبات: ${esc(error.message)}</p>`;
-    return;
-  }
-  ordersCache = data || [];
-  drawBrowse(); drawLog();
+  try {
+    orders = await api("/rest/v1/orders?select=*&order=created_at.desc&limit=200") || [];
+  } catch { return; }
+  drawBrowse(); drawLog(); drawFeed();
+  $("statOpen").textContent = orders.filter(o => o.status === "متاحة").length;
+  $("statMine").textContent = orders.filter(o => o.requester_id === me?.id).length;
+  $("openPill").textContent = orders.filter(o => o.status === "متاحة").length;
 }
 
 function drawBrowse() {
-  const box = $("browseOrdersList");
-  const open = ordersCache.filter(o => o.status === "متاحة");
-  const list = open.filter(o => catFilter === "الكل" || o.cat === catFilter);
-
-  if (!list.length) { box.innerHTML = `<p class="sub-note">لا توجد طلبات متاحة حالياً.</p>`; return; }
-
-  const canAccept = profile.role === "عامل توصيل";
-  box.innerHTML = list.map(o => `
-    <div class="card-row">
-      <div>
-        <strong>${esc(o.cat)}</strong>
-        ${o.inter_state ? `<span class="badge">${esc(o.vehicle)}</span>` : ""}
-        ${o.deferred ? `<span class="badge">بالآجل</span>` : ""}
-        <div style="margin-top:4px">${esc(o.items)}</div>
-        <div class="sub-note" style="margin:4px 0 0">📞 ${esc(o.phone)} | عمولة: ${money(o.fee)} د.ج | ${esc(o.requester_name || "")}</div>
+  const box = $("browseList"); if (!box) return;
+  const open = orders.filter(o => o.status === "متاحة" && (cat === "الكل" || o.cat === cat));
+  if (!open.length) { box.innerHTML = '<p class="empty">لا توجد طلبات متاحة الآن.</p>'; return; }
+  const can = prof.role === "عامل توصيل";
+  box.innerHTML = open.map(o => `
+    <div class="row">
+      <div style="flex:1;min-width:200px">
+        <div class="t">${esc(o.items)}</div>
+        <div class="m">${esc(o.cat)} · ${esc(o.requester_name || "")} · ${esc(o.phone)}</div>
+        <div class="m">عمولة ${money(o.fee)} د.ج ${o.deferred ? " · بالآجل" : ""}${o.inter_state ? " · " + esc(o.vehicle) : ""}</div>
       </div>
-      <div>
-        ${canAccept
-          ? `<button type="button" class="btn btn-mint" onclick="acceptOrderRoute('${escJs(o.id)}')">قبول ورسم المسار</button>`
-          : `<span class="badge badge-mint">متاحة</span>`}
-      </div>
+      ${can ? `<button class="btn btn-solid btn-sm" onclick="accept('${js(o.id)}')">قبول</button>` : '<span class="pill">متاح</span>'}
     </div>`).join("");
 }
 
-async function acceptOrderRoute(id) {
-  const target = ordersCache.find(o => o.id === id);
-  if (!target) return;
-  if (target.lat == null || target.lng == null) return showFb("routeFeedback", "الطلبية بلا إحداثيات.", "err");
-
-  let myCoords = cachedCoords;
-  try {
-    myCoords = await readCoords(20000);
-    cachedCoords = myCoords;
-    writeJSON("wossol_coords", myCoords);
-  } catch (err) {
-    if (!myCoords) return showFb("routeFeedback", "❌ تعذر تحديد موقعك: " + err.message, "err");
-  }
-
-  const km = distKm({ lat: target.lat, lng: target.lng }, myCoords);
-  const { data, error } = await sb.from("orders").update({
-    status: "مقبولة", accepted_by: me.id, accepted_email: me.email,
-    accepted_lat: myCoords.lat, accepted_lng: myCoords.lng,
-    dist_km: km, accepted_at: new Date().toISOString()
-  }).eq("id", id).is("accepted_by", null).select();
-
-  if (error) return showFb("routeFeedback", "❌ " + error.message, "err");
-  if (!data || !data.length) return showFb("routeFeedback", "⛔ سبقك أحد إلى قبول هذه الطلبية.", "err");
-
-  const order = data[0];
-  $("routePanel").style.display = "block";
-  $("routeSummaryTxt").textContent =
-    `المسافة الهوائية: ${km} كم — من موقعك (${myCoords.lat.toFixed(5)}, ${myCoords.lng.toFixed(5)}) إلى موقع الطلبية (${target.lat.toFixed(5)}, ${target.lng.toFixed(5)}).`;
-  $("gmapsLink").href =
-    `https://www.google.com/maps/dir/?api=1&origin=${myCoords.lat},${myCoords.lng}&destination=${target.lat},${target.lng}&travelmode=driving`;
-
-  drawRouteMap(myCoords, { lat: target.lat, lng: target.lng });
-  showFb("routeFeedback", "✔️ تم قبول الطلبية ورسم المسار.", "ok");
-  await pushAlert(`قبلت الطلبية ${id} (${km} كم).`);
-  await notifyUser(order.requester_id, `تم قبول طلبيتك ${id} من ${me.email} — المسافة ${km} كم.`);
-  await loadOrders();
-}
-
-function drawRouteMap(from, to) {
-  if (!window.L) return;
-  if (!mapObj) {
-    mapObj = L.map("mapBox").setView([from.lat, from.lng], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(mapObj);
-    mapLayer = L.layerGroup().addTo(mapObj);
-  }
-  mapLayer.clearLayers();
-  const p1 = [from.lat, from.lng], p2 = [to.lat, to.lng];
-  L.circleMarker(p1, { radius: 8, color: "#059669", fillColor: "#059669", fillOpacity: .9 }).bindPopup("موقعك").addTo(mapLayer);
-  L.circleMarker(p2, { radius: 8, color: "#1d4ed8", fillColor: "#1d4ed8", fillOpacity: .9 }).bindPopup("موقع الطلبية").addTo(mapLayer);
-  const poly = L.polyline([p1, p2], { color: "#e11d48", weight: 4, dashArray: "6 8" }).addTo(mapLayer);
-  mapObj.fitBounds(poly.getBounds(), { padding: [30, 30] });
-  setTimeout(() => mapObj.invalidateSize(), 150);
-}
-
-function switchLogTab(t) {
-  logTab = t;
-  $("tabMine").classList.toggle("on", t === "mine");
-  $("tabTaken").classList.toggle("on", t === "taken");
-  drawLog();
-}
-
 function drawLog() {
-  const box = $("ordersLogList");
-  const list = logTab === "mine"
-    ? ordersCache.filter(o => o.requester_id === me?.id)
-    : ordersCache.filter(o => o.accepted_by === me?.id);
-
-  if (!list.length) { box.innerHTML = `<p class="sub-note">لا توجد طلبيات.</p>`; return; }
-
+  const box = $("logList"); if (!box) return;
+  const list = tab === "mine" ? orders.filter(o => o.requester_id === me?.id) : orders.filter(o => o.accepted_by === me?.id);
+  if (!list.length) { box.innerHTML = '<p class="empty">لا شيء هنا بعد.</p>'; return; }
   box.innerHTML = list.map(o => {
-    const total = num(o.cost) + num(o.fee);
-    const cls = o.status === "متاحة" ? "badge-mint" : o.status === "مقبولة" ? "badge" : "badge-expired";
-    const canFinish = o.accepted_by === me?.id && o.status === "مقبولة";
-    return `
-      <div class="card-row">
-        <div>
-          <strong>${esc(o.items)}</strong> <span class="badge ${cls}">${esc(o.status)}</span>
-          <div class="sub-note" style="margin:4px 0 0">${esc(o.id)} | المشتريات + العمولة = ${money(total)} د.ج</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${canFinish ? `
-            <button class="btn btn-light" style="padding:6px 10px;font-size:.78rem" onclick="setOrderDone('${escJs(o.id)}','تم الشراء')">تم الشراء</button>
-            <button class="btn btn-mint" style="padding:6px 10px;font-size:.78rem" onclick="setOrderDone('${escJs(o.id)}','تم التسليم')">تم التسليم</button>` : ""}
-        </div>
-      </div>`;
+    const cls = o.status === "متاحة" ? "teal" : o.status === "مقبولة" ? "amber" : "";
+    const fin = o.accepted_by === me?.id && o.status === "مقبولة";
+    return `<div class="row">
+      <div style="flex:1;min-width:200px">
+        <div class="t">${esc(o.items)} <span class="pill ${cls}">${esc(o.status)}</span></div>
+        <div class="m">${esc(o.id)} · ${money(num(o.cost) + num(o.fee))} د.ج</div>
+      </div>
+      ${fin ? `<div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="finish('${js(o.id)}','تم الشراء')">تم الشراء</button>
+        <button class="btn btn-teal btn-sm" onclick="finish('${js(o.id)}','تم التسليم')">تم التسليم</button></div>` : ""}
+    </div>`;
   }).join("");
 }
 
-async function setOrderDone(id, status) {
-  const { error } = await sb.from("orders").update({ status }).eq("id", id);
-  if (error) return showFb("routeFeedback", "❌ " + error.message, "err");
-  await loadOrders();
+function drawFeed() {
+  const mine = orders.filter(o => o.requester_id === me?.id || o.accepted_by === me?.id).slice(0, 3);
+  $("homeFeed").innerHTML = mine.length
+    ? mine.map(o => `<div class="row"><div class="t">${esc(o.items)}</div><span class="pill">${esc(o.status)}</span></div>`).join("")
+    : '<p class="empty">لا نشاط بعد — ابدأ بطلب.</p>';
 }
 
-/* ---------- products ---------- */
-async function compressImage(file) {
-  if (!file.type.startsWith("image/")) throw new Error("الملف ليس صورة.");
+async function accept(id) {
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  let c = coords;
+  try { c = await geo(); coords = c; lsSet("wossol_coords", c); }
+  catch (e) { if (!c) return say("browseMsg", "تعذر تحديد موقعك: " + e.message, "err"); }
+
+  const km = dist({ lat: o.lat, lng: o.lng }, c);
+  try {
+    const rows = await api(`/rest/v1/orders?id=eq.${encodeURIComponent(id)}&accepted_by=is.null&status=eq.${encodeURIComponent("متاحة")}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=representation" },
+      body: { status: "مقبولة", accepted_by: me.id, accepted_email: me.email,
+        accepted_lat: c.lat, accepted_lng: c.lng, dist_km: km, accepted_at: new Date().toISOString() }
+    });
+    if (!rows?.length) return say("browseMsg", "سبقك أحد إلى هذا الطلب.", "err");
+
+    $("routeBox").classList.remove("hide");
+    $("routeTxt").textContent = `المسافة الهوائية ${km} كم — منك إلى الطلب.`;
+    $("gmaps").href = `https://www.google.com/maps/dir/?api=1&origin=${c.lat},${c.lng}&destination=${o.lat},${o.lng}&travelmode=driving`;
+    drawMap(c, { lat: o.lat, lng: o.lng });
+    say("browseMsg", "قبلت الطلب. المسار ظاهر.", "ok");
+    await pushAlert("قبلت الطلب " + id);
+    await notify(o.requester_id, "قُبل طلبك " + id + " — المسافة " + km + " كم.");
+    await loadOrders();
+  } catch (e) { say("browseMsg", e.message, "err"); }
+}
+
+function dist(a, b) {
+  const r = x => x * Math.PI / 180;
+  const dA = r(b.lat - a.lat), dB = r(b.lng - a.lng);
+  const s = Math.sin(dA/2)**2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dB/2)**2;
+  return +(2 * 6371 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))).toFixed(2);
+}
+
+function drawMap(from, to) {
+  if (!window.L) return;
+  if (!mapObj) {
+    mapObj = L.map("map").setView([from.lat, from.lng], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mapObj);
+    layer = L.layerGroup().addTo(mapObj);
+  }
+  layer.clearLayers();
+  const a = [from.lat, from.lng], b = [to.lat, to.lng];
+  L.circleMarker(a, { radius: 8, color: "#22d3ee", fillColor: "#22d3ee", fillOpacity: .9 }).bindPopup("أنت").addTo(layer);
+  L.circleMarker(b, { radius: 8, color: "#f5a524", fillColor: "#f5a524", fillOpacity: .9 }).bindPopup("الطلب").addTo(layer);
+  const line = L.polyline([a, b], { color: "#fb7185", weight: 4, dashArray: "6 8" }).addTo(layer);
+  mapObj.fitBounds(line.getBounds(), { padding: [30, 30] });
+  setTimeout(() => mapObj.invalidateSize(), 150);
+}
+
+async function finish(id, status) {
+  try { await api("/rest/v1/orders?id=eq." + encodeURIComponent(id), { method: "PATCH", body: { status } }); await loadOrders(); }
+  catch (e) { say("logMsg", e.message, "err"); }
+}
+
+/* ---------- store ---------- */
+async function shrink(file) {
+  if (!file.type.startsWith("image/")) throw new Error("الملف ليس صورة");
   if (!window.createImageBitmap) {
-    if (file.size > MAX_UPLOAD_BYTES) throw new Error("حجم الصورة كبير (الحد 2.5 ميغا).");
+    if (file.size > MAXB) throw new Error("الصورة كبيرة");
     return file;
   }
   const bmp = await createImageBitmap(file);
-  const scale = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
-  const w = Math.round(bmp.width * scale), h = Math.round(bmp.height * scale);
+  const k = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
   const cv = document.createElement("canvas");
-  cv.width = w; cv.height = h;
-  cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
+  cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+  cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
   bmp.close?.();
-  const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.75));
-  if (!blob) throw new Error("تعذر ضغط الصورة.");
-  if (blob.size > MAX_UPLOAD_BYTES) throw new Error("الصورة كبيرة جداً بعد الضغط.");
+  const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", .75));
+  if (!blob) throw new Error("تعذر الضغط");
+  if (blob.size > MAXB) throw new Error("الصورة كبيرة حتى بعد الضغط");
   return blob;
 }
-
-async function uploadImage(blob) {
-  const { data: { session: s } } = await sb.auth.getSession();
-  if (!s) throw new Error("انتهت الجلسة، أعد تسجيل الدخول.");
-  const path = `${s.user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
-  const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg" });
-  if (error) throw error;
-  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+async function upload(blob) {
+  const t = await token();
+  const path = `${me.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+  const r = await fetch(`${U}/storage/v1/object/${BUCKET}/${path}`, {
+    method: "POST",
+    headers: { apikey: KEY, Authorization: "Bearer " + t, "Content-Type": "image/jpeg", "x-upsert": "true" },
+    body: blob
+  });
+  if (!r.ok) throw new Error("فشل رفع الصورة: " + (await r.text()).slice(0, 120));
+  return `${U}/storage/v1/object/public/${BUCKET}/${path}`;
 }
-
 async function publishProduct(e) {
   e.preventDefault();
-  if (profile.role !== "بائع") return showFb("storeFeedback", "النشر متاح لدور البائع فقط.", "err");
-  const file = $("prodFile").files[0];
-  if (!file) return showFb("storeFeedback", "اختر صورة المنتج.", "err");
-
-  const btn = $("publishProdBtn");
-  btn.disabled = true;
-  btn.textContent = "⏳ جاري الرفع...";
-
+  if (prof.role !== "بائع") return say("storeMsg", "النشر لدور البائع فقط.", "err");
+  const f = $("pFile").files[0];
+  if (!f) return say("storeMsg", "اختر صورة.", "err");
+  const b = $("bPublish"); b.disabled = true; b.textContent = "جارٍ الرفع…";
+  say("storeMsg", "", "");
   try {
-    const blob = await compressImage(file);
-    const url = await uploadImage(blob);
-    const row = {
-      seller_id: me.id,
-      title: $("prodTitle").value.trim(),
-      cost: num($("prodCost").value),
-      kind: $("prodKind").value,
-      notes: $("prodNotes").value.trim(),
-      image_url: url
-    };
-    const { error } = await sb.from("products").insert(row);
-    if (error) throw error;
-
+    const url = await upload(await shrink(f));
+    await api("/rest/v1/products", { method: "POST", headers: { Prefer: "return=minimal" }, body: {
+      seller_id: me.id, title: $("pTitle").value.trim(), cost: num($("pCost").value),
+      kind: $("pKind").value, notes: $("pNotes").value.trim(), image_url: url
+    }});
     $("storeForm").reset();
-    showFb("storeFeedback", "✔️ تم نشر المنتج.", "ok");
-    await pushAlert("منتج جديد: " + row.title);
+    say("storeMsg", "نُشر المنتج.", "ok");
+    await pushAlert("منتج جديد: " + $("pTitle").value);
     await loadProducts();
-  } catch (err) {
-    showFb("storeFeedback", "❌ " + (err.message || err), "err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "⬆️ نشر المنتج والصورة";
-  }
+  } catch (err) { say("storeMsg", err.message, "err"); }
+  finally { b.disabled = false; b.textContent = "رفع ونشر"; }
 }
-
 async function loadProducts() {
-  const { data, error } = await sb.from("products").select("*").order("created_at", { ascending: false }).limit(120);
-  if (error) { $("storeGrid").innerHTML = `<p class="sub-note">تعذر التحميل: ${esc(error.message)}</p>`; return; }
-  productsCache = data || [];
-  drawStore();
+  try { products = await api("/rest/v1/products?select=*&order=created_at.desc&limit=100") || []; }
+  catch { return; }
+  const g = $("storeGrid");
+  g.innerHTML = products.length ? products.map(p => `
+    <article class="tile">
+      <img src="${esc(p.image_url)}" alt="${esc(p.title)}" loading="lazy" />
+      <div class="in"><span class="pill">${esc(p.kind)}</span><strong>${esc(p.title)}</strong>
+      <span class="money">${money(p.cost)} د.ج</span><p class="m">${esc(p.notes || "")}</p></div>
+    </article>`).join("") : '<p class="empty">لا منتجات بعد.</p>';
 }
 
-function drawStore() {
-  const grid = $("storeGrid");
-  if (!productsCache.length) { grid.innerHTML = `<p class="sub-note">لا توجد منتجات معروضة.</p>`; return; }
-  grid.innerHTML = productsCache.map(p => `
-    <article class="prod-tile">
-      <img class="prod-pic" src="${esc(p.image_url)}" alt="${esc(p.title)}" loading="lazy" />
-      <div class="prod-info">
-        <span class="badge" style="align-self:flex-start">${esc(p.kind)}</span>
-        <strong>${esc(p.title)}</strong>
-        <strong style="color:var(--mint)">${money(p.cost)} د.ج</strong>
-        <p class="sub-note" style="margin:0">${esc(p.notes || "")}</p>
-      </div>
-    </article>`).join("");
-}
-
-/* ---------- notifications ---------- */
+/* ---------- alerts ---------- */
 async function pushAlert(text) {
   if (!me) return;
-  const { error } = await sb.from("notifications").insert({ user_id: me.id, text });
-  if (!error) await loadAlerts();
+  try { await api("/rest/v1/notifications", { method: "POST", headers: { Prefer: "return=minimal" }, body: { user_id: me.id, text } }); } catch {}
+  loadAlerts();
 }
-async function notifyUser(userId, text) {
-  if (!userId) return;
-  await sb.from("notifications").insert({ user_id: userId, text });
+async function notify(uid, text) {
+  if (!uid) return;
+  try { await api("/rest/v1/notifications", { method: "POST", headers: { Prefer: "return=minimal" }, body: { user_id: uid, text } }); } catch {}
 }
-
 async function loadAlerts() {
-  if (!me) return;
-  const { data } = await sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(80);
-  alertsCache = data || [];
-  drawAlerts();
+  try { alerts = await api("/rest/v1/notifications?select=*&order=created_at.desc&limit=60") || []; } catch { return; }
+  const n = alerts.filter(a => !a.read).length;
+  $("dot").textContent = n; $("dot").classList.toggle("off", n === 0);
+  $("alertList").innerHTML = alerts.length ? alerts.map(a => `
+    <div class="row" style="opacity:${a.read ? .65 : 1}">
+      <div><div class="t">${esc(a.text)}</div><div class="m">${new Date(a.created_at).toLocaleString("ar-DZ")}</div></div>
+      <span class="pill ${a.read ? "" : "amber"}">${a.read ? "مقروء" : "جديد"}</span>
+    </div>`).join("") : '<p class="empty">لا إشعارات.</p>';
+}
+async function markRead() {
+  if (!alerts.some(a => !a.read)) return;
+  try { await api("/rest/v1/notifications?read=eq.false", { method: "PATCH", body: { read: true } }); } catch {}
+  loadAlerts();
 }
 
-function drawAlerts() {
-  const unread = alertsCache.filter(a => !a.read).length;
-  $("notifCount").textContent = String(unread);
-  $("notifCount").classList.toggle("hide", unread === 0);
-
-  $("alertsFullList").innerHTML = alertsCache.length
-    ? alertsCache.map(a => `
-      <div class="card-row" style="opacity:${a.read ? .7 : 1}">
-        <div><strong>${esc(a.text)}</strong><div class="sub-note" style="margin:2px 0 0">${new Date(a.created_at).toLocaleString("ar-DZ")}</div></div>
-        <span class="badge">${a.read ? "مقروء" : "جديد"}</span>
-      </div>`).join("")
-    : `<p class="sub-note">لا توجد إشعارات.</p>`;
+/* ---------- polling ---------- */
+function startPoll() {
+  clearInterval(poll);
+  poll = setInterval(() => {
+    if (document.visibilityState === "visible" && sess) { loadOrders(); loadAlerts(); }
+  }, 12000);
 }
 
-async function markAllRead() {
-  if (!me || !alertsCache.some(a => !a.read)) return;
-  await sb.from("notifications").update({ read: true }).eq("user_id", me.id).eq("read", false);
-  alertsCache = alertsCache.map(a => ({ ...a, read: true }));
-  drawAlerts();
+/* ---------- diagnostics ---------- */
+async function runDiag() {
+  const d = $("diag"); d.textContent = "…";
+  const out = [];
+  const probe = async (label, fn) => {
+    try { const r = await fn(); out.push(`${label}: ${r}`); }
+    catch (e) { out.push(`${label}: فشل — ${e.message}`); }
+  };
+  await probe("المشروع", async () => (await fetch(U + "/auth/v1/settings", { headers: { apikey: KEY } })).status);
+  await probe("الجداول", async () => (await fetch(U + "/rest/v1/", { headers: { apikey: KEY } })).status);
+  await probe("البريد", async () => {
+    const r = await fetch(U + "/auth/v1/otp", {
+      method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ email: $("fEmail").value.trim() || "test@example.com", create_user: true })
+    });
+    return r.status + " " + (await r.text()).slice(0, 90);
+  });
+  out.push("");
+  out.push("200 = سليم · 401 = المفتاح لا يخص المشروع · 429 = حد الإرسال · 5xx = المشروع موقوف");
+  d.textContent = out.join("\n");
 }
 
-async function openNotificationsPage() {
-  if (!session) return showEntryGate();
-  openPage("alerts");
-  await markAllRead();
-}
-function leaveNotificationsPage() { backToMenu(); }
-
-/* ---------- realtime ---------- */
-function subscribeRealtime() {
-  channels.forEach(c => { try { sb.removeChannel(c); } catch {} });
-  channels = [];
-
-  channels.push(sb.channel("orders-rt")
-    .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
-      loadOrders();
-    }).subscribe());
-
-  channels.push(sb.channel("products-rt")
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "products" }, () => loadProducts())
-    .subscribe());
-
-  channels.push(sb.channel("notif-rt")
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${me.id}` }, () => loadAlerts())
-    .subscribe());
-}
-
-/* ---------- boot ---------- */
-cachedCoords = readJSON("wossol_coords", null);
-applyRoleUI();
-initAuth();
+/* ---------- init ---------- */
+(async () => {
+  coords = ls("wossol_coords", null);
+  sess = ls(SKEY, null);
+  if (sess?.user) {
+    me = sess.user;
+    try { await token(); await boot(); go("home"); }
+    catch { renderAuth(); }
+  } else renderAuth();
+})();
 </script>
 </body>
 </html>
