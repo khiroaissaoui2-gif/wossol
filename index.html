@@ -1,366 +1,943 @@
--- خدمات wossol: قاعدة البيانات الكاملة (الإصدار 2) لمنصة Supabase
--- تنبيه: هذا الملف يمسح الجداول القديمة ويعيد إنشاءها، فاستعمله للإعداد الأول فقط.
--- بعد أن تدخل بيانات حقيقية لا تعد تشغيله (سأعطيك ملف تحديث بدلاً منه).
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>wossol | دخول مؤكد + خدمات ومتجر</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{--bg-page:#f1f5f9;--bg-card:#fff;--bg-tint:#f8fafc;--royal:#1d4ed8;--royal-dark:#1e3a8a;--mint:#059669;--coral:#e11d48;--sun:#d97706;--ink:#0f172a;--ink-muted:#475569;--line:#cbd5e1;--r-card:16px;--r-btn:12px}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Kufi Arabic",sans-serif}
+  body{background:var(--bg-page);color:var(--ink);min-height:100vh;padding-bottom:60px;line-height:1.65}
+  .app-bar{background:var(--royal-dark);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:80;box-shadow:0 2px 10px rgba(15,23,42,.18)}
+  .app-bar-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .app-title{font-weight:900;font-size:1.12rem;cursor:pointer}
+  .notif-top-btn{background:#fff;color:var(--royal-dark);border:none;border-radius:var(--r-btn);padding:7px 13px;font-weight:800;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .notif-badge{background:var(--coral);color:#fff;border-radius:999px;padding:1px 7px;font-size:.72rem}
+  .notif-badge.hide{display:none}
+  .main-wrap{max-width:980px;margin:20px auto 0;padding:0 16px}
+  .entry-gate.hidden{display:none}
+  .hub-menu{display:none}.hub-menu.active{display:block}
+  .hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+  @media(min-width:650px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .hub-btn{background:var(--bg-card);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-btn);padding:14px 12px;font-weight:800;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,border-color .15s}
+  .hub-btn:hover{background:#eff6ff;border-color:var(--royal)}
+  .hub-btn[hidden]{display:none}
+  .hub-btn.exit-btn{color:var(--coral);border-color:#fecdd3}
+  .hub-btn.exit-btn:hover{background:#fff1f2;border-color:var(--coral)}
+  .solo-view{display:none}.solo-view.active{display:block}
+  .box{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-card);padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(15,23,42,.04)}
+  .box-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .box-head h1,.box-head h2{font-size:1.12rem;font-weight:900;color:var(--royal-dark)}
+  .sub-note{color:var(--ink-muted);font-size:.85rem;margin-bottom:12px}
+  .hint{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:9px 12px;font-size:.82rem;font-weight:700;margin-bottom:12px}
+  .row-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .row-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+  label{display:block;font-size:.84rem;font-weight:700;margin-bottom:5px}
+  input,select,textarea{width:100%;background:var(--bg-tint);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.92rem;outline:none;margin-bottom:12px}
+  input:focus,select:focus,textarea:focus{border-color:var(--royal);background:#fff}
+  .check-opt{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;margin-bottom:10px}
+  .check-opt input[type=checkbox]{width:auto;margin:0}
+  .btn{border:none;border-radius:var(--r-btn);padding:10px 16px;font-size:.88rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn-royal{background:var(--royal);color:#fff}
+  .btn-mint{background:var(--mint);color:#fff}
+  .btn-coral{background:var(--coral);color:#fff}
+  .btn-sun{background:var(--sun);color:#fff}
+  .btn-light{background:var(--bg-tint);color:var(--ink);border:1px solid var(--line)}
+  .meta-strip{display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem;font-weight:700}
+  .badge{background:#eff6ff;color:var(--royal-dark);border:1px solid #bfdbfe;padding:4px 10px;border-radius:999px}
+  .badge-mint{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+  .badge-expired{background:#fff1f2;color:#9f1239;border-color:#fecdd3}
+  .prod-tile{background:var(--bg-tint);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .prod-pic{width:100%;height:165px;object-fit:cover;background:#e2e8f0}
+  .prod-info{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card-row{background:var(--bg-tint);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  #mapBox{width:100%;height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:10px;z-index:1}
+  .tabs{display:flex;gap:6px;margin-bottom:12px}
+  .tab{padding:6px 12px;font-size:.82rem;font-weight:800;border-radius:999px;border:1px solid var(--line);background:var(--bg-tint);cursor:pointer}
+  .tab.on{background:var(--royal);color:#fff;border-color:var(--royal)}
+  .feedback{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7}
+  .feedback.err{background:#fff1f2;color:#9f1239;border:1px solid #fda4af}
+</style>
+</head>
+<body>
 
--- ===== تنظيف أي تشغيل سابق =====
-drop trigger if exists on_auth_user_created on auth.users;
-drop table if exists public.notifications cascade;
-drop table if exists public.order_tracking cascade;
-drop table if exists public.order_private cascade;
-drop table if exists public.orders cascade;
-drop table if exists public.products cascade;
-drop table if exists public.profiles cascade;
-drop function if exists public.handle_new_user() cascade;
-drop function if exists public.set_seller_name() cascade;
-drop function if exists public.notify(uuid,text) cascade;
-drop function if exists public.create_errand(text,text,text,text,int,boolean,text,text) cascade;
-drop function if exists public.create_errand(text,text,text,text,int,int,boolean,text,text,double precision,double precision) cascade;
-drop function if exists public.create_store_order(bigint,int,text,text,int,text) cascade;
-drop function if exists public.create_store_order(bigint,int,text,text,int,text,double precision,double precision) cascade;
-drop function if exists public.accept_order(bigint) cascade;
-drop function if exists public.release_order(bigint) cascade;
-drop function if exists public.mark_bought(bigint,int) cascade;
-drop function if exists public.mark_delivered(bigint) cascade;
-drop function if exists public.cancel_order(bigint) cascade;
-drop function if exists public.seller_decide(bigint,boolean) cascade;
-drop function if exists public.update_tracking(bigint,double precision,double precision) cascade;
-drop function if exists public.mark_notifications_read() cascade;
+<header class="app-bar">
+  <div class="app-bar-inner">
+    <div class="app-title" onclick="handleHeaderBrandClick()"><span>wossol</span></div>
+    <button class="notif-top-btn" id="notifBtn" onclick="openNotificationsPage()">
+      <span>🔔 الإشعارات</span><span class="notif-badge hide" id="notifCount">0</span>
+    </button>
+  </div>
+</header>
 
--- ============ الملفات الشخصية ============
-create table public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  name text not null,
-  phone text not null,
-  created_at timestamptz not null default now()
-);
-alter table public.profiles enable row level security;
-create policy "profiles_select_own" on public.profiles for select to authenticated using (id = auth.uid());
-create policy "profiles_update_own" on public.profiles for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
+<main class="main-wrap">
 
-create function public.handle_new_user() returns trigger
-language plpgsql security definer set search_path = public as $$
-begin
-  insert into public.profiles (id, name, phone)
-  values (
-    new.id,
-    left(coalesce(nullif(trim(new.raw_user_meta_data->>'name'), ''), '—'), 60),
-    left(coalesce(nullif(trim(new.raw_user_meta_data->>'phone'), ''), '—'), 20)
-  );
-  return new;
-end $$;
-create trigger on_auth_user_created after insert on auth.users
-for each row execute function public.handle_new_user();
+  <section class="entry-gate" id="entryGate">
+    <div class="box">
+      <div class="box-head">
+        <h1>تسجيل الدخول وإنشاء حساب — wossol</h1>
+        <span class="badge" id="gpsStatusBadge">📍 الموقع: بانتظار السماح</span>
+      </div>
+      <p class="sub-note">لا يمكن الدخول إلا بعد إرسال رمز التحقق (OTP) إلى بريدك وإدخاله لتأكيد الحساب.</p>
+      <div style="margin-bottom:14px">
+        <button type="button" class="btn btn-mint" id="requestGpsEntryBtn" onclick="requestLocationAtLogin()">📍 السماح بالوصول إلى الموقع الآن</button>
+      </div>
+      <div class="row-2">
+        <div><label for="entryName">الاسم الكامل *</label><input type="text" id="entryName" placeholder="اكتب اسمك الكامل" /></div>
+        <div><label for="entryEmail">البريد الإلكتروني *</label><input type="email" id="entryEmail" placeholder="name@example.com" /></div>
+      </div>
+      <div class="row-2">
+        <div><label for="entryPhone">رقم الهاتف</label><input type="tel" id="entryPhone" placeholder="06xxxxxxxx" /></div>
+        <div><label for="entryRole">اختر دورك</label>
+          <select id="entryRole">
+            <option value="مشتري">مشتري</option>
+            <option value="عامل توصيل">عامل توصيل</option>
+            <option value="بائع">بائع / متجر</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" class="btn btn-royal" id="sendOtpBtn" onclick="sendLoginOtp()">📨 إرسال رمز التحقق (OTP) إلى البريد</button>
+      <hr style="border:none;border-top:1px solid var(--line);margin:16px 0" />
+      <label for="entryOtpCode">رمز التحقق (OTP) المرسل لبريدك *</label>
+      <input type="text" id="entryOtpCode" inputmode="numeric" autocomplete="one-time-code" placeholder="أدخل الرمز الذي وصلك في البريد" />
+      <button type="button" class="btn btn-mint" id="verifyOtpBtn" onclick="verifyLoginOtp()">✔️ تأكيد الرمز وإنشاء الحساب / الدخول</button>
+      <div class="feedback" id="entryFeedback"></div>
+    </div>
+  </section>
 
--- ============ المنتجات (المتجر) ============
-create table public.products (
-  id bigint generated always as identity primary key,
-  seller_id uuid not null references public.profiles(id) on delete cascade,
-  seller_name text not null,
-  name text not null check (char_length(name) between 1 and 80),
-  price int not null check (price > 0 and price <= 10000000),
-  descr text not null default '—' check (char_length(descr) <= 200),
-  kind text not null default 'أسرة منتجة' check (kind in ('أسرة منتجة','متجر / بقالة','مطعم','قطع غيار / صيدلية','أخرى')),
-  image_url text check (image_url is null or image_url like 'https://%'),
-  interstate boolean not null default false,
-  created_at timestamptz not null default now()
-);
-alter table public.products enable row level security;
-create policy "products_select_all" on public.products for select to authenticated using (true);
-create policy "products_insert_own" on public.products for insert to authenticated with check (seller_id = auth.uid());
-create policy "products_update_own" on public.products for update to authenticated using (seller_id = auth.uid()) with check (seller_id = auth.uid());
-create policy "products_delete_own" on public.products for delete to authenticated using (seller_id = auth.uid());
+  <section class="hub-menu" id="hubMenu">
+    <div class="box">
+      <div class="box-head">
+        <h2>القائمة الرئيسية — wossol</h2>
+        <div class="meta-strip">
+          <span class="badge" id="hubUserBadge">غير مسجّل</span>
+          <span class="badge badge-mint" id="hubRoleBadge">مشتري</span>
+          <span class="badge" id="hubGpsBadge">📍 غير محدد</span>
+        </div>
+      </div>
+      <div class="hub-grid">
+        <button class="hub-btn" onclick="openPage('role')">🪪 اختيار الدور</button>
+        <button class="hub-btn" onclick="openPage('location')">📌 تحديث الموقع</button>
+        <button class="hub-btn" data-roles="مشتري" onclick="openPage('new-order')">✍️ طلبية جديدة</button>
+        <button class="hub-btn" onclick="openPage('browse-orders')">🛵 تصفح الطلبات والمسار</button>
+        <button class="hub-btn" onclick="openPage('orders-log')">🧾 سجل الطلبيات</button>
+        <button class="hub-btn" onclick="openPage('store')">🛍️ المتجر ونشر الصور</button>
+        <button class="hub-btn" onclick="openNotificationsPage()">📣 صفحة الإشعارات</button>
+        <button class="hub-btn exit-btn" onclick="logoutImmediately()">🛑 تسجيل الخروج</button>
+      </div>
+    </div>
+  </section>
 
-create function public.set_seller_name() returns trigger
-language plpgsql security definer set search_path = public as $$
-begin
-  new.seller_name := (select name from public.profiles where id = new.seller_id);
-  return new;
-end $$;
-create trigger products_seller_name before insert on public.products
-for each row execute function public.set_seller_name();
+  <section class="solo-view" id="v-role">
+    <div class="box">
+      <div class="box-head"><h2>🪪 اختيار الدور</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
+      <label for="roleSelectSolo">دور المستخدم</label>
+      <select id="roleSelectSolo">
+        <option value="مشتري">مشتري</option>
+        <option value="عامل توصيل">عامل توصيل</option>
+        <option value="بائع">بائع / متجر</option>
+      </select>
+      <button class="btn btn-royal" onclick="saveRoleSolo()">💾 حفظ الدور</button>
+      <div class="feedback" id="roleFeedback"></div>
+    </div>
+  </section>
 
--- ============ الطلبات ============
-create table public.orders (
-  id bigint generated always as identity primary key,
-  kind text not null check (kind in ('errand', 'store')),
-  buyer_id uuid not null references public.profiles(id),
-  buyer_name text not null,
-  cat text not null,
-  items text not null,
-  area text not null,
-  a_lat numeric(8,2),   -- موقع تقريبي (نحو كيلومتر) يراه عمال التوصيل لحساب المسافة
-  a_lng numeric(9,2),
-  fee int not null check (fee >= 0),
-  est_cost int check (est_cost is null or est_cost >= 0),
-  interstate boolean not null default false,
-  state text,
-  veh text not null default 'أي وسيلة',
-  seller_id uuid references public.profiles(id),
-  seller_name text,
-  product_id bigint references public.products(id) on delete set null,
-  total int,
-  payment text check (payment in ('cash', 'credit')),
-  status text not null check (status in ('pending_seller','open','accepted','bought','delivered','cancelled','rejected')),
-  courier_id uuid references public.profiles(id),
-  courier_name text,
-  paid int,
-  created_at timestamptz not null default now(),
-  delivered_at timestamptz
-);
-create index orders_status_idx on public.orders(status);
-create index orders_buyer_idx on public.orders(buyer_id);
-create index orders_courier_idx on public.orders(courier_id);
-create index orders_seller_idx on public.orders(seller_id);
-alter table public.orders enable row level security;
-create policy "orders_select" on public.orders for select to authenticated
-using (status = 'open' or buyer_id = auth.uid() or courier_id = auth.uid() or seller_id = auth.uid());
+  <section class="solo-view" id="v-location">
+    <div class="box">
+      <div class="box-head"><h2>📌 تحديث الموقع</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
+      <p class="sub-note">تُستخدم إحداثيات GPS الفعلية لتحديد موقع الطلبية وموقع القبول على الخريطة.</p>
+      <button type="button" class="btn btn-mint" onclick="refreshCoordsNow()">📍 تحديث إحداثياتي الحالية (GPS)</button>
+      <div class="feedback" id="locFeedback"></div>
+    </div>
+  </section>
 
--- البيانات الخاصة: العنوان والموقع الدقيق والهواتف (لأطراف الطلب فقط)
-create table public.order_private (
-  order_id bigint primary key references public.orders(id) on delete cascade,
-  address text not null,
-  buyer_phone text not null,
-  seller_phone text,
-  lat double precision not null,
-  lng double precision not null
-);
-alter table public.order_private enable row level security;
-create policy "order_private_select" on public.order_private for select to authenticated
-using (exists (
-  select 1 from public.orders o
-  where o.id = order_id and (o.buyer_id = auth.uid() or o.courier_id = auth.uid() or o.seller_id = auth.uid())
-));
+  <section class="solo-view" id="v-new-order">
+    <div class="box">
+      <div class="box-head"><h2>✍️ طلبية جديدة</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
+      <p class="sub-note">يُثبَّت موقع الطلبية آلياً عبر GPS ويُرسم المسار إليها عند قبولها.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('خبز 2x')">+ خبز 2x</button>
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('حليب 1x')">+ حليب 1x</button>
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('بيض 6x')">+ بيض 6x</button>
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="addQuickText('قطعة غيار')">+ قطعة غيار</button>
+      </div>
+      <form id="orderForm" onsubmit="createOrderItem(event)">
+        <div class="row-2">
+          <div><label for="ordCat">التصنيف</label>
+            <select id="ordCat">
+              <option value="بقالة">بقالة</option>
+              <option value="قطع غيار">قطع غيار</option>
+              <option value="مطاعم">مطاعم وأسر منتجة</option>
+            </select>
+          </div>
+          <div><label for="ordItems">تفاصيل الطلبية *</label><input type="text" id="ordItems" placeholder="مثال: خبز 2x، حليب 1x" required /></div>
+        </div>
+        <div class="row-2">
+          <div><label for="ordPhone">رقم الهاتف للتواصل *</label><input type="tel" id="ordPhone" placeholder="06xxxxxxxx" required /></div>
+          <div><label for="ordCost">ثمن المشتريات التقريبي (د.ج)</label><input type="number" id="ordCost" value="1200" min="0" step="any" /></div>
+        </div>
+        <div><label for="ordFee">عمولة التوصيل (د.ج)</label><input type="number" id="ordFee" value="200" min="0" step="any" /></div>
+        <label class="check-opt"><input type="checkbox" id="ordDeferred" /><span>الشراء بالآجل</span></label>
+        <label class="check-opt"><input type="checkbox" id="ordInterState" onchange="toggleTransport()" /><span>توصيل بين الولايات</span></label>
+        <div id="transportWrap" style="display:none">
+          <label for="ordVehicle">وسيلة النقل بحسب حجم الطلبية</label>
+          <select id="ordVehicle"><option value="دراجة">دراجة</option><option value="سيارة">سيارة</option><option value="شاحنة">شاحنة</option></select>
+        </div>
+        <button type="submit" class="btn btn-royal" id="submitOrderBtn">🚀 إرسال الطلبية</button>
+        <div class="feedback" id="orderFeedback"></div>
+      </form>
+    </div>
+  </section>
 
--- موقع عامل التوصيل الحي (آخر نقطة فقط)
-create table public.order_tracking (
-  order_id bigint primary key references public.orders(id) on delete cascade,
-  lat double precision not null,
-  lng double precision not null,
-  updated_at timestamptz not null default now()
-);
-alter table public.order_tracking enable row level security;
-create policy "order_tracking_select" on public.order_tracking for select to authenticated
-using (exists (
-  select 1 from public.orders o
-  where o.id = order_id and (o.buyer_id = auth.uid() or o.courier_id = auth.uid() or o.seller_id = auth.uid())
-));
+  <section class="solo-view" id="v-browse-orders">
+    <div class="box">
+      <div class="box-head"><h2>🛵 تصفح الطلبات والمسار الحي</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
+      <div class="hint" id="browseHint" hidden>دورك الحالي لا يسمح بقبول الطلبات. بدّل الدور إلى «عامل توصيل» للقبول.</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('الكل')">الكل</button>
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('بقالة')">بقالة</button>
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('قطع غيار')">قطع غيار</button>
+        <button type="button" class="btn btn-light" style="padding:6px 11px;font-size:.8rem" onclick="filterOrders('مطاعم')">مطاعم</button>
+      </div>
+      <div id="browseOrdersList"><p class="sub-note">جارٍ التحميل...</p></div>
+      <div class="feedback" id="routeFeedback"></div>
+      <div id="routePanel" style="display:none;margin-top:14px">
+        <strong style="color:var(--mint)">🗺️ المسار الحي: من موقعك الحالي إلى موقع الطلبية</strong>
+        <p class="sub-note" id="routeSummaryTxt" style="margin-top:4px"></p>
+        <div id="mapBox"></div>
+        <div style="margin-top:10px"><a id="gmapsLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-royal">فتح في خرائط جوجل</a></div>
+      </div>
+    </div>
+  </section>
 
--- الإشعارات
-create table public.notifications (
-  id bigint generated always as identity primary key,
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  body text not null,
-  read boolean not null default false,
-  created_at timestamptz not null default now()
-);
-create index notifications_user_idx on public.notifications(user_id, read);
-alter table public.notifications enable row level security;
-create policy "notifications_select_own" on public.notifications for select to authenticated using (user_id = auth.uid());
+  <section class="solo-view" id="v-orders-log">
+    <div class="box">
+      <div class="box-head"><h2>🧾 سجل الطلبيات</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
+      <div class="tabs">
+        <button class="tab on" id="tabMine" onclick="switchLogTab('mine')">طلباتي</button>
+        <button class="tab" id="tabTaken" onclick="switchLogTab('taken')">طلبات قبلتها</button>
+      </div>
+      <div id="ordersLogList"></div>
+    </div>
+  </section>
 
--- ============ الدوال ============
-create function public.notify(p_user uuid, p_body text) returns void
-language plpgsql security definer set search_path = public as $$
-begin
-  if p_user is not null then
-    insert into public.notifications (user_id, body) values (p_user, left(p_body, 200));
-  end if;
-end $$;
+  <section class="solo-view" id="v-store">
+    <div class="box">
+      <div class="box-head"><h2>🛍️ المتجر ونشر الصور</h2><button class="btn btn-light" onclick="backToMenu()">← القائمة الرئيسية</button></div>
+      <div class="hint" id="storeHint" hidden>النشر متاح لدور «بائع / متجر» فقط.</div>
+      <form id="storeForm" onsubmit="publishProduct(event)">
+        <div class="row-2">
+          <div><label for="prodTitle">اسم المنتج أو الخدمة *</label><input type="text" id="prodTitle" placeholder="مثال: كسكس يدوي / حلويات" required /></div>
+          <div><label for="prodCost">السعر (د.ج) *</label><input type="number" id="prodCost" placeholder="2000" min="0" step="any" required /></div>
+        </div>
+        <div class="row-2">
+          <div><label for="prodKind">الجهة / المتجر</label>
+            <select id="prodKind">
+              <option value="أسرة منتجة">أسرة منتجة</option>
+              <option value="متجر / بقالة">متجر / بقالة</option>
+              <option value="مطعم">مطعم</option>
+              <option value="قطع غيار / صيدلية">قطع غيار / صيدلية</option>
+            </select>
+          </div>
+          <div><label for="prodFile">صورة المنتج *</label><input type="file" id="prodFile" accept="image/*" required /></div>
+        </div>
+        <label for="prodNotes">وصف المنتج</label>
+        <textarea id="prodNotes" rows="2" placeholder="تفاصيل إضافية..."></textarea>
+        <button type="submit" class="btn btn-mint" id="publishProdBtn">⬆️ نشر المنتج والصورة</button>
+        <div class="feedback" id="storeFeedback"></div>
+      </form>
+    </div>
+    <div class="box">
+      <div class="box-head"><h2>المنتجات المعروضة</h2></div>
+      <div class="row-3" id="storeGrid"><p class="sub-note">جارٍ التحميل...</p></div>
+    </div>
+  </section>
 
-create function public.create_errand(
-  p_cat text, p_items text, p_area text, p_address text, p_fee int, p_est int,
-  p_inter boolean, p_state text, p_veh text, p_lat double precision, p_lng double precision
-) returns bigint
-language plpgsql security definer set search_path = public as $$
-declare v_name text; v_phone text; v_id bigint;
-begin
-  if auth.uid() is null then raise exception 'سجّل الدخول أولاً'; end if;
-  select name, phone into v_name, v_phone from public.profiles where id = auth.uid();
-  if v_name is null then raise exception 'الحساب غير موجود'; end if;
-  if coalesce(trim(p_items), '') = '' or char_length(p_items) > 500 then raise exception 'اكتب ما تحتاجه (500 حرف كحد أقصى)'; end if;
-  if coalesce(trim(p_area), '') = '' or char_length(p_area) > 100 then raise exception 'أدخل الحي أو المنطقة'; end if;
-  if coalesce(trim(p_address), '') = '' or char_length(p_address) > 300 then raise exception 'أدخل عنوان التسليم'; end if;
-  if p_fee is null or p_fee < 0 or p_fee > 1000000 then raise exception 'عمولة غير صحيحة'; end if;
-  if p_est is not null and (p_est < 0 or p_est > 10000000) then raise exception 'مبلغ تقريبي غير صحيح'; end if;
-  if coalesce(p_inter, false) and coalesce(trim(p_state), '') = '' then raise exception 'أدخل اسم الولاية'; end if;
-  if p_lat is null or p_lng is null or p_lat not between -90 and 90 or p_lng not between -180 and 180 then
-    raise exception 'حدّد موقعك أولاً (فعّل GPS)';
-  end if;
+  <section class="solo-view" id="v-alerts">
+    <div class="box">
+      <div class="box-head"><h2>📣 صفحة الإشعارات</h2><button class="btn btn-light" onclick="leaveNotificationsPage()">← القائمة الرئيسية</button></div>
+      <div id="alertsFullList"></div>
+    </div>
+  </section>
 
-  insert into public.orders (kind, buyer_id, buyer_name, cat, items, area, a_lat, a_lng, fee, est_cost, interstate, state, veh, status)
-  values (
-    'errand', auth.uid(), v_name, left(coalesce(p_cat, 'أخرى'), 40), trim(p_items), trim(p_area),
-    round(p_lat::numeric, 2), round(p_lng::numeric, 2), p_fee, p_est,
-    coalesce(p_inter, false),
-    case when coalesce(p_inter, false) then left(trim(p_state), 60) end,
-    case when coalesce(p_inter, false) then left(coalesce(p_veh, 'أي وسيلة'), 40) else 'أي وسيلة' end,
-    'open'
-  ) returning id into v_id;
+  <section class="solo-view" id="v-logout">
+    <div class="box">
+      <div class="box-head"><h2>🛑 تسجيل الخروج</h2></div>
+      <div class="feedback show ok" style="margin-top:0">✔️ تم تسجيل الخروج بنجاح.</div>
+      <div style="margin-top:12px"><button type="button" class="btn btn-royal" onclick="showEntryGate()">تسجيل الدخول بحساب آخر</button></div>
+    </div>
+  </section>
 
-  insert into public.order_private (order_id, address, buyer_phone, lat, lng)
-  values (v_id, trim(p_address), v_phone, p_lat, p_lng);
-  return v_id;
-end $$;
+</main>
 
-create function public.create_store_order(
-  p_product bigint, p_qty int, p_area text, p_address text, p_fee int, p_payment text,
-  p_lat double precision, p_lng double precision
-) returns bigint
-language plpgsql security definer set search_path = public as $$
-declare v_name text; v_phone text; v_p public.products%rowtype; v_sphone text; v_id bigint;
-begin
-  if auth.uid() is null then raise exception 'سجّل الدخول أولاً'; end if;
-  select name, phone into v_name, v_phone from public.profiles where id = auth.uid();
-  if v_name is null then raise exception 'الحساب غير موجود'; end if;
-  select * into v_p from public.products where id = p_product;
-  if not found then raise exception 'المنتج لم يعد متوفراً'; end if;
-  if v_p.seller_id = auth.uid() then raise exception 'لا يمكنك طلب منتجك أنت'; end if;
-  if p_qty is null or p_qty < 1 or p_qty > 100 then raise exception 'كمية غير صحيحة'; end if;
-  if coalesce(trim(p_area), '') = '' or char_length(p_area) > 100 then raise exception 'أدخل الحي أو المنطقة'; end if;
-  if coalesce(trim(p_address), '') = '' or char_length(p_address) > 300 then raise exception 'أدخل عنوان التسليم'; end if;
-  if p_fee is null or p_fee < 0 or p_fee > 1000000 then raise exception 'عمولة غير صحيحة'; end if;
-  if p_payment not in ('cash', 'credit') then raise exception 'طريقة دفع غير صحيحة'; end if;
-  if p_lat is null or p_lng is null or p_lat not between -90 and 90 or p_lng not between -180 and 180 then
-    raise exception 'حدّد موقعك أولاً (فعّل GPS)';
-  end if;
-  select phone into v_sphone from public.profiles where id = v_p.seller_id;
+<script>
+"use strict";
 
-  insert into public.orders (kind, buyer_id, buyer_name, cat, items, area, a_lat, a_lng, fee, seller_id, seller_name, product_id, total, payment, status)
-  values ('store', auth.uid(), v_name, 'متجر', p_qty || ' × ' || v_p.name, trim(p_area),
-          round(p_lat::numeric, 2), round(p_lng::numeric, 2), p_fee,
-          v_p.seller_id, v_p.seller_name, v_p.id, v_p.price * p_qty, p_payment, 'pending_seller')
-  returning id into v_id;
+const SUPABASE_URL = "https://nnozlrxxleutxwbznbza.supabase.co";
+const SUPABASE_ANON_KEY = "Sb_publishable_AicCXULMxPLjb3wqw4eyEw_RFoydgHK";
+const BUCKET = "product-images";
+const MAX_UPLOAD_BYTES = 2.5 * 1024 * 1024;
+const OTP_COOLDOWN_MS = 60000;
 
-  insert into public.order_private (order_id, address, buyer_phone, seller_phone, lat, lng)
-  values (v_id, trim(p_address), v_phone, v_sphone, p_lat, p_lng);
+let sb = null;
+let session = null;
+let me = null;
+let profile = { full_name: "", phone: "", role: "مشتري", lat: null, lng: null };
+let cachedCoords = null;
+let catFilter = "الكل";
+let logTab = "mine";
+let ordersCache = [];
+let productsCache = [];
+let alertsCache = [];
+let otpCooldownTimer = null;
+let channels = [];
 
-  perform public.notify(v_p.seller_id, 'طلب جديد على منتجك: ' || p_qty || ' × ' || v_p.name);
-  return v_id;
-end $$;
+let mapObj = null, mapLayer = null;
 
-create function public.accept_order(p_id bigint) returns void
-language plpgsql security definer set search_path = public as $$
-declare v_o public.orders%rowtype; v_cn text;
-begin
-  select name into v_cn from public.profiles where id = auth.uid();
-  update public.orders
-  set status = 'accepted', courier_id = auth.uid(), courier_name = v_cn
-  where id = p_id and status = 'open' and buyer_id <> auth.uid() and auth.uid() is not null
-  returning * into v_o;
-  if not found then raise exception 'الطلب لم يعد متاحاً'; end if;
-  perform public.notify(v_o.buyer_id, 'قبل ' || coalesce(v_cn, 'عامل توصيل') || ' طلبك: ' || left(v_o.items, 60));
-end $$;
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
 
-create function public.release_order(p_id bigint) returns void
-language plpgsql security definer set search_path = public as $$
-declare v_o public.orders%rowtype;
-begin
-  update public.orders set status = 'open', courier_id = null, courier_name = null
-  where id = p_id and courier_id = auth.uid() and status = 'accepted'
-  returning * into v_o;
-  if not found then raise exception 'لا يمكن التخلي عن هذا الطلب'; end if;
-  delete from public.order_tracking where order_id = p_id;
-  perform public.notify(v_o.buyer_id, 'تخلّى عامل التوصيل عن طلبك وعاد متاحاً لغيره: ' || left(v_o.items, 60));
-end $$;
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function escJs(s) { return String(s ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
+function money(n) { const v = Number(n); return Number.isFinite(v) ? v.toLocaleString("ar-DZ") : "0"; }
+function num(n) { const v = Number(n); return Number.isFinite(v) ? v : 0; }
 
-create function public.mark_bought(p_id bigint, p_amount int default null) returns void
-language plpgsql security definer set search_path = public as $$
-declare v_o public.orders%rowtype;
-begin
-  update public.orders
-  set status = 'bought', paid = case when kind = 'store' then total else p_amount end
-  where id = p_id and courier_id = auth.uid() and status = 'accepted'
-    and (kind = 'store' or (p_amount is not null and p_amount > 0 and p_amount <= 1000000))
-  returning * into v_o;
-  if not found then raise exception 'تعذّر تسجيل الشراء. تأكد من المبلغ'; end if;
-  perform public.notify(v_o.buyer_id, 'تم شراء طلبك وهو في الطريق إليك: ' || left(v_o.items, 60));
-end $$;
+function readJSON(key, fallback) {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch { return fallback; }
+}
+function writeJSON(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch { return false; }
+}
+function writeStr(key, val) { try { localStorage.setItem(key, val); return true; } catch { return false; } }
 
-create function public.mark_delivered(p_id bigint) returns void
-language plpgsql security definer set search_path = public as $$
-declare v_o public.orders%rowtype;
-begin
-  update public.orders set status = 'delivered', delivered_at = now()
-  where id = p_id and courier_id = auth.uid() and status = 'bought'
-  returning * into v_o;
-  if not found then raise exception 'تعذّر تأكيد التسليم'; end if;
-  delete from public.order_tracking where order_id = p_id;
-  perform public.notify(v_o.buyer_id, 'تم تسليم طلبك: ' || left(v_o.items, 60));
-  perform public.notify(v_o.seller_id, 'تم تسليم الطلب: ' || left(v_o.items, 60));
-end $$;
+function showFb(id, msg, kind) {
+  const el = $(id);
+  if (!el) return;
+  if (!msg) { el.className = "feedback"; el.textContent = ""; return; }
+  el.textContent = msg;
+  el.className = "feedback show " + kind;
+}
 
-create function public.cancel_order(p_id bigint) returns void
-language plpgsql security definer set search_path = public as $$
-declare v_o public.orders%rowtype;
-begin
-  update public.orders set status = 'cancelled'
-  where id = p_id and buyer_id = auth.uid() and status in ('open', 'pending_seller')
-  returning * into v_o;
-  if not found then raise exception 'لا يمكن إلغاء هذا الطلب'; end if;
-  perform public.notify(v_o.seller_id, 'ألغى المشتري الطلب: ' || left(v_o.items, 60));
-end $$;
+function readCoords(timeoutMs = 20000) {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error("المتصفح لا يدعم تحديد الموقع"));
+    navigator.geolocation.getCurrentPosition(
+      p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      e => reject(new Error(e.message || "تعذر الوصول إلى الموقع")),
+      { enableHighAccuracy: false, timeout: timeoutMs, maximumAge: 60000 }
+    );
+  });
+}
 
-create function public.seller_decide(p_id bigint, p_ok boolean) returns void
-language plpgsql security definer set search_path = public as $$
-declare v_o public.orders%rowtype;
-begin
-  update public.orders set status = case when p_ok then 'open' else 'rejected' end
-  where id = p_id and seller_id = auth.uid() and status = 'pending_seller'
-  returning * into v_o;
-  if not found then raise exception 'لا يمكن تعديل هذا الطلب'; end if;
-  perform public.notify(v_o.buyer_id, case when p_ok then 'وافق البائع على طلبك وهو بانتظار عامل توصيل: ' else 'رفض البائع طلبك: ' end || left(v_o.items, 60));
-end $$;
+function distKm(a, b) {
+  const rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const s = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng/2)**2;
+  return +(2 * 6371 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))).toFixed(2);
+}
 
-create function public.update_tracking(p_id bigint, p_lat double precision, p_lng double precision) returns void
-language plpgsql security definer set search_path = public as $$
-begin
-  if p_lat is null or p_lng is null or p_lat not between -90 and 90 or p_lng not between -180 and 180 then
-    raise exception 'إحداثيات غير صحيحة';
-  end if;
-  if not exists (select 1 from public.orders where id = p_id and courier_id = auth.uid() and status in ('accepted', 'bought')) then
-    raise exception 'لا يمكن تحديث موقع هذا الطلب';
-  end if;
-  insert into public.order_tracking (order_id, lat, lng, updated_at) values (p_id, p_lat, p_lng, now())
-  on conflict (order_id) do update set lat = excluded.lat, lng = excluded.lng, updated_at = now();
-end $$;
+/* ---------- navigation ---------- */
+function hideAllSolo() { document.querySelectorAll(".solo-view").forEach(v => v.classList.remove("active")); }
 
-create function public.mark_notifications_read() returns void
-language plpgsql security definer set search_path = public as $$
-begin
-  update public.notifications set read = true where user_id = auth.uid() and read = false;
-end $$;
+function showEntryGate() {
+  hideAllSolo();
+  $("hubMenu").classList.remove("active");
+  $("entryGate").classList.remove("hidden");
+  $("entryOtpCode").value = "";
+  showFb("entryFeedback", "", "");
+}
 
--- الصلاحيات: المستخدمون المسجّلون فقط، و notify داخلية بالكامل
-revoke all on function public.notify(uuid,text) from public, anon, authenticated;
-revoke all on function public.create_errand(text,text,text,text,int,int,boolean,text,text,double precision,double precision) from public, anon;
-revoke all on function public.create_store_order(bigint,int,text,text,int,text,double precision,double precision) from public, anon;
-revoke all on function public.accept_order(bigint) from public, anon;
-revoke all on function public.release_order(bigint) from public, anon;
-revoke all on function public.mark_bought(bigint,int) from public, anon;
-revoke all on function public.mark_delivered(bigint) from public, anon;
-revoke all on function public.cancel_order(bigint) from public, anon;
-revoke all on function public.seller_decide(bigint,boolean) from public, anon;
-revoke all on function public.update_tracking(bigint,double precision,double precision) from public, anon;
-revoke all on function public.mark_notifications_read() from public, anon;
-grant execute on function public.create_errand(text,text,text,text,int,int,boolean,text,text,double precision,double precision) to authenticated;
-grant execute on function public.create_store_order(bigint,int,text,text,int,text,double precision,double precision) to authenticated;
-grant execute on function public.accept_order(bigint) to authenticated;
-grant execute on function public.release_order(bigint) to authenticated;
-grant execute on function public.mark_bought(bigint,int) to authenticated;
-grant execute on function public.mark_delivered(bigint) to authenticated;
-grant execute on function public.cancel_order(bigint) to authenticated;
-grant execute on function public.seller_decide(bigint,boolean) to authenticated;
-grant execute on function public.update_tracking(bigint,double precision,double precision) to authenticated;
-grant execute on function public.mark_notifications_read() to authenticated;
+function backToMenu() {
+  if (!session) { showEntryGate(); return; }
+  hideAllSolo();
+  $("entryGate").classList.add("hidden");
+  $("hubMenu").classList.add("active");
+  refreshHubBadges();
+  applyRoleUI();
+}
 
--- ============ صور المنتجات (Storage) ============
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('product-images', 'product-images', true, 2097152, array['image/jpeg', 'image/png', 'image/webp'])
-on conflict (id) do update
-set public = true, file_size_limit = 2097152, allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp'];
+function openPage(key) {
+  if (!session) { showEntryGate(); return; }
+  $("entryGate").classList.add("hidden");
+  $("hubMenu").classList.remove("active");
+  hideAllSolo();
+  $("v-" + key).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (key === "browse-orders") { loadOrders(); if (mapObj) setTimeout(() => mapObj.invalidateSize(), 120); }
+  if (key === "orders-log") loadOrders();
+  if (key === "store") loadProducts();
+}
 
-drop policy if exists "product_images_insert_own" on storage.objects;
-drop policy if exists "product_images_delete_own" on storage.objects;
-create policy "product_images_insert_own" on storage.objects for insert to authenticated
-with check (bucket_id = 'product-images' and (storage.foldername(name))[1] = auth.uid()::text);
-create policy "product_images_delete_own" on storage.objects for delete to authenticated
-using (bucket_id = 'product-images' and (storage.foldername(name))[1] = auth.uid()::text);
+function handleHeaderBrandClick() {
+  if (!session) { showEntryGate(); return; }
+  backToMenu();
+}
+
+function applyRoleUI() {
+  const role = profile.role || "مشتري";
+  document.querySelectorAll(".hub-btn[data-roles]").forEach(btn => {
+    btn.hidden = !btn.dataset.roles.split(",").includes(role);
+  });
+  const canAccept = role === "عامل توصيل";
+  $("browseHint").hidden = canAccept;
+  $("storeHint").hidden = role === "بائع";
+}
+
+function refreshHubBadges() {
+  $("hubUserBadge").textContent = me?.email || "غير مسجّل";
+  $("hubRoleBadge").textContent = profile.role || "مشتري";
+  $("hubGpsBadge").textContent = cachedCoords
+    ? `📍 ${cachedCoords.lat.toFixed(3)}, ${cachedCoords.lng.toFixed(3)}` : "📍 غير محدد";
+  $("roleSelectSolo").value = profile.role || "مشتري";
+}
+
+/* ---------- auth ---------- */
+async function initAuth() {
+  if (!window.supabase) {
+    $("entryFeedback").className = "feedback show err";
+    $("entryFeedback").textContent = "تعذر تحميل مكتبة الاتصال. تحقق من الشبكة وأعد تحميل الصفحة.";
+    return;
+  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const { data } = await sb.auth.getSession();
+  session = data.session || null;
+
+  if (session) {
+    await onSignedIn(session);
+  } else {
+    showEntryGate();
+  }
+
+  sb.auth.onAuthStateChange(async (event, s) => {
+    if (event === "SIGNED_IN" && s) {
+      session = s;
+      if (location.hash.includes("access_token")) history.replaceState(null, "", location.pathname);
+      await onSignedIn(s);
+    }
+    if (event === "SIGNED_OUT") { session = null; me = null; }
+    if (event === "TOKEN_REFRESHED" && s) session = s;
+  });
+}
+
+async function onSignedIn(s) {
+  me = s.user;
+  await loadProfile();
+  const pending = readJSON("wossol_pending_signup", null);
+  if (pending && (!profile.full_name || profile.full_name !== pending.full_name)) {
+    await saveProfile({ full_name: pending.full_name, phone: pending.phone, role: pending.role });
+    writeJSON("wossol_pending_signup", null);
+  }
+  await pushAlert(`تم تأكيد الحساب والدخول (${profile.role}): ${me.email}`);
+  subscribeRealtime();
+  backToMenu();
+  loadOrders(); loadProducts(); loadAlerts();
+}
+
+async function loadProfile() {
+  const { data, error } = await sb.from("profiles").select("*").eq("id", me.id).maybeSingle();
+  if (!error && data) { profile = { ...profile, ...data }; return; }
+  const meta = me.user_metadata || {};
+  await saveProfile({
+    full_name: meta.full_name || "", phone: meta.phone || "",
+    role: meta.role || "مشتري"
+  });
+}
+
+async function saveProfile(patch) {
+  profile = { ...profile, ...patch };
+  if (!me) return;
+  const row = {
+    id: me.id, full_name: profile.full_name, phone: profile.phone,
+    role: profile.role, lat: cachedCoords?.lat ?? null, lng: cachedCoords?.lng ?? null,
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await sb.from("profiles").upsert(row, { onConflict: "id" });
+  if (error) showFb("roleFeedback", "تعذر حفظ البيانات: " + error.message, "err");
+}
+
+function startOtpCooldown() {
+  const btn = $("sendOtpBtn");
+  let left = Math.floor(OTP_COOLDOWN_MS / 1000);
+  clearInterval(otpCooldownTimer);
+  btn.disabled = true;
+  btn.textContent = `⏳ إعادة الإرسال بعد ${left}ث`;
+  otpCooldownTimer = setInterval(() => {
+    left -= 1;
+    if (left <= 0) {
+      clearInterval(otpCooldownTimer);
+      btn.disabled = false;
+      btn.textContent = "📨 إعادة إرسال رمز التحقق";
+    } else btn.textContent = `⏳ إعادة الإرسال بعد ${left}ث`;
+  }, 1000);
+}
+
+async function sendLoginOtp() {
+  const email = $("entryEmail").value.trim().toLowerCase();
+  const name = $("entryName").value.trim();
+  const phone = $("entryPhone").value.trim();
+  const role = $("entryRole").value;
+
+  if (!name) return showFb("entryFeedback", "أدخل الاسم الكامل أولاً.", "err");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showFb("entryFeedback", "صيغة البريد غير صحيحة.", "err");
+
+  const btn = $("sendOtpBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ جاري الإرسال...";
+
+  try {
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: location.origin + location.pathname,
+        data: { full_name: name, phone, role }
+      }
+    });
+    if (error) throw error;
+    writeJSON("wossol_pending_signup", { full_name: name, phone, role, email });
+    showFb("entryFeedback", `📨 تم إرسال رمز التحقق إلى ${email}. أدخل الرمز أدناه.`, "ok");
+    startOtpCooldown();
+  } catch (err) {
+    showFb("entryFeedback", "❌ تعذر إرسال الرمز: " + (err.message || err), "err");
+    btn.disabled = false;
+    btn.textContent = "📨 إرسال رمز التحقق (OTP) إلى البريد";
+  }
+}
+
+async function verifyLoginOtp() {
+  const email = $("entryEmail").value.trim().toLowerCase();
+  const token = $("entryOtpCode").value.trim();
+  if (!email) return showFb("entryFeedback", "أدخل البريد الإلكتروني.", "err");
+  if (!token) return showFb("entryFeedback", "أدخل رمز التحقق.", "err");
+
+  const btn = $("verifyOtpBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ جاري التحقق...";
+
+  try {
+    const payload = /^\d{4,10}$/.test(token)
+      ? { email, token, type: "email" }
+      : { token_hash: token, type: "magiclink" };
+    const { data, error } = await sb.auth.verifyOtp(payload);
+    if (error) throw error;
+    if (data?.session) session = data.session;
+    if (!cachedCoords) {
+      try { cachedCoords = await readCoords(15000); writeJSON("wossol_coords", cachedCoords); } catch {}
+    }
+    showFb("entryFeedback", "✔️ تم التأكيد بنجاح.", "ok");
+    await onSignedIn(data.session);
+  } catch (err) {
+    showFb("entryFeedback", "❌ رمز غير صحيح أو منتهي: " + (err.message || err), "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "✔️ تأكيد الرمز وإنشاء الحساب / الدخول";
+  }
+}
+
+async function logoutImmediately() {
+  channels.forEach(c => { try { sb.removeChannel(c); } catch {} });
+  channels = [];
+  try { await sb.auth.signOut(); } catch {}
+  session = null; me = null; ordersCache = []; productsCache = []; alertsCache = [];
+  hideAllSolo();
+  $("entryGate").classList.add("hidden");
+  $("hubMenu").classList.remove("active");
+  $("v-logout").classList.add("active");
+}
+
+async function requestLocationAtLogin() {
+  const btn = $("requestGpsEntryBtn");
+  btn.disabled = true;
+  btn.textContent = "📍 جاري طلب الموقع...";
+  try {
+    cachedCoords = await readCoords(20000);
+    writeJSON("wossol_coords", cachedCoords);
+    $("gpsStatusBadge").textContent = `📍 تم السماح (${cachedCoords.lat.toFixed(4)}, ${cachedCoords.lng.toFixed(4)})`;
+    showFb("entryFeedback", "✔️ تم حفظ إحداثياتك.", "ok");
+  } catch (err) {
+    showFb("entryFeedback", "⚠️ لم يكتمل تحديد الموقع: " + err.message, "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "📍 السماح بالوصول إلى الموقع الآن";
+  }
+}
+
+async function refreshCoordsNow() {
+  try {
+    cachedCoords = await readCoords(20000);
+    writeJSON("wossol_coords", cachedCoords);
+    refreshHubBadges();
+    await saveProfile({});
+    showFb("locFeedback", `✔️ تم التحديث: ${cachedCoords.lat.toFixed(5)}, ${cachedCoords.lng.toFixed(5)}`, "ok");
+  } catch (err) {
+    showFb("locFeedback", "❌ " + err.message, "err");
+  }
+}
+
+async function saveRoleSolo() {
+  profile.role = $("roleSelectSolo").value;
+  await saveProfile({ role: profile.role });
+  refreshHubBadges();
+  applyRoleUI();
+  showFb("roleFeedback", "✔️ تم حفظ الدور: " + profile.role, "ok");
+  await pushAlert("تغيير الدور إلى: " + profile.role);
+}
+
+/* ---------- orders ---------- */
+function addQuickText(t) {
+  const i = $("ordItems");
+  i.value = i.value.trim() ? `${i.value.trim()}، ${t}` : t;
+}
+function toggleTransport() {
+  $("transportWrap").style.display = $("ordInterState").checked ? "block" : "none";
+}
+function filterOrders(c) { catFilter = c; drawBrowse(); }
+
+async function createOrderItem(e) {
+  e.preventDefault();
+  const btn = $("submitOrderBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ جاري الإرسال...";
+
+  try {
+    let coords = cachedCoords;
+    try {
+      coords = await readCoords(20000);
+      cachedCoords = coords;
+      writeJSON("wossol_coords", coords);
+    } catch (err) {
+      if (!coords) throw new Error("تعذر تحديد موقع الطلبية: " + err.message);
+    }
+
+    const id = "ORD-" + Date.now().toString(36).toUpperCase();
+    const row = {
+      id, requester_id: me.id,
+      requester_name: profile.full_name || me.email,
+      phone: $("ordPhone").value.trim(),
+      cat: $("ordCat").value,
+      items: $("ordItems").value.trim(),
+      cost: num($("ordCost").value), fee: num($("ordFee").value),
+      deferred: $("ordDeferred").checked,
+      inter_state: $("ordInterState").checked,
+      vehicle: $("ordInterState").checked ? $("ordVehicle").value : "محلي",
+      lat: coords.lat, lng: coords.lng,
+      status: "متاحة"
+    };
+
+    const { error } = await sb.from("orders").insert(row);
+    if (error) throw error;
+
+    $("orderForm").reset();
+    $("transportWrap").style.display = "none";
+    showFb("orderFeedback", `✔️ تم إرسال الطلبية (${id}).`, "ok");
+    await pushAlert(`طلبية جديدة (${id}): ${row.items}`);
+    await loadOrders();
+  } catch (err) {
+    showFb("orderFeedback", "❌ " + (err.message || err), "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🚀 إرسال الطلبية";
+  }
+}
+
+async function loadOrders() {
+  const { data, error } = await sb.from("orders").select("*").order("created_at", { ascending: false }).limit(300);
+  if (error) {
+    $("browseOrdersList").innerHTML = `<p class="sub-note">تعذر تحميل الطلبات: ${esc(error.message)}</p>`;
+    return;
+  }
+  ordersCache = data || [];
+  drawBrowse(); drawLog();
+}
+
+function drawBrowse() {
+  const box = $("browseOrdersList");
+  const open = ordersCache.filter(o => o.status === "متاحة");
+  const list = open.filter(o => catFilter === "الكل" || o.cat === catFilter);
+
+  if (!list.length) { box.innerHTML = `<p class="sub-note">لا توجد طلبات متاحة حالياً.</p>`; return; }
+
+  const canAccept = profile.role === "عامل توصيل";
+  box.innerHTML = list.map(o => `
+    <div class="card-row">
+      <div>
+        <strong>${esc(o.cat)}</strong>
+        ${o.inter_state ? `<span class="badge">${esc(o.vehicle)}</span>` : ""}
+        ${o.deferred ? `<span class="badge">بالآجل</span>` : ""}
+        <div style="margin-top:4px">${esc(o.items)}</div>
+        <div class="sub-note" style="margin:4px 0 0">📞 ${esc(o.phone)} | عمولة: ${money(o.fee)} د.ج | ${esc(o.requester_name || "")}</div>
+      </div>
+      <div>
+        ${canAccept
+          ? `<button type="button" class="btn btn-mint" onclick="acceptOrderRoute('${escJs(o.id)}')">قبول ورسم المسار</button>`
+          : `<span class="badge badge-mint">متاحة</span>`}
+      </div>
+    </div>`).join("");
+}
+
+async function acceptOrderRoute(id) {
+  const target = ordersCache.find(o => o.id === id);
+  if (!target) return;
+  if (target.lat == null || target.lng == null) return showFb("routeFeedback", "الطلبية بلا إحداثيات.", "err");
+
+  let myCoords = cachedCoords;
+  try {
+    myCoords = await readCoords(20000);
+    cachedCoords = myCoords;
+    writeJSON("wossol_coords", myCoords);
+  } catch (err) {
+    if (!myCoords) return showFb("routeFeedback", "❌ تعذر تحديد موقعك: " + err.message, "err");
+  }
+
+  const km = distKm({ lat: target.lat, lng: target.lng }, myCoords);
+  const { data, error } = await sb.from("orders").update({
+    status: "مقبولة", accepted_by: me.id, accepted_email: me.email,
+    accepted_lat: myCoords.lat, accepted_lng: myCoords.lng,
+    dist_km: km, accepted_at: new Date().toISOString()
+  }).eq("id", id).is("accepted_by", null).select();
+
+  if (error) return showFb("routeFeedback", "❌ " + error.message, "err");
+  if (!data || !data.length) return showFb("routeFeedback", "⛔ سبقك أحد إلى قبول هذه الطلبية.", "err");
+
+  const order = data[0];
+  $("routePanel").style.display = "block";
+  $("routeSummaryTxt").textContent =
+    `المسافة الهوائية: ${km} كم — من موقعك (${myCoords.lat.toFixed(5)}, ${myCoords.lng.toFixed(5)}) إلى موقع الطلبية (${target.lat.toFixed(5)}, ${target.lng.toFixed(5)}).`;
+  $("gmapsLink").href =
+    `https://www.google.com/maps/dir/?api=1&origin=${myCoords.lat},${myCoords.lng}&destination=${target.lat},${target.lng}&travelmode=driving`;
+
+  drawRouteMap(myCoords, { lat: target.lat, lng: target.lng });
+  showFb("routeFeedback", "✔️ تم قبول الطلبية ورسم المسار.", "ok");
+  await pushAlert(`قبلت الطلبية ${id} (${km} كم).`);
+  await notifyUser(order.requester_id, `تم قبول طلبيتك ${id} من ${me.email} — المسافة ${km} كم.`);
+  await loadOrders();
+}
+
+function drawRouteMap(from, to) {
+  if (!window.L) return;
+  if (!mapObj) {
+    mapObj = L.map("mapBox").setView([from.lat, from.lng], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mapObj);
+    mapLayer = L.layerGroup().addTo(mapObj);
+  }
+  mapLayer.clearLayers();
+  const p1 = [from.lat, from.lng], p2 = [to.lat, to.lng];
+  L.circleMarker(p1, { radius: 8, color: "#059669", fillColor: "#059669", fillOpacity: .9 }).bindPopup("موقعك").addTo(mapLayer);
+  L.circleMarker(p2, { radius: 8, color: "#1d4ed8", fillColor: "#1d4ed8", fillOpacity: .9 }).bindPopup("موقع الطلبية").addTo(mapLayer);
+  const poly = L.polyline([p1, p2], { color: "#e11d48", weight: 4, dashArray: "6 8" }).addTo(mapLayer);
+  mapObj.fitBounds(poly.getBounds(), { padding: [30, 30] });
+  setTimeout(() => mapObj.invalidateSize(), 150);
+}
+
+function switchLogTab(t) {
+  logTab = t;
+  $("tabMine").classList.toggle("on", t === "mine");
+  $("tabTaken").classList.toggle("on", t === "taken");
+  drawLog();
+}
+
+function drawLog() {
+  const box = $("ordersLogList");
+  const list = logTab === "mine"
+    ? ordersCache.filter(o => o.requester_id === me?.id)
+    : ordersCache.filter(o => o.accepted_by === me?.id);
+
+  if (!list.length) { box.innerHTML = `<p class="sub-note">لا توجد طلبيات.</p>`; return; }
+
+  box.innerHTML = list.map(o => {
+    const total = num(o.cost) + num(o.fee);
+    const cls = o.status === "متاحة" ? "badge-mint" : o.status === "مقبولة" ? "badge" : "badge-expired";
+    const canFinish = o.accepted_by === me?.id && o.status === "مقبولة";
+    return `
+      <div class="card-row">
+        <div>
+          <strong>${esc(o.items)}</strong> <span class="badge ${cls}">${esc(o.status)}</span>
+          <div class="sub-note" style="margin:4px 0 0">${esc(o.id)} | المشتريات + العمولة = ${money(total)} د.ج</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${canFinish ? `
+            <button class="btn btn-light" style="padding:6px 10px;font-size:.78rem" onclick="setOrderDone('${escJs(o.id)}','تم الشراء')">تم الشراء</button>
+            <button class="btn btn-mint" style="padding:6px 10px;font-size:.78rem" onclick="setOrderDone('${escJs(o.id)}','تم التسليم')">تم التسليم</button>` : ""}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+async function setOrderDone(id, status) {
+  const { error } = await sb.from("orders").update({ status }).eq("id", id);
+  if (error) return showFb("routeFeedback", "❌ " + error.message, "err");
+  await loadOrders();
+}
+
+/* ---------- products ---------- */
+async function compressImage(file) {
+  if (!file.type.startsWith("image/")) throw new Error("الملف ليس صورة.");
+  if (!window.createImageBitmap) {
+    if (file.size > MAX_UPLOAD_BYTES) throw new Error("حجم الصورة كبير (الحد 2.5 ميغا).");
+    return file;
+  }
+  const bmp = await createImageBitmap(file);
+  const scale = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * scale), h = Math.round(bmp.height * scale);
+  const cv = document.createElement("canvas");
+  cv.width = w; cv.height = h;
+  cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
+  bmp.close?.();
+  const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.75));
+  if (!blob) throw new Error("تعذر ضغط الصورة.");
+  if (blob.size > MAX_UPLOAD_BYTES) throw new Error("الصورة كبيرة جداً بعد الضغط.");
+  return blob;
+}
+
+async function uploadImage(blob) {
+  const { data: { session: s } } = await sb.auth.getSession();
+  if (!s) throw new Error("انتهت الجلسة، أعد تسجيل الدخول.");
+  const path = `${s.user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+  const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg" });
+  if (error) throw error;
+  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
+async function publishProduct(e) {
+  e.preventDefault();
+  if (profile.role !== "بائع") return showFb("storeFeedback", "النشر متاح لدور البائع فقط.", "err");
+  const file = $("prodFile").files[0];
+  if (!file) return showFb("storeFeedback", "اختر صورة المنتج.", "err");
+
+  const btn = $("publishProdBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ جاري الرفع...";
+
+  try {
+    const blob = await compressImage(file);
+    const url = await uploadImage(blob);
+    const row = {
+      seller_id: me.id,
+      title: $("prodTitle").value.trim(),
+      cost: num($("prodCost").value),
+      kind: $("prodKind").value,
+      notes: $("prodNotes").value.trim(),
+      image_url: url
+    };
+    const { error } = await sb.from("products").insert(row);
+    if (error) throw error;
+
+    $("storeForm").reset();
+    showFb("storeFeedback", "✔️ تم نشر المنتج.", "ok");
+    await pushAlert("منتج جديد: " + row.title);
+    await loadProducts();
+  } catch (err) {
+    showFb("storeFeedback", "❌ " + (err.message || err), "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⬆️ نشر المنتج والصورة";
+  }
+}
+
+async function loadProducts() {
+  const { data, error } = await sb.from("products").select("*").order("created_at", { ascending: false }).limit(120);
+  if (error) { $("storeGrid").innerHTML = `<p class="sub-note">تعذر التحميل: ${esc(error.message)}</p>`; return; }
+  productsCache = data || [];
+  drawStore();
+}
+
+function drawStore() {
+  const grid = $("storeGrid");
+  if (!productsCache.length) { grid.innerHTML = `<p class="sub-note">لا توجد منتجات معروضة.</p>`; return; }
+  grid.innerHTML = productsCache.map(p => `
+    <article class="prod-tile">
+      <img class="prod-pic" src="${esc(p.image_url)}" alt="${esc(p.title)}" loading="lazy" />
+      <div class="prod-info">
+        <span class="badge" style="align-self:flex-start">${esc(p.kind)}</span>
+        <strong>${esc(p.title)}</strong>
+        <strong style="color:var(--mint)">${money(p.cost)} د.ج</strong>
+        <p class="sub-note" style="margin:0">${esc(p.notes || "")}</p>
+      </div>
+    </article>`).join("");
+}
+
+/* ---------- notifications ---------- */
+async function pushAlert(text) {
+  if (!me) return;
+  const { error } = await sb.from("notifications").insert({ user_id: me.id, text });
+  if (!error) await loadAlerts();
+}
+async function notifyUser(userId, text) {
+  if (!userId) return;
+  await sb.from("notifications").insert({ user_id: userId, text });
+}
+
+async function loadAlerts() {
+  if (!me) return;
+  const { data } = await sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(80);
+  alertsCache = data || [];
+  drawAlerts();
+}
+
+function drawAlerts() {
+  const unread = alertsCache.filter(a => !a.read).length;
+  $("notifCount").textContent = String(unread);
+  $("notifCount").classList.toggle("hide", unread === 0);
+
+  $("alertsFullList").innerHTML = alertsCache.length
+    ? alertsCache.map(a => `
+      <div class="card-row" style="opacity:${a.read ? .7 : 1}">
+        <div><strong>${esc(a.text)}</strong><div class="sub-note" style="margin:2px 0 0">${new Date(a.created_at).toLocaleString("ar-DZ")}</div></div>
+        <span class="badge">${a.read ? "مقروء" : "جديد"}</span>
+      </div>`).join("")
+    : `<p class="sub-note">لا توجد إشعارات.</p>`;
+}
+
+async function markAllRead() {
+  if (!me || !alertsCache.some(a => !a.read)) return;
+  await sb.from("notifications").update({ read: true }).eq("user_id", me.id).eq("read", false);
+  alertsCache = alertsCache.map(a => ({ ...a, read: true }));
+  drawAlerts();
+}
+
+async function openNotificationsPage() {
+  if (!session) return showEntryGate();
+  openPage("alerts");
+  await markAllRead();
+}
+function leaveNotificationsPage() { backToMenu(); }
+
+/* ---------- realtime ---------- */
+function subscribeRealtime() {
+  channels.forEach(c => { try { sb.removeChannel(c); } catch {} });
+  channels = [];
+
+  channels.push(sb.channel("orders-rt")
+    .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+      loadOrders();
+    }).subscribe());
+
+  channels.push(sb.channel("products-rt")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "products" }, () => loadProducts())
+    .subscribe());
+
+  channels.push(sb.channel("notif-rt")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${me.id}` }, () => loadAlerts())
+    .subscribe());
+}
+
+/* ---------- boot ---------- */
+cachedCoords = readJSON("wossol_coords", null);
+applyRoleUI();
+initAuth();
+</script>
+</body>
+</html>
